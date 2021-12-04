@@ -1,6 +1,14 @@
+using HorrorTacticsApi2;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 // Add services to the container.
+
+// TODO: validate complex objects?
+builder.Services.AddOptions<AppSettings>()
+    .Bind(builder.Configuration)
+    .ValidateDataAnnotations();
 
 builder.Services
     .AddControllers()
