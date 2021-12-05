@@ -10,16 +10,22 @@ builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 
 // TODO: validate complex objects?
 builder.Services.AddOptions<AppSettings>()
-    .Bind(builder.Configuration)
+    .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_GENERAL_KEY))
     .ValidateDataAnnotations();
+{ 
+    // Jwt setup
+    builder.Services.AddOptions<JwtGeneratorStaticOptions>()
+        .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_JWTGENERATOR_KEY))
+        .ValidateDataAnnotations();
 
-builder.Services.AddAuthentication(auth =>
-{
-    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-});
+    builder.Services.AddAuthentication(auth =>
+    {
+        auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    });
 
-builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+    builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+}
 
 builder.Services
     .AddControllers()
