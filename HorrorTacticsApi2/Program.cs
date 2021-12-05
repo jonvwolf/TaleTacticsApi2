@@ -1,4 +1,7 @@
 using HorrorTacticsApi2;
+using Jonwolfdev.Utils6.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,14 @@ builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 builder.Services.AddOptions<AppSettings>()
     .Bind(builder.Configuration)
     .ValidateDataAnnotations();
+
+builder.Services.AddAuthentication(auth =>
+{
+    auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+});
+
+builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 
 builder.Services
     .AddControllers()
