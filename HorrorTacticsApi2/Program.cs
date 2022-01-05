@@ -1,6 +1,8 @@
 using HorrorTacticsApi2;
+using HorrorTacticsApi2.Data;
 using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +28,10 @@ builder.Services.AddOptions<AppSettings>()
 
     builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 }
+
+builder.Services.AddDbContext<HorrorDbContext>(options => 
+    options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY))
+);
 
 builder.Services
     .AddControllers()
