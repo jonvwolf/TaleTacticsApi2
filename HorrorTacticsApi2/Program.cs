@@ -53,6 +53,12 @@ builder.Services.AddCors(cors =>
 
 var app = builder.Build();
 
+{
+    using var scope2 = app.Services.CreateScope();
+    // Making sure the database file is always updated
+    var db = scope2.ServiceProvider.GetRequiredService<HorrorDbContext>();
+    await db.Database.MigrateAsync();
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

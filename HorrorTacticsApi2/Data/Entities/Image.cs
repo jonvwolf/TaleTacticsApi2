@@ -13,7 +13,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public int Width { get; set; }
         public int Height { get; set; }
         public FormatsEnum Format { get; set; }
-        [StringLength(999), Required]
+        [StringLength(5000), Required]
         public string AbsoluteUrl { get; set; } = "";
 
         public void Validate()
