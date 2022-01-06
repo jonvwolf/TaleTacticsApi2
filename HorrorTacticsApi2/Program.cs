@@ -41,6 +41,7 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// TODO: enhance cors policies
 builder.Services.AddCors(cors =>
 {
     cors.AddDefaultPolicy(policy =>
@@ -54,14 +55,17 @@ builder.Services.AddCors(cors =>
 var app = builder.Build();
 
 {
+    // TODO: make sure this is not called when replacing services in API integration
     using var scope2 = app.Services.CreateScope();
     // Making sure the database file is always updated
     var db = scope2.ServiceProvider.GetRequiredService<HorrorDbContext>();
     await db.Database.MigrateAsync();
 }
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -75,3 +79,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// This has to be added so it can be used within public classes
+namespace HorrorTacticsApi2
+{
+    public partial class Program { }
+}

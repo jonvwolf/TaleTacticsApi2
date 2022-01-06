@@ -1,25 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HorrorTacticsApi2.Common;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HorrorTacticsApi2.Data.Entities
 {
-    public class Image : IValidatable
+    public class Image
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        [StringLength(300), Required]
+        [StringLength(ValidationConstants.Image_Name_MaxStringLength), Required]
         public string Name { get; set; } = "";
         public int Width { get; set; }
         public int Height { get; set; }
         public FormatsEnum Format { get; set; }
-        [StringLength(5000), Required]
-        public string AbsoluteUrl { get; set; } = "";
-
-        public void Validate()
-        {
-            if (Format == FormatsEnum.Invalid)
-                throw new ArgumentException($"Has invalid as value", nameof(Format));
-        }
+        [StringLength(ValidationConstants.Image_AbsoluteUrl_MaxStringLength), Required]
+        public string AbsolutePath { get; set; } = "";
     }
 }

@@ -6,5 +6,7 @@ namespace HorrorTacticsApi2
     {
         [Required, MinLength(2)]
         public string MainPassword { get; set; } = "";
+        [Range(1, 1000)]
+        public int MaxImageSizeInMegabytes { get; set; }
     }
 }

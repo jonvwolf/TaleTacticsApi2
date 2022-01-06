@@ -1,4 +1,4 @@
-﻿namespace HorrorTacticsApi2.Data.Entities
+﻿namespace HorrorTacticsApi2.Common
 {
     public enum FormatsEnum
     {
