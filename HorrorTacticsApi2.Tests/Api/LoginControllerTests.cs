@@ -24,7 +24,7 @@ namespace HorrorTacticsApi2.Tests.Api
         [Fact]
         public async Task Should_Return_Token_With_Valid_Credentials()
         {
-            
+
         }
 
         [Fact]
@@ -37,6 +37,16 @@ namespace HorrorTacticsApi2.Tests.Api
         public async Task Should_Return_Unauthorized_With_Forged_Token()
         {
             // change in config a different token jwt key
+        }
+
+        [Fact]
+        public async Task TestApi_NoAuthentication_ReturnsUnauthorized()
+        {
+        }
+
+        [Fact]
+        public async Task TestApi_InvalidToken_ReturnsUnauthorized()
+        {
         }
     }
 }

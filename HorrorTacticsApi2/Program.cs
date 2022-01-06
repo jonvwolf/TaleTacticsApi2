@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 // Add services to the container.
 
-// TODO: validate complex objects?
 builder.Services.AddOptions<AppSettings>()
     .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_GENERAL_KEY))
     .ValidateDataAnnotations();
@@ -41,7 +40,6 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// TODO: enhance cors policies
 builder.Services.AddCors(cors =>
 {
     cors.AddDefaultPolicy(policy =>
@@ -65,6 +63,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // TODO: what is the difference of having devexception page and not having it?
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -74,7 +73,7 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 
