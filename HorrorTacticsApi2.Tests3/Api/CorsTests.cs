@@ -8,13 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HorrorTacticsApi2.Tests3
+namespace HorrorTacticsApi2.Tests3.Api
 {
-    public class CorsTests
+    public class CorsTests : IClassFixture<ApiTestsCollection>
     {
-        readonly CustomWebAppFactory _factory;
+        readonly ApiTestsCollection _factory;
         
-        public CorsTests(CustomWebAppFactory factory)
+        public CorsTests(ApiTestsCollection factory)
         {
             _factory = factory;
         }

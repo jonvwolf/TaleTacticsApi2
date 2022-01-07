@@ -10,11 +10,11 @@ using Xunit;
 
 namespace HorrorTacticsApi2.Tests3
 {
-    public class ConfigValidationTests
+    public class ConfigValidationTests : IClassFixture<ApiTestsCollection>
     {
-        readonly CustomWebAppFactory _factory;
+        readonly ApiTestsCollection _factory;
         
-        public ConfigValidationTests(CustomWebAppFactory factory)
+        public ConfigValidationTests(ApiTestsCollection factory)
         {
             _factory = factory;
         }

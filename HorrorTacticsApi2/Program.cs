@@ -6,10 +6,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
+bool enableInitLogging = false;
+if (args != null && args.Length > 0)
+{
+    foreach(var arg in args)
+    {
+        if ("init-log".Equals(arg, StringComparison.OrdinalIgnoreCase))
+        {
+            enableInitLogging = true;
+        }
+    }
+}
+
+var logConfig = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-    .CreateBootstrapLogger();
+    .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning);
+
+if (enableInitLogging)
+    logConfig.WriteTo.File("./logs/ht-log-init.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug);
+
+Log.Logger = logConfig.CreateBootstrapLogger();
 
 try
 {
@@ -60,10 +76,10 @@ try
         using var app = builder.Build();
 
         {
-            // Migrate
+            // Start up operations...
             using var scope = app.Services.CreateScope();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Starting HorrorTactics...");
+            logger.LogInformation("HorrorTactics starting up...");
             await scope.ServiceProvider.MigrateDbAsync();
         }
 

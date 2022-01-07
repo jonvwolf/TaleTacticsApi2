@@ -10,11 +10,11 @@ using Xunit;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
-    public class LoginControllerTests
+    public class LoginControllerTests : IClassFixture<ApiTestsCollection>
     {
-        readonly CustomWebAppFactory _factory;
+        readonly ApiTestsCollection _factory;
         const string Path = "api/images";
-        public LoginControllerTests(CustomWebAppFactory factory)
+        public LoginControllerTests(ApiTestsCollection factory)
         {
             _factory = factory;
         }
