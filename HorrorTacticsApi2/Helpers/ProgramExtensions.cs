@@ -41,7 +41,14 @@ namespace HorrorTacticsApi2.Helpers
                     await db.Database.MigrateAsync();
                     logger.LogInformation("Finished migrations.");
                     logger.LogInformation($"Deleting file {Constants.FILE_APPLY_MIGRATIONS}");
-                    File.Delete(Constants.FILE_APPLY_MIGRATIONS);
+                    try
+                    {
+                        File.Delete(Constants.FILE_APPLY_MIGRATIONS);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError($"Couldn't delete {Constants.FILE_APPLY_MIGRATIONS} file", ex);
+                    }
                 }
                 else
                 {

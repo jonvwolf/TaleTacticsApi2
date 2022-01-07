@@ -13,7 +13,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HorrorTacticsApi2.Tests.Api.Helpers
+namespace HorrorTacticsApi2.Tests2.Api.Helpers
 {
     public class CustomWebAppFactory : WebApplicationFactory<Program>
     {

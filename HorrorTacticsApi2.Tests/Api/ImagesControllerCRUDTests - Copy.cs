@@ -17,23 +17,41 @@ using Xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace HorrorTacticsApi2.Tests.Api
 {
-    public class ImagesControllerCRUDTests : IClassFixture<ApiTestsCollection>
+    public class ImagesControllerCRUDTests2 : IClassFixture<ApiTestsCollection>
     {
-        readonly ApiTestsCollection _collection;
         const string Path = "secured/images";
-        public ImagesControllerCRUDTests(ApiTestsCollection collection)
+        public ImagesControllerCRUDTests2()
         {
-            _collection = collection;
+            
         }
 
         [Fact]
         public async Task Should_Do_Crud_Without_Errors()
         {
-            var client = _collection.CreateClient();
+            using var application = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.UseSerilog((ctx, lc) =>
+                    {
+                        lc
+                            .WriteTo.Console()
+                            .ReadFrom.Configuration(ctx.Configuration);
+                    });
+
+                    builder.ConfigureServices(services =>
+                    {
+                        services.RemoveAll<HorrorDbContext>();
+                        services.RemoveAll<DbContextOptions<HorrorDbContext>>();
+
+                        services.AddDbContext<HorrorDbContext>(options => options.UseSqlite($"Data Source={ApiTestsCollection.ImagesCRUDDbFile + "2"}"));
+                    });
+                });
+            
+            var client = application.CreateClient();
 
             var readImageDto = await Post_Should_Create_Image(client, "image1");
             await Get_Should_Return_One_Image(client, readImageDto);
@@ -45,14 +63,24 @@ namespace HorrorTacticsApi2.Tests.Api
             await Delete_Should_Delete_Image(client, readImageDto1_1);
 
             await Get_Should_Return_One_Image(client, readImageDto2);
-
-            await Delete_Should_Delete_Image(client, readImageDto2);
         }
 
         [Fact]
         public async Task Should_Do_Crud_Without_Errors2()
         {
-            var client = _collection.CreateClient();
+            using var application = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.ConfigureServices(services =>
+                    {
+                        services.RemoveAll<HorrorDbContext>();
+                        services.RemoveAll<DbContextOptions<HorrorDbContext>>();
+
+                        services.AddDbContext<HorrorDbContext>(options => options.UseSqlite($"Data Source={ApiTestsCollection.ImagesCRUDDbFile + "3"}"));
+                    });
+                });
+
+            var client = application.CreateClient();
 
             var readImageDto = await Post_Should_Create_Image(client, "image1");
             await Get_Should_Return_One_Image(client, readImageDto);
@@ -64,8 +92,6 @@ namespace HorrorTacticsApi2.Tests.Api
             await Delete_Should_Delete_Image(client, readImageDto1_1);
 
             await Get_Should_Return_One_Image(client, readImageDto2);
-
-            await Delete_Should_Delete_Image(client, readImageDto2);
         }
 
         static async Task<ReadImageModel> Post_Should_Create_Image(HttpClient client, string name)

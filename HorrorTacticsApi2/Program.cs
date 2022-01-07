@@ -2,32 +2,25 @@ using HorrorTacticsApi2;
 using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Helpers;
-using Jonwolfdev.Utils6.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    // ht-logs has to have the same arguments as the one in the appsettings.json
-    .WriteTo.File("./logs/ht-logs-.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 5242880, retainedFileCountLimit: 5)
-    .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
-    .CreateBootstrapLogger();
-
-Log.Information("HorrorTactics starting up...");
+//Log.Logger = new LoggerConfiguration()
+//    .WriteTo.Console()
+//    //.WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
+//    .CreateBootstrapLogger();
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 
     builder.Host.UseSerilog((ctx, lc) =>
     {
-        lc.WriteTo.Console()
+        lc
+            .WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
-
-    builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
 
     // Add services to the container.
     builder.Services.AddOptions<AppSettings>()
@@ -39,6 +32,9 @@ try
     builder.Services.AddDbContext<HorrorDbContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY))
     );
+
+    builder.Services.AddScoped<ImageModelEntityConverter>();
+    builder.Services.AddScoped<ImageService>();
 
     builder.Services
         .AddControllers()
@@ -58,11 +54,13 @@ try
         });
     });
 
-    var app = builder.Build();
+    using var app = builder.Build();
 
     {
-        // TODO: make sure this is not called when replacing services in API integration
+        // Migrate
         using var scope = app.Services.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("Starting HorrorTactics...");
         await scope.ServiceProvider.MigrateDbAsync();
     }
 
@@ -90,6 +88,7 @@ try
 catch (Exception ex)
 {
     Log.Fatal(ex, "Unhandled exception");
+    throw;
 }
 finally
 {

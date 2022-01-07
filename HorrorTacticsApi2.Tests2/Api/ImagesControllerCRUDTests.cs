@@ -1,6 +1,5 @@
 ﻿using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain.Dtos;
-using HorrorTacticsApi2.Tests.Api.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -13,24 +12,25 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using HorrorTacticsApi2.Tests2.Api.Helpers;
+using NUnit.Framework;
 
-namespace HorrorTacticsApi2.Tests.Api
+namespace HorrorTacticsApi2.Tests2.Api
 {
-    public class ImagesControllerCRUDTests : IClassFixture<ApiTestsCollection>
+    public class ImagesControllerCRUDTests
     {
         readonly ApiTestsCollection _collection;
         const string Path = "secured/images";
-        public ImagesControllerCRUDTests(ApiTestsCollection collection)
+        public ImagesControllerCRUDTests()
         {
-            _collection = collection;
+            _collection = new ApiTestsCollection();
         }
 
-        [Fact]
+        [Test, Order(1)]
         public async Task Should_Do_Crud_Without_Errors()
         {
             var client = _collection.CreateClient();
@@ -49,7 +49,7 @@ namespace HorrorTacticsApi2.Tests.Api
             await Delete_Should_Delete_Image(client, readImageDto2);
         }
 
-        [Fact]
+        [Test, Order(2)]
         public async Task Should_Do_Crud_Without_Errors2()
         {
             var client = _collection.CreateClient();
@@ -78,8 +78,8 @@ namespace HorrorTacticsApi2.Tests.Api
 
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response);
-            Assert.Equal(StatusCodes.Status201Created, (int)response.StatusCode);
-            Assert.Equal(createImageDto.Name, readModel.Name);
+            Assert.AreEqual(StatusCodes.Status201Created, (int)response.StatusCode);
+            Assert.AreEqual(createImageDto.Name, readModel.Name);
             // TODO: validate other properties
 
             return readModel;
@@ -92,7 +92,7 @@ namespace HorrorTacticsApi2.Tests.Api
             var images = await GetImagesAndValidateTaskAsync(client);
 
             // assert
-            Assert.Equal(1, images?.Count);
+            Assert.AreEqual(1, images?.Count);
             AssertImageDto(imageDto, images?[0]);
         }
 
@@ -106,10 +106,10 @@ namespace HorrorTacticsApi2.Tests.Api
 
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response);
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
-            Assert.Equal(updateModel.Name, readModel.Name);
-            Assert.Equal(model.Id, readModel.Id);
-            Assert.NotEqual(model.Name, readModel.Name);
+            Assert.AreEqual(StatusCodes.Status200OK, (int)response.StatusCode);
+            Assert.AreEqual(updateModel.Name, readModel.Name);
+            Assert.AreEqual(model.Id, readModel.Id);
+            Assert.AreNotEqual(model.Name, readModel.Name);
             // TODO: validate other properties
 
             return readModel;
@@ -122,7 +122,7 @@ namespace HorrorTacticsApi2.Tests.Api
             var images = await GetImagesAndValidateTaskAsync(client);
 
             // assert
-            Assert.Equal(2, images?.Count);
+            Assert.AreEqual(2, images?.Count);
             AssertImageDto(imageDto, images?[0]);
             AssertImageDto(imageDto2, images?[1]);
         }
@@ -135,7 +135,7 @@ namespace HorrorTacticsApi2.Tests.Api
             var response = await client.DeleteAsync(Path + $"/{model.Id}");
 
             // assert
-            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
+            Assert.AreEqual(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
 
         static async Task<IList<ReadImageModel>> GetImagesAndValidateTaskAsync(HttpClient client)
@@ -147,19 +147,19 @@ namespace HorrorTacticsApi2.Tests.Api
 
             // assert
             var images = await Helper.VerifyAndGetAsync<IList<ReadImageModel>>(response);
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+            Assert.AreEqual(StatusCodes.Status200OK, (int)response.StatusCode);
 
             return images;
         }
 
         static void AssertImageDto(ReadImageModel expected, ReadImageModel? imageDto)
         {
-            Assert.Equal(expected.Id, imageDto?.Id);
-            Assert.Equal(expected.Name, imageDto?.Name);
-            Assert.Equal(expected.AbsoluteUrl, imageDto?.AbsoluteUrl);
-            Assert.Equal(expected.Format, imageDto?.Format);
-            Assert.Equal(expected.Height, imageDto?.Height);
-            Assert.Equal(expected.Width, imageDto?.Width);
+            Assert.AreEqual(expected.Id, imageDto?.Id);
+            Assert.AreEqual(expected.Name, imageDto?.Name);
+            Assert.AreEqual(expected.AbsoluteUrl, imageDto?.AbsoluteUrl);
+            Assert.AreEqual(expected.Format, imageDto?.Format);
+            Assert.AreEqual(expected.Height, imageDto?.Height);
+            Assert.AreEqual(expected.Width, imageDto?.Width);
         }
     }
 }

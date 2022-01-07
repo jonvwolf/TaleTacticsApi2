@@ -1,18 +1,16 @@
-﻿using HorrorTacticsApi2.Domain.Dtos;
-using HorrorTacticsApi2.Tests.Api.Helpers;
-using Microsoft.AspNetCore.Http;
+﻿using HorrorTacticsApi2.Tests2.Api.Helpers;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
-namespace HorrorTacticsApi2.Tests.Api
+namespace HorrorTacticsApi2.Tests2.Api
 {
-    public class ErrorDisplayTests : IClassFixture<CustomWebAppFactory>
+    public class ErrorDisplayTests
     {
         readonly CustomWebAppFactory _factory;
         
@@ -21,26 +19,26 @@ namespace HorrorTacticsApi2.Tests.Api
             _factory = factory;
         }
 
-        [Fact]
+        [Test]
         public async Task Should_Return_Exception_Details_In_Development_Mode()
         {
             
         }
 
-        [Fact]
+        [Test]
         public async Task Should_Return_InternalServerError_Instead_Of_Exception_Details_In_Production()
         {
 
         }
 
-        [Fact]
+        [Test]
         public async Task Should_Return_InternalServerError_With_Details_For_HtExceptions()
         {
             // HttpExceptionFilter
             // Inject new controllers that only throw these kind of exceptions
         }
 
-        [Fact]
+        [Test]
         public async Task Should_Return_BadRequest_For_HtBadRequestExceptions()
         {
             // HttpExceptionFilter
@@ -49,7 +47,7 @@ namespace HorrorTacticsApi2.Tests.Api
             // TODO: BadRequest should give the details
         }
 
-        [Fact]
+        [Test]
         public async Task Should_Return_NotFound_For_Route_That_Doesnt_Exist()
         {
 
