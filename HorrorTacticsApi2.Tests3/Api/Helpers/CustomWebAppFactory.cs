@@ -1,4 +1,5 @@
 ﻿using HorrorTacticsApi2.Data;
+using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +14,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HorrorTacticsApi2.Tests2.Api.Helpers
+namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class CustomWebAppFactory : WebApplicationFactory<Program>
     {
         readonly SqliteInMemory _db;
         readonly CustomWebAppFactoryOptions _options;
+        bool _disposed;
         public CustomWebAppFactory(CustomWebAppFactoryOptions? options = null)
         {
             _options = options ?? new CustomWebAppFactoryOptions();
@@ -29,28 +31,22 @@ namespace HorrorTacticsApi2.Tests2.Api.Helpers
         {
             base.ConfigureWebHost(builder);
 
-            builder.UseSerilog((ctx, lc) =>
-            {
-                lc
-                    .WriteTo.Console();
-            });
-
             builder.ConfigureServices(services =>
             {
-                //services.RemoveAll<HorrorDbContext>();
                 services.RemoveAll<DbContextOptions<HorrorDbContext>>();
                 
                 services.AddSingleton(_db.Options);
             });
         }
-
+        
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
 
-            if (disposing)
+            if (disposing && !_disposed)
             {
                 _db.Dispose();
+                _disposed = true;
             }
         }
     }

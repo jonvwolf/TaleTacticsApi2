@@ -1,14 +1,14 @@
-﻿using HorrorTacticsApi2.Tests2.Api.Helpers;
+﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace HorrorTacticsApi2.Tests2.Api
+namespace HorrorTacticsApi2.Tests3.Api
 {
     public class ErrorDisplayTests
     {
@@ -19,26 +19,26 @@ namespace HorrorTacticsApi2.Tests2.Api
             _factory = factory;
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_Exception_Details_In_Development_Mode()
         {
             
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_InternalServerError_Instead_Of_Exception_Details_In_Production()
         {
 
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_InternalServerError_With_Details_For_HtExceptions()
         {
             // HttpExceptionFilter
             // Inject new controllers that only throw these kind of exceptions
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_BadRequest_For_HtBadRequestExceptions()
         {
             // HttpExceptionFilter
@@ -47,7 +47,7 @@ namespace HorrorTacticsApi2.Tests2.Api
             // TODO: BadRequest should give the details
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_NotFound_For_Route_That_Doesnt_Exist()
         {
 

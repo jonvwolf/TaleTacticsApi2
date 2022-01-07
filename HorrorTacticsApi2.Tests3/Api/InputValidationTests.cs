@@ -1,14 +1,14 @@
-﻿using HorrorTacticsApi2.Tests2.Api.Helpers;
+﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace HorrorTacticsApi2.Tests2.Api
+namespace HorrorTacticsApi2.Tests3.Api
 {
     public class InputValidationTests
     {
@@ -19,19 +19,19 @@ namespace HorrorTacticsApi2.Tests2.Api
             _factory = factory;
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_BadRequest_Invalid_Complex_Object()
         {
             // for all controllers?
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_BadRequest_Invalid_List_Complex_Object()
         {
             // for all controllers?
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_BadRequest_When_Sending_Empty_Body()
         {
             // check [FromBody] model cannot be null

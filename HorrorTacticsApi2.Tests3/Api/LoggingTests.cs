@@ -1,14 +1,14 @@
-﻿using HorrorTacticsApi2.Tests2.Api.Helpers;
+﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace HorrorTacticsApi2.Tests2.Api
+namespace HorrorTacticsApi2.Tests3.Api
 {
     public class LoggingTests
     {
@@ -19,7 +19,7 @@ namespace HorrorTacticsApi2.Tests2.Api
             _factory = factory;
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Create_Log()
         {
             // There can only be one instance of CustomWebAppFactory with enabled logging

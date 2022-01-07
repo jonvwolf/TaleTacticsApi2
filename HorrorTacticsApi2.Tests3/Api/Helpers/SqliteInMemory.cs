@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HorrorTacticsApi2.Tests2.Api.Helpers
+namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class SqliteInMemory : IDisposable
     {

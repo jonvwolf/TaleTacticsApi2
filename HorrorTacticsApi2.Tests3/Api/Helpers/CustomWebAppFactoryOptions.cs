@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HorrorTacticsApi2.Tests.Api.Helpers
+namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class CustomWebAppFactoryOptions
     {

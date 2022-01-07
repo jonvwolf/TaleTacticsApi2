@@ -1,6 +1,4 @@
-﻿using HorrorTacticsApi2.Domain.Dtos;
-using HorrorTacticsApi2.Tests.Api.Helpers;
-using Microsoft.AspNetCore.Http;
+﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -10,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HorrorTacticsApi2.Tests
+namespace HorrorTacticsApi2.Tests3
 {
-    public class CorsTests : IClassFixture<CustomWebAppFactory>
+    public class CorsTests
     {
         readonly CustomWebAppFactory _factory;
         

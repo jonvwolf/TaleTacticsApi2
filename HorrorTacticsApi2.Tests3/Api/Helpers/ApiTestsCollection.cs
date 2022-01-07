@@ -5,9 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
 
-namespace HorrorTacticsApi2.Tests.Api.Helpers
+namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class ApiTestsCollection : IDisposable
     {
@@ -19,13 +18,8 @@ namespace HorrorTacticsApi2.Tests.Api.Helpers
 
         public ApiTestsCollection()
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "ApiTesting");
             _webAppFactory = new CustomWebAppFactory();
-
-            if (!File.Exists(Constants.FILE_APPLY_MIGRATIONS))
-            {
-                File.WriteAllText(Constants.FILE_APPLY_MIGRATIONS, "");
-                File.SetAttributes(Constants.FILE_APPLY_MIGRATIONS, FileAttributes.ReadOnly);
-            }
         }
 
         public HttpClient CreateClient()
@@ -39,6 +33,7 @@ namespace HorrorTacticsApi2.Tests.Api.Helpers
             {
                 if (disposing)
                 {
+                    _webAppFactory.Dispose();
                 }
 
                 disposedValue = true;

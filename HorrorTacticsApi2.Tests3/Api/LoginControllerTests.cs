@@ -1,14 +1,14 @@
-﻿using HorrorTacticsApi2.Tests2.Api.Helpers;
+﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace HorrorTacticsApi2.Tests2.Api
+namespace HorrorTacticsApi2.Tests3.Api
 {
     public class LoginControllerTests
     {
@@ -19,30 +19,30 @@ namespace HorrorTacticsApi2.Tests2.Api
             _factory = factory;
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_Token_With_Valid_Credentials()
         {
 
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_Unauthorized_With_Bad_Password()
         {
 
         }
 
-        [Test]
+        [Fact]
         public async Task Should_Return_Unauthorized_With_Forged_Token()
         {
             // change in config a different token jwt key
         }
 
-        [Test]
+        [Fact]
         public async Task TestApi_NoAuthentication_ReturnsUnauthorized()
         {
         }
 
-        [Test]
+        [Fact]
         public async Task TestApi_InvalidToken_ReturnsUnauthorized()
         {
         }
