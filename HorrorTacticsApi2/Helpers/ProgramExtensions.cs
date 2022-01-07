@@ -30,25 +30,29 @@ namespace HorrorTacticsApi2.Helpers
         {
             // Making sure the database file is always updated
             var db = services.GetRequiredService<HorrorDbContext>();
-            var logger = services.GetRequiredService<ILogger<Program>>();
             var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
             
             if (pendingMigrations.Any())
             {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                var settings = services.GetRequiredService<IOptions<AppSettings>>();
+
+                if (settings.Value.ByPassApplyMigrationFileCheck)
+                {
+                    logger.LogInformation("Applying migrations...");
+                    await db.Database.MigrateAsync();
+                    logger.LogInformation("Finished migrations.");
+                    return;
+                }
+
                 if (File.Exists(Constants.FILE_APPLY_MIGRATIONS))
                 {
                     logger.LogInformation("Applying migrations...");
                     await db.Database.MigrateAsync();
                     logger.LogInformation("Finished migrations.");
-                    logger.LogInformation($"Deleting file {Constants.FILE_APPLY_MIGRATIONS}");
-                    try
-                    {
-                        File.Delete(Constants.FILE_APPLY_MIGRATIONS);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError($"Couldn't delete {Constants.FILE_APPLY_MIGRATIONS} file", ex);
-                    }
+
+                    File.Delete(Constants.FILE_APPLY_MIGRATIONS);
+                    logger.LogInformation($"File {Constants.FILE_APPLY_MIGRATIONS} deleted.");
                 }
                 else
                 {

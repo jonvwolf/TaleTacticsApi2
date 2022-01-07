@@ -39,8 +39,7 @@ namespace HorrorTacticsApi2.Tests2.Api.Helpers
             {
                 //services.RemoveAll<HorrorDbContext>();
                 services.RemoveAll<DbContextOptions<HorrorDbContext>>();
-                //services.AddDbContext<HorrorDbContext>(options => options.UseSqlite($"Data Source={_options.DbFileName}"));
-
+                
                 services.AddSingleton(_db.Options);
             });
         }

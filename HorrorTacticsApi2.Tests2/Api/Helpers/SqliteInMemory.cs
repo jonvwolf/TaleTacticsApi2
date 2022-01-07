@@ -12,19 +12,14 @@ namespace HorrorTacticsApi2.Tests2.Api.Helpers
 {
     public class SqliteInMemory : IDisposable
     {
-        static DbConnection CreateInMemoryDatabase()
-        {
-            var conn = new SqliteConnection("Filename=:memory:");
-            conn.Open();
-            return conn;
-        }
-
         readonly DbConnection _conn;
         public readonly DbContextOptions<HorrorDbContext> Options;
 
         public SqliteInMemory()
         {
-            _conn = CreateInMemoryDatabase();
+            _conn = new SqliteConnection("Filename=:memory:");
+            _conn.Open();
+
             Options = new DbContextOptionsBuilder<HorrorDbContext>().UseSqlite(_conn).Options;
         }
 
@@ -41,7 +36,7 @@ namespace HorrorTacticsApi2.Tests2.Api.Helpers
             {
                 if (disposing)
                 {
-                    _conn?.Dispose();
+                    _conn.Dispose();
                 }
 
                 disposedValue = true;

@@ -19,12 +19,6 @@ namespace HorrorTacticsApi2.Tests2.Api.Helpers
         public ApiTestsCollection()
         {
             _webAppFactory = new CustomWebAppFactory();
-
-            if (!File.Exists(Constants.FILE_APPLY_MIGRATIONS))
-            {
-                File.WriteAllText(Constants.FILE_APPLY_MIGRATIONS, "");
-                File.SetAttributes(Constants.FILE_APPLY_MIGRATIONS, FileAttributes.ReadOnly);
-            }
         }
 
         public HttpClient CreateClient()

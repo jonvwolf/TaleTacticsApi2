@@ -28,6 +28,18 @@ namespace HorrorTacticsApi2.Tests2.Api
         public ImagesControllerCRUDTests()
         {
             _collection = new ApiTestsCollection();
+
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "ApiTesting");
+            var tasks = new List<Task>();
+            for(int i = 0; i < 2; i++)
+            {
+                //tasks.Add(Task.Run(() =>
+                //{
+                //    using var ok = new ApiTestsCollection();
+                //    using var client = ok.CreateClient();
+                //    var resp = client.GetAsync(Path).GetAwaiter().GetResult();
+                //}));
+            }
         }
 
         [Test, Order(1)]
