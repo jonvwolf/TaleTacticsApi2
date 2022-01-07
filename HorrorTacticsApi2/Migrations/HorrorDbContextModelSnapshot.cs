@@ -22,7 +22,7 @@ namespace HorrorTacticsApi2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AbsoluteUrl")
+                    b.Property<string>("AbsolutePath")
                         .IsRequired()
                         .HasMaxLength(5000)
                         .HasColumnType("TEXT");

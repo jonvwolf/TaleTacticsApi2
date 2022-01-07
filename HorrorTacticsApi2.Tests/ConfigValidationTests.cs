@@ -12,23 +12,23 @@ using Xunit;
 
 namespace HorrorTacticsApi2.Tests
 {
-    public class CorsTests : IClassFixture<CustomWebAppFactory>
+    public class ConfigValidationTests : IClassFixture<CustomWebAppFactory>
     {
         readonly CustomWebAppFactory _factory;
         
-        public CorsTests(CustomWebAppFactory factory)
+        public ConfigValidationTests(CustomWebAppFactory factory)
         {
             _factory = factory;
         }
 
         [Fact]
-        public async Task Should_Only_Allow_Admin_Endpoints_From_Specific_Host()
+        public async Task AddOptions_Should_Validate_Complex_Objects_And_Lists()
         {
-            // host value is in config
+            
         }
 
         [Fact]
-        public async Task Should_Allow_From_All_For_Game_Endpoints()
+        public async Task AddOptions_Should_Validate()
         {
 
         }

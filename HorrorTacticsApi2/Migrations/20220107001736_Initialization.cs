@@ -18,7 +18,7 @@ namespace HorrorTacticsApi2.Migrations
                     Width = table.Column<int>(type: "INTEGER", nullable: false),
                     Height = table.Column<int>(type: "INTEGER", nullable: false),
                     Format = table.Column<string>(type: "TEXT", nullable: false),
-                    AbsoluteUrl = table.Column<string>(type: "TEXT", maxLength: 5000, nullable: false)
+                    AbsolutePath = table.Column<string>(type: "TEXT", maxLength: 5000, nullable: false)
                 },
                 constraints: table =>
                 {

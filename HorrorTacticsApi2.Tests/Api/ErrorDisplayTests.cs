@@ -15,7 +15,7 @@ namespace HorrorTacticsApi2.Tests.Api
     public class ErrorDisplayTests : IClassFixture<CustomWebAppFactory>
     {
         readonly CustomWebAppFactory _factory;
-        const string Path = "api/images";
+        
         public ErrorDisplayTests(CustomWebAppFactory factory)
         {
             _factory = factory;

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HorrorTacticsApi2", "HorrorTacticsApi2\HorrorTacticsApi2.csproj", "{A06F8ED2-FEAE-4ADF-9623-F58EA0309699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorrorTacticsApi2.Tests", "HorrorTacticsApi2.Tests\HorrorTacticsApi2.Tests.csproj", "{D29E2C6C-9A69-4792-A94B-7901046EB8D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HorrorTacticsApi2.Tests", "HorrorTacticsApi2.Tests\HorrorTacticsApi2.Tests.csproj", "{D29E2C6C-9A69-4792-A94B-7901046EB8D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

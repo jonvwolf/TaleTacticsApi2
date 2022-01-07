@@ -1,5 +1,7 @@
 using HorrorTacticsApi2;
 using HorrorTacticsApi2.Data;
+using HorrorTacticsApi2.Domain;
+using HorrorTacticsApi2.Helpers;
 using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +10,8 @@ using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    .WriteTo.File("./logs/ht-logs-.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 5242880, retainedFileCountLimit: 10)
+    // ht-logs has to have the same arguments as the one in the appsettings.json
+    .WriteTo.File("./logs/ht-logs-.txt", rollingInterval: RollingInterval.Day, fileSizeLimitBytes: 5242880, retainedFileCountLimit: 5)
     .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
     .CreateBootstrapLogger();
 
@@ -25,25 +28,13 @@ try
     });
 
     builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
-    // Add services to the container.
 
+    // Add services to the container.
     builder.Services.AddOptions<AppSettings>()
         .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_GENERAL_KEY))
         .ValidateDataAnnotations();
-    {
-        // Jwt setup
-        builder.Services.AddOptions<JwtGeneratorStaticOptions>()
-            .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_JWTGENERATOR_KEY))
-            .ValidateDataAnnotations();
 
-        builder.Services.AddAuthentication(auth =>
-        {
-            auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        });
-
-        builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
-    }
+    builder.AddJwt();
 
     builder.Services.AddDbContext<HorrorDbContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY))
@@ -71,10 +62,8 @@ try
 
     {
         // TODO: make sure this is not called when replacing services in API integration
-        using var scope2 = app.Services.CreateScope();
-        // Making sure the database file is always updated
-        var db = scope2.ServiceProvider.GetRequiredService<HorrorDbContext>();
-        await db.Database.MigrateAsync();
+        using var scope = app.Services.CreateScope();
+        await scope.ServiceProvider.MigrateDbAsync();
     }
 
     // Configure the HTTP request pipeline.
@@ -112,5 +101,7 @@ finally
 // This has to be added so it can be used within public classes
 namespace HorrorTacticsApi2
 {
-    public partial class Program { }
+    public partial class Program
+    {
+    }
 }

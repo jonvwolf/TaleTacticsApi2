@@ -10,27 +10,27 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HorrorTacticsApi2.Tests
+namespace HorrorTacticsApi2.Tests.Api
 {
-    public class ValidationTests : IClassFixture<CustomWebAppFactory>
+    public class InputValidationTests : IClassFixture<CustomWebAppFactory>
     {
         readonly CustomWebAppFactory _factory;
-        
-        public ValidationTests(CustomWebAppFactory factory)
+        const string Path = "api/images";
+        public InputValidationTests(CustomWebAppFactory factory)
         {
             _factory = factory;
         }
 
         [Fact]
-        public async Task AddOptions_Should_Validate_Complex_Objects_And_Lists()
+        public async Task Should_Return_BadRequest_Invalid_Complex_Object()
         {
-            
+            // for all controllers?
         }
 
         [Fact]
-        public async Task AddOptions_Should_Validate()
+        public async Task Should_Return_BadRequest_Invalid_List_Complex_Object()
         {
-
+            // for all controllers?
         }
     }
 }

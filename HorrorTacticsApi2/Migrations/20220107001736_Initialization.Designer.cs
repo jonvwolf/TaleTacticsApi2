@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HorrorTacticsApi2.Migrations
 {
     [DbContext(typeof(HorrorDbContext))]
-    [Migration("20220105033703_Initialization")]
+    [Migration("20220107001736_Initialization")]
     partial class Initialization
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,9 +24,9 @@ namespace HorrorTacticsApi2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AbsoluteUrl")
+                    b.Property<string>("AbsolutePath")
                         .IsRequired()
-                        .HasMaxLength(999)
+                        .HasMaxLength(5000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Format")
