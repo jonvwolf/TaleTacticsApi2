@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
@@ -7,8 +8,10 @@ using System.Net.Mime;
 
 namespace HorrorTacticsApi2.Controllers
 {
+    [Authorize]
     [Route("secured/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class ImagesController : ControllerBase
@@ -33,7 +36,11 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            return Ok(await _service.GetAsync(id, token));
+            var model = await _service.GetAsync(id, token);
+            if (model == default)
+                return NotFound();
+
+            return Ok(model);
         }
 
         [HttpPost]

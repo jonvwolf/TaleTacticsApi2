@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,19 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
             return new StringContent(str, Encoding.UTF8, MediaTypeNames.Application.Json);
         }
 
-        internal async static Task<T> VerifyAndGetAsync<T>(HttpResponseMessage response)
+        internal async static Task<T> VerifyAndGetAsync<T>(HttpResponseMessage response, int expectedHttpStatusCode)
         {
+            Assert.NotNull(response);
+            Assert.NotNull(response.Content);
+
             var str = await response.Content.ReadAsStringAsync();
+
+            if ((int)response.StatusCode != expectedHttpStatusCode)
+            {
+                throw new InvalidOperationException($"The status code is different from expected. Expected: {expectedHttpStatusCode} Actual: {response.StatusCode}"
+                    + Environment.NewLine + "Response string: " + Environment.NewLine + str);
+            }
+
             try
             {
                 var obj = JsonConvert.DeserializeObject<T>(str);

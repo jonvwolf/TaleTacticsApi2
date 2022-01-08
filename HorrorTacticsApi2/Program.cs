@@ -3,7 +3,6 @@ using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Serilog;
 
 bool enableInitLogging = false;
@@ -58,6 +57,12 @@ try
         .AddControllers()
         .AddNewtonsoftJson();
 
+    builder.Services.AddApiVersioning(config =>
+    {
+        config.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+        config.AssumeDefaultVersionWhenUnspecified = true;
+    });
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -97,6 +102,7 @@ try
         app.UseHttpsRedirection();
 
         app.UseAuthentication();
+        app.UseAuthorization();
 
         app.UseSerilogRequestLogging();
 

@@ -1,4 +1,6 @@
-﻿using HorrorTacticsApi2.Tests3.Api.Helpers;
+﻿using HorrorTacticsApi2.Domain.Models;
+using HorrorTacticsApi2.Tests3.Api.Helpers;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +15,7 @@ namespace HorrorTacticsApi2.Tests3.Api
     public class LoginControllerTests : IClassFixture<ApiTestsCollection>
     {
         readonly ApiTestsCollection _factory;
-        const string Path = "api/images";
+        const string Path = "/login";
         public LoginControllerTests(ApiTestsCollection factory)
         {
             _factory = factory;
@@ -22,13 +24,30 @@ namespace HorrorTacticsApi2.Tests3.Api
         [Fact]
         public async Task Should_Return_Token_With_Valid_Credentials()
         {
+            // arrange
+            using var client = _factory.CreateClient();
+            var login = new LoginModel(_factory.WebAppFactory.MainPassword);
 
+            // act
+            var response = await client.PostAsync(Path, Helper.GetContent(login));
+
+            // assert
+            var responseModel = await Helper.VerifyAndGetAsync<TokenModel>(response, StatusCodes.Status200OK);
+            Assert.NotEmpty(responseModel.Token);
         }
 
         [Fact]
         public async Task Should_Return_Unauthorized_With_Bad_Password()
         {
+            // arrange
+            using var client = _factory.CreateClient();
+            var login = new LoginModel(_factory.WebAppFactory.MainPassword + "1");
 
+            // act
+            var response = await client.PostAsync(Path, Helper.GetContent(login));
+
+            // assert
+            Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
         }
 
         [Fact]

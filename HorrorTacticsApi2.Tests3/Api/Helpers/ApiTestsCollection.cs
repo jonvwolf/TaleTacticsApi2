@@ -13,18 +13,17 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
         /// <summary>
         /// This is to be shared
         /// </summary>
-        readonly CustomWebAppFactory _webAppFactory;
+        public readonly CustomWebAppFactory WebAppFactory;
         private bool disposedValue;
 
         public ApiTestsCollection()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "ApiTesting");
-            _webAppFactory = new CustomWebAppFactory();
+            WebAppFactory = new CustomWebAppFactory();
         }
 
         public HttpClient CreateClient()
         {
-            return _webAppFactory.CreateClient();
+            return WebAppFactory.CreateClient();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -33,7 +32,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
             {
                 if (disposing)
                 {
-                    _webAppFactory.Dispose();
+                    WebAppFactory.Dispose();
                 }
 
                 disposedValue = true;

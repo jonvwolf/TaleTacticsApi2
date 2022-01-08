@@ -4,6 +4,9 @@ using HorrorTacticsApi2.Domain.Exceptions;
 
 namespace HorrorTacticsApi2.Domain
 {
+    /// <summary>
+    /// The only experts that knows how to validate and create entities and models
+    /// </summary>
     public class ImageModelEntityConverter
     {
         public void Validate(CreateImageModel model)

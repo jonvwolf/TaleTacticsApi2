@@ -11,6 +11,8 @@ namespace HorrorTacticsApi2.Helpers
         public static WebApplicationBuilder AddJwt(this WebApplicationBuilder builder)
         {
             // Jwt setup
+            builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
+
             builder.Services.AddOptions<JwtGeneratorStaticOptions>()
                 .Bind(builder.Configuration.GetSection(Constants.APPSETTINGS_JWTGENERATOR_KEY))
                 .ValidateDataAnnotations();
@@ -19,7 +21,7 @@ namespace HorrorTacticsApi2.Helpers
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            });
+            }).AddJwtBearer();
 
             builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 

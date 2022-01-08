@@ -33,7 +33,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         [Fact]
         public async Task Should_Do_Crud_Without_Errors()
         {
-            var client = _collection.CreateClient();
+            using var client = _collection.CreateClient();
 
             var readImageDto = await Post_Should_Create_Image(client, "image1");
             await Get_Should_Return_One_Image(client, readImageDto);
@@ -52,7 +52,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         [Fact]
         public async Task Should_Do_Crud_Without_Errors2()
         {
-            var client = _collection.CreateClient();
+            using var client = _collection.CreateClient();
 
             var readImageDto = await Post_Should_Create_Image(client, "image1");
             await Get_Should_Return_One_Image(client, readImageDto);
@@ -77,8 +77,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var response = await client.PostAsync(Path, Helper.GetContent(createImageDto));
 
             // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response);
-            Assert.Equal(StatusCodes.Status201Created, (int)response.StatusCode);
+            var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response, StatusCodes.Status201Created);
             Assert.Equal(createImageDto.Name, readModel.Name);
             // TODO: validate other properties
 
@@ -105,8 +104,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var response = await client.PutAsync(Path + $"/{model.Id}", Helper.GetContent(updateModel));
 
             // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response);
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+            var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response, StatusCodes.Status200OK);
             Assert.Equal(updateModel.Name, readModel.Name);
             Assert.Equal(model.Id, readModel.Id);
             Assert.NotEqual(model.Name, readModel.Name);
@@ -146,8 +144,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var response = await client.GetAsync(Path);
 
             // assert
-            var images = await Helper.VerifyAndGetAsync<IList<ReadImageModel>>(response);
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+            var images = await Helper.VerifyAndGetAsync<IList<ReadImageModel>>(response, StatusCodes.Status200OK);
 
             return images;
         }
