@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Serilog;
 
 bool enableInitLogging = false;
-if (args != null && args.Length > 0)
+if (args.Length > 0)
 {
     foreach(var arg in args)
     {

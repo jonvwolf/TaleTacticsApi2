@@ -12,7 +12,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public string Name { get; set; } = "";
         public int Width { get; set; }
         public int Height { get; set; }
-        public FormatsEnum Format { get; set; }
+        public ImageFormatsEnum Format { get; set; }
         [StringLength(ValidationConstants.Image_AbsoluteUrl_MaxStringLength), Required]
         public string AbsolutePath { get; set; } = "";
     }

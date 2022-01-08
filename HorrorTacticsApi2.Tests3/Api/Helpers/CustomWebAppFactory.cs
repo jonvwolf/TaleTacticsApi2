@@ -20,7 +20,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
     {
         readonly SqliteInMemory _db;
         readonly CustomWebAppFactoryOptions _options;
-        bool _disposed;
+        bool _disposedValue;
         public CustomWebAppFactory(CustomWebAppFactoryOptions? options = null)
         {
             _options = options ?? new CustomWebAppFactoryOptions();
@@ -43,10 +43,14 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
         {
             base.Dispose(disposing);
 
-            if (disposing && !_disposed)
+            if (!_disposedValue)
             {
-                _db.Dispose();
-                _disposed = true;
+                if (disposing)
+                {
+                    _db.Dispose();
+                }
+
+                _disposedValue = true;
             }
         }
     }

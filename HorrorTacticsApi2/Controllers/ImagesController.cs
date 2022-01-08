@@ -10,6 +10,7 @@ namespace HorrorTacticsApi2.Controllers
     [Route("secured/[controller]")]
     [ApiController]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class ImagesController : ControllerBase
     {
         readonly ImageService _service;
@@ -28,24 +29,27 @@ namespace HorrorTacticsApi2.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Get([FromRoute] long id, CancellationToken token)
         {
             return Ok(await _service.GetAsync(id, token));
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created), ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Post([FromBody] CreateImageModel model, CancellationToken token)
         {
+            // TODO: check if model can ever be null
             var readModel = await _service.CreateImageAsync(model, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Put([FromRoute] long id, [FromBody] UpdateImageModel model, CancellationToken token)

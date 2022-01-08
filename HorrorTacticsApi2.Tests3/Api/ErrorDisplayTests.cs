@@ -52,5 +52,11 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
 
         }
+
+        [Fact]
+        public async Task Copy_Tests_From_BSC()
+        {
+            // TODO: check which tests I am missing from BSC
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadImageModel> CreateImageAsync(CreateImageModel model, CancellationToken token)
         {
+            _converter.Validate(model);
             var entity = _converter.CreateEntity(model);
 
             _context.Images.Add(entity);
@@ -42,6 +43,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadImageModel> UpdateImageAsync(long id, UpdateImageModel model, CancellationToken token)
         {
+            _converter.Validate(model);
             var entity = await FindImageAsync(id, token);
 
             _converter.SetEntity(model, entity);

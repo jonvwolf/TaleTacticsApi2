@@ -1,4 +1,5 @@
 ﻿using HorrorTacticsApi2.Common;
+using HorrorTacticsApi2.Data.Entities;
 
 namespace HorrorTacticsApi2.Domain.Dtos
 {
@@ -8,7 +9,7 @@ namespace HorrorTacticsApi2.Domain.Dtos
         public string Name { get; set; } = "";
         public int Width { get; set; }
         public int Height { get; set; }
-        public FormatsEnum Format { get; set; }
+        public ImageFormatsEnum Format { get; set; }
         public string AbsoluteUrl { get; set; } = "";
 
         public ReadImageModel()
@@ -16,7 +17,7 @@ namespace HorrorTacticsApi2.Domain.Dtos
 
         }
 
-        public ReadImageModel(long id, string name, int w, int h, FormatsEnum format, string absoluteUrl)
+        public ReadImageModel(long id, string name, int w, int h, ImageFormatsEnum format, string absoluteUrl)
         {
             Id = id;
             Name = name;

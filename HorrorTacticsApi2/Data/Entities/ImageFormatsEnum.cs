@@ -1,7 +1,7 @@
 ﻿namespace HorrorTacticsApi2.Data.Entities
 {
-    public interface IValidatable
+    public enum ImageFormatsEnum
     {
-        void Validate();
+        Invalid, JPG, PNG
     }
 }
