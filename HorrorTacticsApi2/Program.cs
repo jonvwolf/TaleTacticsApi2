@@ -49,7 +49,10 @@ try
     builder.Services.AddDbContext<HorrorDbContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY))
     );
-
+    builder.Services.AddScoped<IHorrorDbContext>(services =>
+    {
+        return services.GetRequiredService<HorrorDbContext>();
+    });
     builder.Services.AddScoped<ImageModelEntityConverter>();
     builder.Services.AddScoped<ImageService>();
 

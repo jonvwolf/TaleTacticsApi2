@@ -9,15 +9,22 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class ImageModelEntityConverter
     {
-        public void Validate(CreateImageModel model)
+        public void Validate(CreateImageModel model, bool basicValidated)
         {
+            // basicValidated = true means that its data validation attributes were validated
+            if (!basicValidated)
+                throw new NotImplementedException("basicValidated");
+
             // Just an example
             if (model == null)
                 throw new HtBadRequestException("Model is null");
         }
 
-        public void Validate(UpdateImageModel model)
+        public void Validate(UpdateImageModel model, bool basicValidated)
         {
+            if (!basicValidated)
+                throw new NotImplementedException("basicValidated");
+
             // Just an example
             if (model == null)
                 throw new HtBadRequestException("Model is null");

@@ -1,4 +1,5 @@
 ﻿using HorrorTacticsApi2.Data;
+using HorrorTacticsApi2.Migrations;
 using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,15 @@ namespace HorrorTacticsApi2.Helpers
                 var logger = services.GetRequiredService<ILogger<Program>>();
                 var settings = services.GetRequiredService<IOptions<AppSettings>>();
 
+                bool applyMigrations = false;
                 if (settings.Value.ByPassApplyMigrationFileCheck)
+                    applyMigrations = true;
+
+                // If not migrations have been apply, it means the database is empty
+                if (!string.IsNullOrEmpty(pendingMigrations.FirstOrDefault(x => x.EndsWith("_" + nameof(Initialization)))))
+                    applyMigrations = true;
+
+                if (applyMigrations)
                 {
                     logger.LogInformation("Applying migrations...");
                     await db.Database.MigrateAsync();

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HorrorTacticsApi2.Data.Entities
 {
-    public class Image
+    public class Image : IValidatableEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -15,5 +15,11 @@ namespace HorrorTacticsApi2.Data.Entities
         public ImageFormatsEnum Format { get; set; }
         [StringLength(ValidationConstants.Image_AbsoluteUrl_MaxStringLength), Required]
         public string AbsolutePath { get; set; } = "";
+
+        public void Validate()
+        {
+            if (Format == ImageFormatsEnum.Invalid)
+                throw new InvalidOperationException($"Invalid format value: {Format}");
+        }
     }
 }

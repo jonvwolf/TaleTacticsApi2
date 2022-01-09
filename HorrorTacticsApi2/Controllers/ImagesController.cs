@@ -50,7 +50,7 @@ namespace HorrorTacticsApi2.Controllers
         public async Task<ActionResult<ReadImageModel>> Post([FromBody] CreateImageModel model, CancellationToken token)
         {
             // TODO: check if model can ever be null
-            var readModel = await _service.CreateImageAsync(model, token);
+            var readModel = await _service.CreateImageAsync(model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
@@ -61,7 +61,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Put([FromRoute] long id, [FromBody] UpdateImageModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateImageAsync(id, model, token));
+            return Ok(await _service.UpdateImageAsync(id, model, true, token));
         }
 
         [HttpDelete("{id}")]
