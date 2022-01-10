@@ -2,7 +2,9 @@ using HorrorTacticsApi2;
 using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
 
 bool enableInitLogging = false;
@@ -68,7 +70,28 @@ try
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(opt =>
+    {
+        var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+        {
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Name = "Authorization",
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            Reference = new OpenApiReference()
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = JwtBearerDefaults.AuthenticationScheme
+            }
+        };
+        opt.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+
+        opt.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+        {
+            { securityScheme, Array.Empty<string>() }
+        });
+    });
 
     builder.Services.AddCors(cors =>
     {
