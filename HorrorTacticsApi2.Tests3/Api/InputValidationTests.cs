@@ -23,6 +23,8 @@ namespace HorrorTacticsApi2.Tests3.Api
         public async Task Should_Return_BadRequest_Invalid_Complex_Object()
         {
             // for all controllers?
+
+            // Validate BadRequest... it should have the property name and its message, etc.
         }
 
         [Fact]

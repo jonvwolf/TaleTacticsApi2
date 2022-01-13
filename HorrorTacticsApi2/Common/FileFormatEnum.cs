@@ -1,7 +1,7 @@
 ﻿namespace HorrorTacticsApi2.Data.Entities
 {
-    public enum ImageFormatsEnum
+    public enum FileFormatEnum
     {
-        Invalid, JPG, PNG
+        Invalid, JPG, JPEG
     }
 }

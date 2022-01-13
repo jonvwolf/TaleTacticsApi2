@@ -4,6 +4,8 @@ using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -55,8 +57,17 @@ try
     {
         return services.GetRequiredService<HorrorDbContext>();
     });
-    builder.Services.AddScoped<ImageModelEntityConverter>();
+    builder.Services.AddScoped<ImageModelEntityHandler>();
     builder.Services.AddScoped<ImageService>();
+    builder.Services.AddSingleton<FileUploadHandler>();
+    builder.Services.AddHttpContextAccessor();
+
+    builder.Services.AddSingleton<IFileProvider>(services =>
+    {
+        var config = services.GetRequiredService<IOptions<AppSettings>>().Value;
+        var physicalProvider = new PhysicalFileProvider(config.UploadPath);
+        return physicalProvider;
+    });
 
     builder.Services
         .AddControllers()
@@ -121,6 +132,10 @@ try
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
+        }
+        else
+        {
+            app.UseExceptionHandler("/error");
         }
 
         app.UseCors();

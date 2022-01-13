@@ -2,9 +2,9 @@
 {
     public static class ValidationConstants
     {
-        public const int Image_Name_MaxStringLength = 300;
-        public const int Image_Name_MinStringLength = 1;
+        public const int File_Name_MaxStringLength = 300;
+        public const int File_Name_MinStringLength = 1;
 
-        public const int Image_AbsoluteUrl_MaxStringLength = 5000;
+        public const int File_Filename_MaxStringLength = 100;
     }
 }

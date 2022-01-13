@@ -1,7 +1,13 @@
-﻿using HorrorTacticsApi2.Domain;
+﻿using HorrorTacticsApi2.Data.Entities;
+using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,8 +23,9 @@ namespace HorrorTacticsApi2.Controllers
     public class ImagesController : ControllerBase
     {
         readonly ImageService _service;
+        
         public ImagesController(ImageService service)
-        {
+        { 
             _service = service;
         }
 
@@ -46,11 +53,11 @@ namespace HorrorTacticsApi2.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadImageModel>> Post([FromBody] CreateImageModel model, CancellationToken token)
+        [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadImageModel>> Post(CancellationToken token)
         {
-            // TODO: check if model can ever be null
-            var readModel = await _service.CreateImageAsync(model, true, token);
+            // Multi part request is handled by the service (with IHttpContextAccessor)
+            var readModel = await _service.CreateImageAsync(token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 

@@ -5,7 +5,8 @@ namespace HorrorTacticsApi2.Data
 {
     public class HorrorDbContext : DbContext, IHorrorDbContext
     {
-        public DbSet<Image> Images => Set<Image>();
+        public DbSet<FileEntity> Files => Set<FileEntity>();
+        public DbSet<ImageEntity> Images => Set<ImageEntity>();
 
         public HorrorDbContext(DbContextOptions<HorrorDbContext> options) : base(options)
         {
@@ -31,7 +32,7 @@ namespace HorrorTacticsApi2.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Image>()
+            modelBuilder.Entity<FileEntity>()
                 .Property(x => x.Format)
                 .HasConversion<string>();
         }

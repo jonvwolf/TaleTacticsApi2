@@ -8,5 +8,8 @@
         public const string APPSETTINGS_GENERAL_KEY = "General";
         public const string APPSETTINGS_JWTGENERATOR_KEY = "JwtGenerator";
         public const string CONNECTION_STRING_MAIN_KEY = "Main";
+
+        public const string MULTIPART_FORMDATA = "multipart/form-data";
+        public const string FORMDATA = "form-data";
     }
 }
