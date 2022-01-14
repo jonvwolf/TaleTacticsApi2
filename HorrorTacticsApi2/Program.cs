@@ -1,6 +1,7 @@
 using HorrorTacticsApi2;
 using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
+using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,7 @@ try
     builder.Services.AddScoped<ImageModelEntityHandler>();
     builder.Services.AddScoped<ImageService>();
     builder.Services.AddSingleton<FileUploadHandler>();
+    builder.Services.AddSingleton<IFileIO, PhysicalFileIO>();
     builder.Services.AddHttpContextAccessor();
 
     builder.Services.AddSingleton<IFileProvider>(services =>

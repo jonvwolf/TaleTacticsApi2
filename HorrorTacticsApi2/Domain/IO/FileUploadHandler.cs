@@ -1,6 +1,7 @@
 ﻿using HorrorTacticsApi2.Common;
 using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Domain.Models;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,13 @@ namespace HorrorTacticsApi2.Domain
         readonly FormOptions _defaultFormOptions = new();
         readonly Regex _filenameRegex = new("[^A-Za-z0-9_ -]", RegexOptions.Compiled);
         readonly ILogger<FileUploadHandler> _logger;
-
-        public FileUploadHandler(IHttpContextAccessor httpContextAccessor, IOptions<AppSettings> settings, ILogger<FileUploadHandler> logger)
+        readonly IFileIO _io;
+        public FileUploadHandler(IHttpContextAccessor httpContextAccessor, IOptions<AppSettings> settings, ILogger<FileUploadHandler> logger, IFileIO io)
         {
             _options = settings.Value;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
+            _io = io;
         }
 
         public async Task<FileUploaded> HandleAsync(IReadOnlyDictionary<string, FileFormatEnum> allowedExtensions, CancellationToken token)
@@ -40,7 +42,8 @@ namespace HorrorTacticsApi2.Domain
             var request = _httpContextAccessor.HttpContext?.Request ?? throw new InvalidOperationException($"{nameof(_httpContextAccessor.HttpContext)} is null");
 
             if (!request.HasFormContentType
-                || request.ContentType != Constants.MULTIPART_FORMDATA
+                || request.ContentType == default
+                || !request.ContentType.StartsWith(Constants.MULTIPART_FORMDATA)
                 || !MediaTypeHeaderValue.TryParse(request.ContentType, out var mediaTypeHeader)
                 || string.IsNullOrWhiteSpace(mediaTypeHeader.Boundary.Value)
                 || mediaTypeHeader.Boundary.Length > maxSize)
@@ -72,9 +75,8 @@ namespace HorrorTacticsApi2.Domain
                         throw new HtBadRequestException($"File name is too long. Max length: {ValidationConstants.File_Name_MaxStringLength}");
 
                     string filename = Guid.NewGuid().ToString() + "-" + DateTime.Now.ToString("yyyy_MM_dd", CultureInfo.InvariantCulture) + ext;
-                    using var targetStream = File.Create(Path.Combine(_options.UploadPath, filename));
+                    await _io.CreateAsync(Path.Combine(_options.UploadPath, filename), section.Body, token);
                     // TODO: validate file signature
-                    await section.Body.CopyToAsync(targetStream, token);
                     // TODO: scan file ClamAV
 
                     return new FileUploaded(_filenameRegex.Replace(name, "?"), section.Body.Length, format, filename);
@@ -90,7 +92,7 @@ namespace HorrorTacticsApi2.Domain
         {
             try
             {
-                File.Delete(Path.Combine(_options.UploadPath, file.Filename));
+                _io.Delete(Path.Combine(_options.UploadPath, file.Filename));
                 return true;
             }
             catch (Exception ex)
@@ -102,7 +104,7 @@ namespace HorrorTacticsApi2.Domain
 
         public void DeleteUploadedFile(string filename)
         {
-            File.Delete(Path.Combine(_options.UploadPath, filename));
+            _io.Delete(Path.Combine(_options.UploadPath, filename));
         }
     }
 }

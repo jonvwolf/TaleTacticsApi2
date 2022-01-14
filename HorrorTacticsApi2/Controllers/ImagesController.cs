@@ -2,6 +2,7 @@
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
+        [DisableFormValueModelBinding]
         public async Task<ActionResult<ReadImageModel>> Post(CancellationToken token)
         {
             // Multi part request is handled by the service (with IHttpContextAccessor)

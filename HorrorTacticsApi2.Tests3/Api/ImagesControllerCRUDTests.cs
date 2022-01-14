@@ -18,11 +18,14 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Xunit;
+using System.Net.Http.Headers;
+using HorrorTacticsApi2.Data.Entities;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
     public class ImagesControllerCRUDTests : IClassFixture<ApiTestsCollection>
     {
+        const string JpgImageBase64 = "/9j/4AAQSkZJRgABAQEAYABgAAD/4QA6RXhpZgAATU0AKgAAAAgAA1EAAAQAAAABAAAAAFEBAAMAAAABAAEAAFEEAAEAAAAB/AAAAAAAAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAACAAIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9vZ55PPf52+8e9FFFfwPiP40vV/mfTx2P/9k=";
         readonly ApiTestsCollection _collection;
         const string Path = "secured/images";
         public ImagesControllerCRUDTests(ApiTestsCollection apiTestsCollection)
@@ -71,14 +74,30 @@ namespace HorrorTacticsApi2.Tests3.Api
         static async Task<ReadImageModel> Post_Should_Create_Image(HttpClient client, string name)
         {
             // arrange
+            using var form = new MultipartFormDataContent();
+            var imageBytes = Convert.FromBase64String(JpgImageBase64);
+            using var memoryStream = new MemoryStream(imageBytes);
+            using var streamContent = new StreamContent(memoryStream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+            streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                FileName = name + ".jpg"
+            };
+
+            form.Add(streamContent, "testx", "testx.jpg");
 
             // act
-            var response = await client.PostAsync(Path, Helper.GetContent(new object()));
+            using var response = await client.PostAsync(Path, form);
 
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response, StatusCodes.Status201Created);
-            Assert.Equal("", readModel.Name);
-            // TODO: validate other properties
+            Assert.True(readModel.Id > 0);
+            Assert.Equal(name + ".jpg", readModel.Name);
+            Assert.Equal(FileFormatEnum.JPG, readModel.Format);
+            Assert.Equal(0, (int)readModel.Height);
+            Assert.Equal(0, (int)readModel.Width);
+            Assert.False(readModel.IsScanned);
+            Assert.Equal(name + ".jpg", readModel.AbsoluteUrl);
 
             return readModel;
         }
@@ -100,7 +119,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var updateModel = new UpdateImageModel("updated");
 
             // act
-            var response = await client.PutAsync(Path + $"/{model.Id}", Helper.GetContent(updateModel));
+            using var response = await client.PutAsync(Path + $"/{model.Id}", Helper.GetContent(updateModel));
 
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadImageModel>(response, StatusCodes.Status200OK);
@@ -129,7 +148,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             // arrange
             
             // act
-            var response = await client.DeleteAsync(Path + $"/{model.Id}");
+            using var response = await client.DeleteAsync(Path + $"/{model.Id}");
 
             // assert
             Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
@@ -140,7 +159,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             // arrange
 
             // act
-            var response = await client.GetAsync(Path);
+            using var response = await client.GetAsync(Path);
 
             // assert
             var images = await Helper.VerifyAndGetAsync<IList<ReadImageModel>>(response, StatusCodes.Status200OK);
