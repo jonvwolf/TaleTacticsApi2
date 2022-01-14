@@ -2,7 +2,7 @@
 {
     public interface IFileIO
     {
-        Task CreateAsync(string path, Stream source, CancellationToken token);
+        Task CreateAsync(string path, Stream source, int maxBytesToRead, CancellationToken token);
         void Delete(string path);
     }
 }

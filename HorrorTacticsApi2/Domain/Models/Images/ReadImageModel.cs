@@ -1,5 +1,7 @@
 ﻿using HorrorTacticsApi2.Common;
 using HorrorTacticsApi2.Data.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace HorrorTacticsApi2.Domain.Dtos
 {
@@ -7,7 +9,8 @@ namespace HorrorTacticsApi2.Domain.Dtos
         long Id, 
         string Name, 
         uint Width, 
-        uint Height, 
+        uint Height,
+        [JsonConverter(typeof(StringEnumConverter))]
         FileFormatEnum Format, 
         string AbsoluteUrl,
         bool IsScanned

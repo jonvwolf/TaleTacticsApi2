@@ -2,10 +2,7 @@
 using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Exceptions;
 using HorrorTacticsApi2.Domain.IO;
-using HorrorTacticsApi2.Domain.Models;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -51,7 +48,7 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException($"Request must be a valid {Constants.MULTIPART_FORMDATA}");
             }
             
-            var reader = new MultipartReader(mediaTypeHeader.Boundary.Value, request.Body);
+            var reader = new MultipartReader(HeaderUtilities.RemoveQuotes(mediaTypeHeader.Boundary).Value, request.Body);
             var section = await reader.ReadNextSectionAsync(token);
 
             while (section != default)
@@ -60,11 +57,10 @@ namespace HorrorTacticsApi2.Domain
 
                 if (hasContentDispositionHeader
                     && contentDispositionHeader != default
-                    && contentDispositionHeader.DispositionType.Equals(Constants.FORMDATA)
+                    && Constants.FORMDATA.Equals(contentDispositionHeader.DispositionType.Value)
                     && !string.IsNullOrWhiteSpace(contentDispositionHeader.FileName.Value))
                 {
-                    if (section.Body.Length == 0 || section.Body.Length > _options.GetFileSizeLimitInBytes())
-                        throw new HtBadRequestException($"File size is either 0 or exceeds limit. Limit in KB: {_options.FileSizeLimitInKB}");
+                    // Can't validate file size until we are reading it...
 
                     var ext = Path.GetExtension(contentDispositionHeader.FileName.Value);
                     if(!allowedExtensions.TryGetValue(ext.ToLowerInvariant(), out var format))
@@ -75,7 +71,18 @@ namespace HorrorTacticsApi2.Domain
                         throw new HtBadRequestException($"File name is too long. Max length: {ValidationConstants.File_Name_MaxStringLength}");
 
                     string filename = Guid.NewGuid().ToString() + "-" + DateTime.Now.ToString("yyyy_MM_dd", CultureInfo.InvariantCulture) + ext;
-                    await _io.CreateAsync(Path.Combine(_options.UploadPath, filename), section.Body, token);
+                    string path = Path.Combine(_options.UploadPath, filename);
+                    try
+                    {
+                        await _io.CreateAsync(path, section.Body, _options.GetFileSizeLimitInBytes(), token);
+                    }
+                    catch (Exception)
+                    {
+                        // This could happen when there is a limit size exception
+                        TryDeleteUploadedFile(path);
+                        throw;
+                    }
+                    
                     // TODO: validate file signature
                     // TODO: scan file ClamAV
 
@@ -83,6 +90,7 @@ namespace HorrorTacticsApi2.Domain
                 }
 
                 // To keep reading: section = await reader.ReadNextSectionAsync(token);
+                section = default;
             }
 
             throw new HtBadRequestException($"Request must be a valid {Constants.MULTIPART_FORMDATA}");
@@ -98,6 +106,20 @@ namespace HorrorTacticsApi2.Domain
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error trying to delete file: {filename}", file.Filename);
+                return false;
+            }
+        }
+
+        bool TryDeleteUploadedFile(string path)
+        {
+            try
+            {
+                _io.Delete(Path.Combine(_options.UploadPath, path));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error trying to delete file: {filename}", path);
                 return false;
             }
         }

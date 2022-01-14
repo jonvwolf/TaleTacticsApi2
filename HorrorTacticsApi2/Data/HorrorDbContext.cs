@@ -19,7 +19,7 @@ namespace HorrorTacticsApi2.Data
 
             foreach (var entity in entities)
             {
-                if (entity is IValidatableEntity validatableEntity)
+                if (entity.Entity is IValidatableEntity validatableEntity)
                 {
                     validatableEntity.Validate();
                 }

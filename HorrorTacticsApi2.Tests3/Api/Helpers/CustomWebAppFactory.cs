@@ -49,7 +49,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
                 services.AddSingleton(_db.Options);
 
                 services.RemoveAll<IFileIO>();
-                services.AddSingleton<IFileIO, InMemoryFileIO>();
+                services.AddSingleton<IFileIO, TestInMemoryFileIO>();
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();

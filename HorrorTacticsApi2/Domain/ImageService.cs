@@ -22,7 +22,7 @@ namespace HorrorTacticsApi2.Domain
         public async Task<IList<ReadImageModel>> GetAllImagesAsync(CancellationToken token)
         {
             var list = new List<ReadImageModel>();
-            var images = await _context.Images.ToListAsync(token);
+            var images = await GetQuery().ToListAsync(token);
             images.ForEach(image => { list.Add(_imeHandler.CreateReadModel(image)); });
 
             return list;
@@ -84,9 +84,19 @@ namespace HorrorTacticsApi2.Domain
 
         async Task<ImageEntity?> FindImageAsync(long id, CancellationToken token)
         {
-            var entity = await _context.Images.SingleOrDefaultAsync(x => x.Id == id, token);
-           
+            var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
+
             return entity;
+        }
+
+        IQueryable<ImageEntity> GetQuery(bool includeFiles = true)
+        {
+            IQueryable<ImageEntity> query = _context.Images;
+
+            if (includeFiles)
+                query.Include(x => x.File);
+
+            return query;
         }
     }
 }

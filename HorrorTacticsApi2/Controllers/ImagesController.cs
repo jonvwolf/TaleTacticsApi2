@@ -1,14 +1,8 @@
-﻿using HorrorTacticsApi2.Data.Entities;
-using HorrorTacticsApi2.Domain;
+﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
-using HorrorTacticsApi2.Domain.Exceptions;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
