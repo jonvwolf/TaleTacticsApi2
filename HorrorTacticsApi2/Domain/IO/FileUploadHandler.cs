@@ -27,7 +27,7 @@ namespace HorrorTacticsApi2.Domain
             _io = io;
         }
 
-        public async Task<FileUploaded> HandleAsync(IReadOnlyDictionary<string, FileFormatEnum> allowedExtensions, CancellationToken token)
+        public async Task<FileUploaded> HandleAsync(IReadOnlyDictionary<string, FormatHelper> allowedExtensions, CancellationToken token)
         {
             // Documentation:
             // - In case, to get extra parameters: https://makolyte.com/aspdotnet-core-get-posted-form-data-in-an-api-controller/
@@ -74,7 +74,7 @@ namespace HorrorTacticsApi2.Domain
                     string path = Path.Combine(_options.UploadPath, filename);
                     try
                     {
-                        await _io.CreateAsync(path, section.Body, _options.GetFileSizeLimitInBytes(), token);
+                        await _io.CreateAsync(path, section.Body, _options.GetFileSizeLimitInBytes(), format.FileSignatures, token);
                     }
                     catch (Exception)
                     {
@@ -86,7 +86,7 @@ namespace HorrorTacticsApi2.Domain
                     // TODO: validate file signature
                     // TODO: scan file ClamAV
 
-                    return new FileUploaded(_filenameRegex.Replace(name, "?"), section.Body.Length, format, filename);
+                    return new FileUploaded(_filenameRegex.Replace(name, "?"), section.Body.Length, format.Format, filename);
                 }
 
                 // To keep reading: section = await reader.ReadNextSectionAsync(token);

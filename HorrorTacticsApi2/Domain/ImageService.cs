@@ -94,7 +94,7 @@ namespace HorrorTacticsApi2.Domain
             IQueryable<ImageEntity> query = _context.Images;
 
             if (includeFiles)
-                query.Include(x => x.File);
+                query = query.Include(x => x.File);
 
             return query;
         }

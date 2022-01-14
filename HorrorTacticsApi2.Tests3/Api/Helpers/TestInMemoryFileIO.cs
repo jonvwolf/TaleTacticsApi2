@@ -14,7 +14,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
         readonly object locker = new();
 
         readonly Dictionary<string, byte[]> _db = new();
-        public async Task CreateAsync(string path, Stream source, int maxBytes, CancellationToken token)
+        public async Task CreateAsync(string path, Stream source, int maxBytes, IReadOnlyList<byte[]> fileSignatures, CancellationToken token)
         {
             using var mem = new MemoryStream();
             await source.CopyToAsync(mem, token);
