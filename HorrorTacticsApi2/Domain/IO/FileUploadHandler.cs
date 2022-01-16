@@ -72,9 +72,10 @@ namespace HorrorTacticsApi2.Domain
 
                     string filename = Guid.NewGuid().ToString() + "-" + DateTime.Now.ToString("yyyy_MM_dd", CultureInfo.InvariantCulture) + ext;
                     string path = Path.Combine(_options.UploadPath, filename);
+                    long bytesRead;
                     try
                     {
-                        await _io.CreateAsync(path, section.Body, _options.GetFileSizeLimitInBytes(), format.FileSignatures, token);
+                        bytesRead = await _io.CreateAsync(path, section.Body, _options.GetFileSizeLimitInBytes(), format.FileSignatures, token);
                     }
                     catch (Exception)
                     {
@@ -86,7 +87,7 @@ namespace HorrorTacticsApi2.Domain
                     // TODO: validate file signature
                     // TODO: scan file ClamAV
 
-                    return new FileUploaded(_filenameRegex.Replace(name, "?"), section.Body.Length, format.Format, filename);
+                    return new FileUploaded(_filenameRegex.Replace(name, "?"), bytesRead, format.Format, filename);
                 }
 
                 // To keep reading: section = await reader.ReadNextSectionAsync(token);

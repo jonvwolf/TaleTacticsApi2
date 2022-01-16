@@ -7,6 +7,7 @@ namespace HorrorTacticsApi2.Data
     {
         public DbSet<FileEntity> Files => Set<FileEntity>();
         public DbSet<ImageEntity> Images => Set<ImageEntity>();
+        public DbSet<AudioEntity> Audios => Set<AudioEntity>();
 
         public HorrorDbContext(DbContextOptions<HorrorDbContext> options) : base(options)
         {

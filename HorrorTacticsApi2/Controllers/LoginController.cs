@@ -20,11 +20,11 @@ namespace HorrorTacticsApi2.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class LoginController : ControllerBase
     {
-        readonly ImageService _service;
+        readonly ImagesService _service;
         readonly IJwtGenerator _jwt;
         readonly IOptionsMonitor<AppSettings> _settings;
 
-        public LoginController(ImageService service, IJwtGenerator jwt, IOptionsMonitor<AppSettings> settings)
+        public LoginController(ImagesService service, IJwtGenerator jwt, IOptionsMonitor<AppSettings> settings)
         {
             _service = service;
             _jwt = jwt;

@@ -2,52 +2,54 @@
 using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Models.Audio;
 using Microsoft.EntityFrameworkCore;
 
 namespace HorrorTacticsApi2.Domain
 {
-    public class ImageService
+    public class AudioService
     {
         readonly IHorrorDbContext _context;
-        readonly ImageModelEntityHandler _imeHandler;
+        readonly AudioModelEntityHandler _imeHandler;
         readonly FileUploadHandler _fileUploadHandler;
 
-        public ImageService(IHorrorDbContext context, ImageModelEntityHandler handler, FileUploadHandler fileUploadHandler)
+        public AudioService(IHorrorDbContext context, AudioModelEntityHandler handler, FileUploadHandler fileUploadHandler)
         {
             _context = context;
             _imeHandler = handler;
             _fileUploadHandler = fileUploadHandler;
         }
 
-        public async Task<IList<ReadImageModel>> GetAllImagesAsync(CancellationToken token)
+        public async Task<IList<ReadAudioModel>> GetAllAudiosAsync(CancellationToken token)
         {
-            var list = new List<ReadImageModel>();
+            var list = new List<ReadAudioModel>();
             var images = await GetQuery().ToListAsync(token);
             images.ForEach(image => { list.Add(_imeHandler.CreateReadModel(image)); });
 
             return list;
         }
 
-        public async Task<ReadImageModel?> GetAsync(long id, CancellationToken token)
+        public async Task<ReadAudioModel?> GetAsync(long id, CancellationToken token)
         {
-            var entity = await FindImageAsync(id, token);
+            var entity = await FindAudioAsync(id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadImageModel> CreateImageAsync(CancellationToken token)
+        public async Task<ReadAudioModel> CreateImageAsync(CancellationToken token)
         {
-            var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedImageExtensionsForUpload, token);
+            var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
 
-            ImageEntity entity;
+            AudioEntity entity;
             try
             {
                 entity = _imeHandler.CreateEntity(uploadedFile);
 
-                _context.Images.Add(entity);
+                _context.Audios.Add(entity);
                 await _context.SaveChangesWrappedAsync(token);
             }
             catch (Exception)
             {
+                // TODO: repeated code in ImageService
                 // TODO: background job to check orphan files...
                 _fileUploadHandler.TryDeleteUploadedFile(uploadedFile);
                 throw;
@@ -56,10 +58,10 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadImageModel> UpdateImageAsync(long id, UpdateImageModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadAudioModel> UpdateAudioAsync(long id, UpdateAudioModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await FindImageAsync(id, token);
+            var entity = await FindAudioAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -72,26 +74,26 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task DeleteImageAsync(long id, CancellationToken token)
         {
-            var entity = await FindImageAsync(id, token);
+            var entity = await FindAudioAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
             _fileUploadHandler.DeleteUploadedFile(entity.File.Filename);
 
-            _context.Images.Remove(entity);
+            _context.Audios.Remove(entity);
             await _context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<ImageEntity?> FindImageAsync(long id, CancellationToken token)
+        async Task<AudioEntity?> FindAudioAsync(long id, CancellationToken token)
         {
             var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
 
             return entity;
         }
 
-        IQueryable<ImageEntity> GetQuery(bool includeFiles = true)
+        IQueryable<AudioEntity> GetQuery(bool includeFiles = true)
         {
-            IQueryable<ImageEntity> query = _context.Images;
+            IQueryable<AudioEntity> query = _context.Audios;
 
             if (includeFiles)
                 query = query.Include(x => x.File);

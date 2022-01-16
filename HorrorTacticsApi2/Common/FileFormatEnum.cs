@@ -2,6 +2,6 @@
 {
     public enum FileFormatEnum
     {
-        Invalid, JPG, JPEG
+        Invalid, JPG, JPEG, MP3
     }
 }

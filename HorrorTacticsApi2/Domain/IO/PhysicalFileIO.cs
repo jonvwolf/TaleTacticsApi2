@@ -7,7 +7,7 @@ namespace HorrorTacticsApi2.Domain.IO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", 
             "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", 
             Justification = "Can't make it work with 'Memory'-based overloads")]
-        public async Task CreateAsync(string path, Stream source, int maxBytesToRead, IReadOnlyList<byte[]> fileSignatures, CancellationToken token)
+        public async Task<long> CreateAsync(string path, Stream source, int maxBytesToRead, IReadOnlyList<byte[]> fileSignatures, CancellationToken token)
         {
             // TODO: copy to a memory stream first?
             // TODO: UI should block for uploading big files, so if file size is exceeded many times by an user, it is trying to do something bad
@@ -53,6 +53,8 @@ namespace HorrorTacticsApi2.Domain.IO
 
             if (totalBytesRead == 0)
                 throw new HtBadRequestException($"File size is 0 in bytes");
+
+            return totalBytesRead;
         }
 
         public void Delete(string path)

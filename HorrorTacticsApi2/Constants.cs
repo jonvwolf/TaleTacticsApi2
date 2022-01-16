@@ -11,5 +11,7 @@
 
         public const string MULTIPART_FORMDATA = "multipart/form-data";
         public const string FORMDATA = "form-data";
+
+        public const string APITESTING_ENV_NAME = "ApiTesting";
     }
 }

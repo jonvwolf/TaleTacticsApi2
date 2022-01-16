@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Models.Audio;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,11 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class ImagesController : ControllerBase
+    public class AudioController : ControllerBase
     {
-        readonly ImagesService _service;
+        readonly AudioService _service;
         
-        public ImagesController(ImagesService service)
+        public AudioController(AudioService service)
         { 
             _service = service;
         }
@@ -27,16 +28,16 @@ namespace HorrorTacticsApi2.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<IList<ReadImageModel>>> Get(CancellationToken token)
+        public async Task<ActionResult<IList<ReadAudioModel>>> Get(CancellationToken token)
         {
-            return Ok(await _service.GetAllImagesAsync(token));
+            return Ok(await _service.GetAllAudiosAsync(token));
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadImageModel>> Get([FromRoute] long id, CancellationToken token)
+        public async Task<ActionResult<ReadAudioModel>> Get([FromRoute] long id, CancellationToken token)
         {
             var model = await _service.GetAsync(id, token);
             if (model == default)
@@ -50,7 +51,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
         [DisableFormValueModelBinding]
-        public async Task<ActionResult<ReadImageModel>> Post(CancellationToken token)
+        public async Task<ActionResult<ReadAudioModel>> Post(CancellationToken token)
         {
             // Multi part request is handled by the service (with IHttpContextAccessor)
             var readModel = await _service.CreateImageAsync(token);
@@ -62,9 +63,9 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadImageModel>> Put([FromRoute] long id, [FromBody] UpdateImageModel model, CancellationToken token)
+        public async Task<ActionResult<ReadAudioModel>> Put([FromRoute] long id, [FromBody] UpdateAudioModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateImageAsync(id, model, true, token));
+            return Ok(await _service.UpdateAudioAsync(id, model, true, token));
         }
 
         [HttpDelete("{id}")]

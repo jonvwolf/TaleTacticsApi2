@@ -34,7 +34,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
 
         public CustomWebAppFactory(CustomWebAppFactoryOptions? options = null)
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "ApiTesting");
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Constants.APITESTING_ENV_NAME);
             _options = options ?? new CustomWebAppFactoryOptions();
             _db = new SqliteInMemory();
         }

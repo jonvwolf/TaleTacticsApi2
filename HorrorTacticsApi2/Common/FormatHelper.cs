@@ -21,6 +21,15 @@
             }
         };
 
+        public static readonly IReadOnlyDictionary<string, FormatHelper> AllowedAudioExtensionsForUpload = new Dictionary<string, FormatHelper>()
+        {
+            { "." + FileFormatEnum.MP3.ToString().ToLowerInvariant(), new FormatHelper(FileFormatEnum.MP3, new List<byte[]>()
+                {
+                    new byte[] { 0x49, 0x44, 0x33 }
+                })
+            }
+        };
+
         public FileFormatEnum Format { get; }
         public IReadOnlyList<byte[]> FileSignatures { get; }
         public FormatHelper(FileFormatEnum format, IReadOnlyList<byte[]> signature)

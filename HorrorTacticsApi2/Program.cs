@@ -58,8 +58,11 @@ try
     {
         return services.GetRequiredService<HorrorDbContext>();
     });
+
+    builder.Services.AddScoped<AudioModelEntityHandler>();
+    builder.Services.AddScoped<AudioService>();
     builder.Services.AddScoped<ImageModelEntityHandler>();
-    builder.Services.AddScoped<ImageService>();
+    builder.Services.AddScoped<ImagesService>();
     builder.Services.AddSingleton<FileUploadHandler>();
     builder.Services.AddSingleton<IFileIO, PhysicalFileIO>();
     builder.Services.AddHttpContextAccessor();
@@ -134,6 +137,10 @@ try
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();
+        }
+        else if (app.Environment.EnvironmentName == Constants.APITESTING_ENV_NAME)
+        {
+
         }
         else
         {
