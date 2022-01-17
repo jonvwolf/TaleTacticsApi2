@@ -16,7 +16,6 @@ namespace HorrorTacticsApi2.Swagger
         {
             if ("post".Equals(context.ApiDescription.HttpMethod?.ToLowerInvariant()))
             {
-                // TODO: it doesn't work... the UI presents the file but it won't let you click "Execute"
                 if (OperationIds.Contains(context.ApiDescription.RelativePath?.ToLowerInvariant()))
                 {
                     var multipartBodyPost = new OpenApiMediaType
@@ -28,7 +27,7 @@ namespace HorrorTacticsApi2.Swagger
                             {
                                 ["file"] = new OpenApiSchema
                                 {
-                                    Description = "First Document",
+                                    Description = "File",
                                     Type = "string",
                                     Format = "binary"
                                 }
