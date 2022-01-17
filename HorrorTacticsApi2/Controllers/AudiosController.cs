@@ -11,16 +11,16 @@ using System.Net.Mime;
 namespace HorrorTacticsApi2.Controllers
 {
     [Authorize]
-    [Route("secured/[controller]")]
+    [Route($"{Constants.ApiPath}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class AudioController : ControllerBase
+    public class AudiosController : ControllerBase
     {
         readonly AudioService _service;
         
-        public AudioController(AudioService service)
+        public AudiosController(AudioService service)
         { 
             _service = service;
         }

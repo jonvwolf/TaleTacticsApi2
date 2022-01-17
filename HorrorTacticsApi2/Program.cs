@@ -3,6 +3,7 @@ using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Helpers;
+using HorrorTacticsApi2.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -88,6 +89,8 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(opt =>
     {
+        opt.OperationFilter<FileUploadOperationFilter>();
+
         var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
         {
             In = Microsoft.OpenApi.Models.ParameterLocation.Header,
