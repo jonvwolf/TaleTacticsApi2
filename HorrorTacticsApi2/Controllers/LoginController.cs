@@ -38,7 +38,7 @@ namespace HorrorTacticsApi2.Controllers
         public ActionResult<TokenModel> Post([FromBody] LoginModel model)
         {
             if (!_settings.CurrentValue.MainPassword.Equals(model.Password, StringComparison.Ordinal))
-                return Unauthorized("Wrong password");
+                return Problem("Wrong password", statusCode: StatusCodes.Status401Unauthorized, title: "Unauthorized");
 
             var jwt = _jwt.GenerateJwtSecurityToken(new List<Claim>());
             string token = _jwt.SerializeToken(jwt);
