@@ -1,6 +1,6 @@
 ﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
-using HorrorTacticsApi2.Domain.Models.Audio;
+using HorrorTacticsApi2.Domain.Models.Stories;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,11 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class AudiosController : ControllerBase
+    public class StoriesController : ControllerBase
     {
-        readonly AudioService _service;
+        readonly StoriesService _service;
         
-        public AudiosController(AudioService service)
+        public StoriesController(StoriesService service)
         { 
             _service = service;
         }
@@ -28,16 +28,16 @@ namespace HorrorTacticsApi2.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<IList<ReadAudioModel>>> Get(CancellationToken token)
+        public async Task<ActionResult<IList<ReadStoryModel>>> Get(CancellationToken token)
         {
-            return Ok(await _service.GetAllAudiosAsync(token));
+            return Ok(await _service.GetAllStoriesAsync(token));
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadAudioModel>> Get([FromRoute] long id, CancellationToken token)
+        public async Task<ActionResult<ReadStoryModel>> Get([FromRoute] long id, CancellationToken token)
         {
             var model = await _service.TryGetAsync(id, token);
             if (model == default)
@@ -49,12 +49,10 @@ namespace HorrorTacticsApi2.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
-        [DisableFormValueModelBinding]
-        public async Task<ActionResult<ReadAudioModel>> Post(CancellationToken token)
+        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStoryModel>> Post([FromBody] CreateStoryModel model, CancellationToken token)
         {
-            // Multi part request is handled by the service (with IHttpContextAccessor)
-            var readModel = await _service.CreateAudioAsync(token);
+            var readModel = await _service.CreateStoryAsync(model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
@@ -63,9 +61,9 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadAudioModel>> Put([FromRoute] long id, [FromBody] UpdateAudioModel model, CancellationToken token)
+        public async Task<ActionResult<ReadStoryModel>> Put([FromRoute] long id, [FromBody] UpdateStoryModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateAudioAsync(id, model, true, token));
+            return Ok(await _service.UpdateStoryAsync(id, model, true, token));
         }
 
         [HttpDelete("{id}")]
@@ -73,7 +71,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await _service.DeleteAudioAsync(id, token);
+            await _service.DeleteStoryAsync(id, token);
             return NoContent();
         }
     }

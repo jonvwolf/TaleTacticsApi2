@@ -8,8 +8,8 @@ namespace HorrorTacticsApi2.Swagger
     {
         static readonly IReadOnlyList<string> OperationIds = new List<string>()
         {
-            $"{Constants.ApiPath}/{nameof(ImagesController).Replace("Controller", "")}".ToLowerInvariant(),
-            $"{Constants.ApiPath}/{nameof(AudiosController).Replace("Controller", "")}".ToLowerInvariant()
+            $"{Constants.SecuredApiPath}/{nameof(ImagesController).Replace("Controller", "")}".ToLowerInvariant(),
+            $"{Constants.SecuredApiPath}/{nameof(AudiosController).Replace("Controller", "")}".ToLowerInvariant()
         };
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)

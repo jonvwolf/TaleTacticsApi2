@@ -10,11 +10,11 @@ namespace HorrorTacticsApi2.Data.Entities
 
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-        [StringLength(ValidationConstants.File_Name_MaxStringLength), Required]
-        public string Name { get; set; } = "";
+        [StringLength(ValidationConstants.File_Name_MaxStringLength, MinimumLength = ValidationConstants.File_Name_MinStringLength), Required]
+        public string Name { get; set; } = string.Empty;
         public FileFormatEnum Format { get; set; }
-        [StringLength(ValidationConstants.File_Filename_MaxStringLength), Required]
-        public string Filename { get; set; } = "";
+        [StringLength(ValidationConstants.File_Filename_MaxStringLength, MinimumLength = ValidationConstants.File_Name_MinStringLength), Required]
+        public string Filename { get; set; } = string.Empty;
         public long SizeInBytes { get; set; }
         public bool IsVirusScanned { get; set; }
         public FileEntity()

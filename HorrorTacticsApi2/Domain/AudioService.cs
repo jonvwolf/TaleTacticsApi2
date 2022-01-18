@@ -29,13 +29,13 @@ namespace HorrorTacticsApi2.Domain
             return list;
         }
 
-        public async Task<ReadAudioModel?> GetAsync(long id, CancellationToken token)
+        public async Task<ReadAudioModel?> TryGetAsync(long id, CancellationToken token)
         {
             var entity = await FindAudioAsync(id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadAudioModel> CreateImageAsync(CancellationToken token)
+        public async Task<ReadAudioModel> CreateAudioAsync(CancellationToken token)
         {
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
 
@@ -72,7 +72,7 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task DeleteImageAsync(long id, CancellationToken token)
+        public async Task DeleteAudioAsync(long id, CancellationToken token)
         {
             var entity = await FindAudioAsync(id, token);
             if (entity == default)

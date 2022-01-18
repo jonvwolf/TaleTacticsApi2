@@ -14,6 +14,6 @@
 
         public const string APITESTING_ENV_NAME = "ApiTesting";
 
-        public const string ApiPath = "secured";
+        public const string SecuredApiPath = "secured";
     }
 }

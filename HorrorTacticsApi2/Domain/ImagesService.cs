@@ -28,7 +28,7 @@ namespace HorrorTacticsApi2.Domain
             return list;
         }
 
-        public async Task<ReadImageModel?> GetAsync(long id, CancellationToken token)
+        public async Task<ReadImageModel?> TryGetAsync(long id, CancellationToken token)
         {
             var entity = await FindImageAsync(id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);

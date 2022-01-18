@@ -10,7 +10,7 @@ using System.Net.Mime;
 namespace HorrorTacticsApi2.Controllers
 {
     [Authorize]
-    [Route($"{Constants.ApiPath}/[controller]")]
+    [Route($"{Constants.SecuredApiPath}/[controller]")]
     [ApiController]
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -38,7 +38,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadImageModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.GetAsync(id, token);
+            var model = await _service.TryGetAsync(id, token);
             if (model == default)
                 return NotFound();
 
@@ -48,7 +48,7 @@ namespace HorrorTacticsApi2.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes(typeof(IFormFile), Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
+        [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
         [DisableFormValueModelBinding]
         public async Task<ActionResult<ReadImageModel>> Post(CancellationToken token)
         {
