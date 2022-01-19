@@ -11,9 +11,12 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class StoryModelEntityHandler : ModelEntityHandler
     {
-        public StoryModelEntityHandler()
+        readonly StorySceneModelEntityHandler scene;
+        public StoryModelEntityHandler(StorySceneModelEntityHandler scene)
         {
+            this.scene = scene;
         }
+
         public void Validate(UpdateStoryModel model, bool basicValidated)
         {
             if (!basicValidated)
@@ -36,20 +39,18 @@ namespace HorrorTacticsApi2.Domain
 
         public StoryEntity CreateEntity(CreateStoryModel model)
         {
-            return new StoryEntity();
+            return new StoryEntity(model.Title, model.Description, new List<StorySceneEntity>());
         }
 
         public void UpdateEntity(UpdateStoryModel model, StoryEntity entity)
         {
-            //entity.File.Name = model.Name;
+            entity.Title = model.Title;
+            entity.Description = model.Description;
         }
 
         public ReadStoryModel CreateReadModel(StoryEntity entity)
         {
-            return new ReadStoryModel(entity.Id);
+            return new ReadStoryModel(entity.Id, entity.Title, entity.Description, entity.Scenes.Select(x => scene.CreateReadModel(x)).ToList());
         }
-
-
-
     }
 }

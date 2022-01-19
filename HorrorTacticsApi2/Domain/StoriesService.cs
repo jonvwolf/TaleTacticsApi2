@@ -48,7 +48,9 @@ namespace HorrorTacticsApi2.Domain
         public async Task<ReadStoryModel> UpdateStoryAsync(long id, UpdateStoryModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await TryFindStoryAsync(id, false, token);
+            // TODO: improve includeAll performance (does it really need to include all references when Put?)
+            // - Even better yet... why return data when updating?
+            var entity = await TryFindStoryAsync(id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"Story with Id {id} not found");
 

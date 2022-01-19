@@ -11,7 +11,7 @@ namespace HorrorTacticsApi2.Data.Entities
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
-        [StringLength(ValidationConstants.Story_Title_MaxStringLength), Required]
+        [StringLength(ValidationConstants.Story_Title_MaxStringLength, MinimumLength = ValidationConstants.Story_Title_MinStringLength), Required]
         public string Title { get; set; } = string.Empty;
 
         [StringLength(ValidationConstants.Story_Description_MaxStringLength), Required]

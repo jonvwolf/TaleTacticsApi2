@@ -50,11 +50,11 @@ namespace HorrorTacticsApi2.Domain
             {
                 foreach (var text in texts)
                 {
-                    if (text.Length > ValidationConstants.StoryScene_Text_MaxStringLength)
-                        throw new HtBadRequestException($"One of the texts length is greater than the allowed. Limit: {ValidationConstants.StoryScene_Text_MaxStringLength}");
-
                     if (text == default)
                         throw new HtBadRequestException($"One of the texts is null");
+
+                    if (text.Length > ValidationConstants.StoryScene_Text_MaxStringLength)
+                        throw new HtBadRequestException($"One of the texts length is greater than the allowed. Limit: {ValidationConstants.StoryScene_Text_MaxStringLength}");
                 }
             }
         }
