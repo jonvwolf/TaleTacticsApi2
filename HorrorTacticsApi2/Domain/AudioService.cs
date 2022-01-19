@@ -31,7 +31,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadAudioModel?> TryGetAsync(long id, CancellationToken token)
         {
-            var entity = await FindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -61,7 +61,7 @@ namespace HorrorTacticsApi2.Domain
         public async Task<ReadAudioModel> UpdateAudioAsync(long id, UpdateAudioModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await FindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -74,7 +74,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task DeleteAudioAsync(long id, CancellationToken token)
         {
-            var entity = await FindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -84,7 +84,7 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<AudioEntity?> FindAudioAsync(long id, CancellationToken token)
+        public async Task<AudioEntity?> TryFindAudioAsync(long id, CancellationToken token)
         {
             var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
 

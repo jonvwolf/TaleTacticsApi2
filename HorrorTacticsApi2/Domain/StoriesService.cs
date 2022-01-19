@@ -30,7 +30,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadStoryModel?> TryGetAsync(long id, CancellationToken token)
         {
-            var entity = await FindStoryAsync(id, true, token);
+            var entity = await TryFindStoryAsync(id, true, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -48,7 +48,7 @@ namespace HorrorTacticsApi2.Domain
         public async Task<ReadStoryModel> UpdateStoryAsync(long id, UpdateStoryModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await FindStoryAsync(id, false, token);
+            var entity = await TryFindStoryAsync(id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"Story with Id {id} not found");
 
@@ -61,7 +61,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task DeleteStoryAsync(long id, CancellationToken token)
         {
-            var entity = await FindStoryAsync(id, false, token);
+            var entity = await TryFindStoryAsync(id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"Story with Id {id} not found");
 
@@ -69,7 +69,7 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<StoryEntity?> FindStoryAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<StoryEntity?> TryFindStoryAsync(long id, bool includeAll, CancellationToken token)
         {
             var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 

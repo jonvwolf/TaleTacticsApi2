@@ -18,11 +18,41 @@ namespace HorrorTacticsApi2.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class StoriesController : ControllerBase
     {
-        readonly StoriesService _service;
-        
-        public StoriesController(StoriesService service)
+        readonly StoriesService service;
+        readonly StoryScenesService sceneService;
+        public StoriesController(StoriesService service, StoryScenesService sceneService)
         { 
-            _service = service;
+            this.service = service;
+            this.sceneService = sceneService;
+        }
+
+        [HttpGet("{storyId}/scene/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStorySceneModel>> GetStoryScene([FromRoute] long storyId, [FromRoute] long id, CancellationToken token)
+        {
+            // TODO: performance
+            var storyModel = await service.TryFindStoryAsync(storyId, false, token);
+            if (storyModel == default)
+                return NotFound();
+
+            // TODO: TryMethods should always have the `includeAll` parameter
+            var model = await sceneService.TryGetAsync(id, true, token);
+            if (model == default)
+                return NotFound();
+
+            return Ok(model);
+        }
+
+        [HttpPost("{storyId}/scene")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStorySceneModel>> Post([FromRoute] long storyId, [FromBody] CreateStorySceneModel model, CancellationToken token)
+        {
+            var readModel = await sceneService.CreateStorySceneAsync(storyId, model, true, token);
+            return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
         [HttpGet]
@@ -30,7 +60,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<IList<ReadStoryModel>>> Get(CancellationToken token)
         {
-            return Ok(await _service.GetAllStoriesAsync(token));
+            return Ok(await service.GetAllStoriesAsync(token));
         }
 
         [HttpGet("{id}")]
@@ -39,7 +69,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.TryGetAsync(id, token);
+            var model = await service.TryGetAsync(id, token);
             if (model == default)
                 return NotFound();
 
@@ -52,7 +82,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Post([FromBody] CreateStoryModel model, CancellationToken token)
         {
-            var readModel = await _service.CreateStoryAsync(model, true, token);
+            var readModel = await service.CreateStoryAsync(model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
@@ -63,7 +93,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Put([FromRoute] long id, [FromBody] UpdateStoryModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateStoryAsync(id, model, true, token));
+            return Ok(await service.UpdateStoryAsync(id, model, true, token));
         }
 
         [HttpDelete("{id}")]
@@ -71,7 +101,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await _service.DeleteStoryAsync(id, token);
+            await service.DeleteStoryAsync(id, token);
             return NoContent();
         }
     }

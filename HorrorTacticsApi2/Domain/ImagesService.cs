@@ -30,7 +30,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadImageModel?> TryGetAsync(long id, CancellationToken token)
         {
-            var entity = await FindImageAsync(id, token);
+            var entity = await TryFindImageAsync(id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -60,7 +60,7 @@ namespace HorrorTacticsApi2.Domain
         public async Task<ReadImageModel> UpdateImageAsync(long id, UpdateImageModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await FindImageAsync(id, token);
+            var entity = await TryFindImageAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -73,7 +73,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task DeleteImageAsync(long id, CancellationToken token)
         {
-            var entity = await FindImageAsync(id, token);
+            var entity = await TryFindImageAsync(id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -83,10 +83,9 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<ImageEntity?> FindImageAsync(long id, CancellationToken token)
+        public async Task<ImageEntity?> TryFindImageAsync(long id, CancellationToken token)
         {
             var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
-
             return entity;
         }
 

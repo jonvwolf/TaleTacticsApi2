@@ -37,24 +37,15 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneModel>> Get([FromRoute] long id, CancellationToken token)
+        public async Task<ActionResult<ReadStorySceneModel>> GetStoryScene([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.TryGetAsync(id, token);
+            var model = await _service.TryGetAsync(id, true, token);
             if (model == default)
                 return NotFound();
 
             return Ok(model);
         }
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneModel>> Post([FromBody] CreateStorySceneModel model, CancellationToken token)
-        {
-            var readModel = await _service.CreateStorySceneAsync(model, true, token);
-            return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
-        }
+        
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

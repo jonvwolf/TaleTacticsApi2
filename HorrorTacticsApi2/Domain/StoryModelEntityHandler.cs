@@ -41,12 +41,12 @@ namespace HorrorTacticsApi2.Domain
 
         public void UpdateEntity(UpdateStoryModel model, StoryEntity entity)
         {
-            entity.File.Name = model.Name;
+            //entity.File.Name = model.Name;
         }
 
         public ReadStoryModel CreateReadModel(StoryEntity entity)
         {
-            return new ReadStoryModel();
+            return new ReadStoryModel(entity.Id);
         }
 
 

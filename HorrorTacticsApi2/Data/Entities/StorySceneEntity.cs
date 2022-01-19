@@ -12,13 +12,20 @@ namespace HorrorTacticsApi2.Data.Entities
         [Required]
         public StoryEntity ParentStory { get; set; } = StoryEntity.EmptyStory;
 
+        /// <summary>
+        /// Validation length is specific (no need to share)
+        /// </summary>
         [MaxLength(15000)]
-        public string Texts { get; protected set; } = string.Empty;
+        public string Texts { get; set; } = string.Empty;
+        /// <summary>
+        /// Validation length is specific (no need to share)
+        /// </summary>
         [MaxLength(1000)]
-        public string Timers { get; protected set; } = string.Empty;
+        public string Timers { get; set; } = string.Empty;
 
-        public IList<ImageEntity>? Images { get; protected set; }
-        public IList<AudioEntity>? Audios { get; protected set; }
+        // TODO: make sure these are not cascade deleted
+        public List<ImageEntity> Images { get; protected set; } = new();
+        public List<AudioEntity> Audios { get; protected set; } = new();
 
         public StorySceneEntity()
         {
@@ -31,6 +38,7 @@ namespace HorrorTacticsApi2.Data.Entities
         {
             Texts = texts;
             Timers = timers;
+            // TODO: be consistent, in some other models/entities are not doing this...
             Images = images.ToList();
             Audios = audios.ToList();
             ParentStory = parent;

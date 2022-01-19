@@ -10,63 +10,69 @@ namespace HorrorTacticsApi2.Domain
 {
     public class StoryScenesService
     {
-        readonly IHorrorDbContext _context;
-        readonly StorySceneModelEntityHandler _imeHandler;
-        
-        public StoryScenesService(IHorrorDbContext context, StorySceneModelEntityHandler handler)
+        readonly IHorrorDbContext context;
+        readonly StorySceneModelEntityHandler imeHandler;
+        readonly StoriesService stories;
+
+        public StoryScenesService(IHorrorDbContext context, StorySceneModelEntityHandler handler, StoriesService stories)
         {
-            _context = context;
-            _imeHandler = handler;
+            this.context = context;
+            imeHandler = handler;
+            this.stories = stories;
         }
 
         public async Task<IList<ReadStorySceneModel>> GetAllStoryScenesAsync(CancellationToken token)
         {
             var list = new List<ReadStorySceneModel>();
             var stories = await GetQuery(true).ToListAsync(token);
-            stories.ForEach(story => { list.Add(_imeHandler.CreateReadModel(story)); });
+            stories.ForEach(story => { list.Add(imeHandler.CreateReadModel(story)); });
 
             return list;
         }
 
-        public async Task<ReadStorySceneModel?> TryGetAsync(long id, CancellationToken token)
+        public async Task<ReadStorySceneModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
         {
-            var entity = await FindStorySceneAsync(id, true, token);
-            return entity == default ? default : _imeHandler.CreateReadModel(entity);
+            var entity = await FindStorySceneAsync(id, includeAll, token);
+            return entity == default ? default : imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStorySceneModel> CreateStorySceneAsync(CreateStorySceneModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneModel> CreateStorySceneAsync(long storyId, CreateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            _imeHandler.Validate(model, basicValidated);
+            imeHandler.Validate(model, basicValidated);
 
-            var entity = _imeHandler.CreateEntityAsync(model);
-            _context.StoryScenes.Add(entity);
-            await _context.SaveChangesWrappedAsync(token);
+            var story = await stories.TryFindStoryAsync(storyId, true, token);
+            if (story == default)
+                throw new HtNotFoundException($"Story with id {storyId} not found");
 
-            return _imeHandler.CreateReadModel(entity);
+            var entity = await imeHandler.CreateEntityAsync(model, story, token);
+            context.StoryScenes.Add(entity);
+            await context.SaveChangesWrappedAsync(token);
+
+            return imeHandler.CreateReadModel(entity);
         }
 
         public async Task<ReadStorySceneModel> UpdateStorySceneAsync(long id, UpdateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            _imeHandler.Validate(model, basicValidated);
+            imeHandler.Validate(model, basicValidated);
             var entity = await FindStorySceneAsync(id, false, token);
             if (entity == default)
-                throw new HtNotFoundException($"Story with Id {id} not found");
+                throw new HtNotFoundException($"StoryScene with Id {id} not found");
 
-            _imeHandler.UpdateEntity(model, entity);
+            await imeHandler.UpdateEntityAsync(model, entity, token);
 
-            await _context.SaveChangesWrappedAsync(token);
+            await context.SaveChangesWrappedAsync(token);
 
-            return _imeHandler.CreateReadModel(entity);
+            return imeHandler.CreateReadModel(entity);
         }
 
         public async Task DeleteStorySceneAsync(long id, CancellationToken token)
         {
             var entity = await FindStorySceneAsync(id, false, token);
             if (entity == default)
-                throw new HtNotFoundException($"Story with Id {id} not found");
+                throw new HtNotFoundException($"StoryScene with Id {id} not found");
 
-            _context.StoryScenes.Remove(entity);
-            await _context.SaveChangesWrappedAsync(token);
+            context.StoryScenes.Remove(entity);
+            await context.SaveChangesWrappedAsync(token);
         }
 
         async Task<StorySceneEntity?> FindStorySceneAsync(long id, bool includeAll, CancellationToken token)
@@ -78,7 +84,7 @@ namespace HorrorTacticsApi2.Domain
 
         IQueryable<StorySceneEntity> GetQuery(bool includeAll = true)
         {
-            IQueryable<StorySceneEntity> query = _context.StoryScenes;
+            IQueryable<StorySceneEntity> query = context.StoryScenes;
 
             if (includeAll)
             {

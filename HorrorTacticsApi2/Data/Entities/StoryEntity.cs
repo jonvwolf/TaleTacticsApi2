@@ -17,7 +17,7 @@ namespace HorrorTacticsApi2.Data.Entities
         [StringLength(ValidationConstants.Story_Description_MaxStringLength), Required]
         public string Description { get; set; } = string.Empty;
 
-        public IList<StorySceneEntity> Scenes { get; protected set; } = new List<StorySceneEntity>();
+        public List<StorySceneEntity> Scenes { get; protected set; } = new List<StorySceneEntity>();
 
         public StoryEntity()
         {

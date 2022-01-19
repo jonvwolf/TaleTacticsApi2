@@ -13,5 +13,7 @@
         public const int Story_Title_MaxStringLength = 300;
         public const int Story_Description_MaxStringLength = 600;
 
+        public const int StoryScene_Items_List_MaxLength = 10;
+
     }
 }

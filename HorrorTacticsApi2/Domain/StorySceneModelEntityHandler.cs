@@ -2,6 +2,7 @@
 using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Models.Audio;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using Microsoft.Extensions.Options;
 
@@ -16,31 +17,38 @@ namespace HorrorTacticsApi2.Domain
 
         readonly ImagesService images;
         readonly AudioService audios;
-        public StorySceneModelEntityHandler(ImagesService images, AudioService audios)
+        readonly ImageModelEntityHandler imageHandler;
+        readonly AudioModelEntityHandler audioHandler;
+
+        public StorySceneModelEntityHandler(ImagesService images, AudioService audios, 
+            ImageModelEntityHandler imageHandler, AudioModelEntityHandler audioHandler)
         {
             this.images = images;
             this.audios = audios;
+            this.imageHandler = imageHandler;
+            this.audioHandler = audioHandler;
         }
         public void Validate(UpdateStorySceneModel model, bool basicValidated)
         {
             if (!basicValidated)
                 throw new NotImplementedException("basicValidated");
 
-            // Just an example
-            if (model == null)
-                throw new HtBadRequestException("Model is null");
+            ValidateTexts(model.Texts);
         }
 
         public void Validate(CreateStorySceneModel model, bool basicValidated)
         {
-            // TODO: set a limit for the lists (validation)
             if (!basicValidated)
                 throw new NotImplementedException("basicValidated");
 
-            if (model.Texts != default)
+            ValidateTexts(model.Texts);
+        }
+
+        static void ValidateTexts(IReadOnlyList<string>? texts)
+        {
+            if (texts != default)
             {
-                // TODO: this is repeated code in StorySceneEntity
-                foreach (var text in model.Texts)
+                foreach (var text in texts)
                 {
                     if (text.Length > ValidationConstants.StoryScene_Text_MaxStringLength)
                         throw new HtBadRequestException($"One of the texts length is greater than the allowed. Limit: {ValidationConstants.StoryScene_Text_MaxStringLength}");
@@ -49,49 +57,114 @@ namespace HorrorTacticsApi2.Domain
                         throw new HtBadRequestException($"One of the texts is null");
                 }
             }
-            
         }
 
-        public async Task<StorySceneEntity> CreateEntityAsync(CreateStorySceneModel model, CancellationToken token)
+        public async Task<StorySceneEntity> CreateEntityAsync(CreateStorySceneModel model, StoryEntity parent, CancellationToken token)
         {
-            string texts = string.Empty;
+            return new StorySceneEntity(
+                parent,
+                CreateTextsFromList(model.Texts),
+                CreateTimersFromList(model.Timers),
+                await FindImagesFromIdsAsync(model.Images, token),
+                await FindAudiosFromIdsAsync(model.Audios, token)
+            );
+        }
+
+        public async Task UpdateEntityAsync(UpdateStorySceneModel model, StorySceneEntity entity, CancellationToken token)
+        {
             if (model.Texts != default && model.Texts.Count > 0)
-            {
-                texts = string.Join(Separator, model.Texts);
-            }
+                entity.Texts = CreateTextsFromList(model.Texts);
 
-            string timers = string.Empty;
             if (model.Timers != default && model.Timers.Count > 0)
-            {
-                timers = string.Join(Separator, model.Timers);
-            }
+                entity.Timers = CreateTimersFromList(model.Timers);
 
-            var imagesEntities = new List<ImageEntity>();
-            // TODO: optimize, only need to know the Ids exist
             if (model.Images != default && model.Images.Count > 0)
             {
-                foreach (var imageId in model.Images)
-                {
-                    var entity = await images.TryGetAsync(imageId, token);
-                    if (entity != default)
-                        imagesEntities.Add(entity);
-                }
+                // TODO: improve this (performance)
+                entity.Images.Clear();
+                entity.Images.AddRange(await FindImagesFromIdsAsync(model.Images, token));
             }
 
-            return new StorySceneEntity();
-        }
-
-        public void UpdateEntity(UpdateStorySceneModel model, StorySceneEntity entity)
-        {
-            
+            if (model.Audios != default && model.Audios.Count > 0)
+            {
+                // TODO: improve this (performance)
+                entity.Audios.Clear();
+                entity.Audios.AddRange(await FindAudiosFromIdsAsync(model.Audios, token));
+            }
         }
 
         public ReadStorySceneModel CreateReadModel(StorySceneEntity entity)
         {
-            return new ReadStorySceneModel();
+            var images = entity.Images.Select(x => imageHandler.CreateReadModel(x)).ToList();
+            var audios = entity.Audios.Select(x => audioHandler.CreateReadModel(x)).ToList();
+
+            var timers = CreateTimersFromString(entity.Timers);
+            var texts = CreateTextsFromString(entity.Texts);
+
+            // TODO: should I do `ToList`? inside Models?
+            return new ReadStorySceneModel(entity.Id, texts, timers, images, audios);
         }
 
+        static string CreateTextsFromList(IReadOnlyList<string>? textList)
+        {
+            string texts = string.Empty;
+            if (textList != default && textList.Count > 0)
+            {
+                texts = string.Join(Separator, textList);
+            }
+            return texts;
+        }
 
+        static string CreateTimersFromList(IReadOnlyList<uint>? timerList)
+        {
+            string timers = string.Empty;
+            if (timerList != default && timerList.Count > 0)
+            {
+                timers = string.Join(Separator, timerList);
+            }
+            return timers;
+        }
 
+        static List<string> CreateTextsFromString(string texts)
+        {
+            return texts.Split(Separator, StringSplitOptions.RemoveEmptyEntries).ToList();
+        }
+
+        static List<uint> CreateTimersFromString(string timers)
+        {
+            return timers.Split(Separator, StringSplitOptions.RemoveEmptyEntries).Select(x => uint.Parse(x)).ToList();
+        }
+
+        async Task<List<ImageEntity>> FindImagesFromIdsAsync(IReadOnlyList<long>? imageIds, CancellationToken token)
+        {
+            var imagesEntities = new List<ImageEntity>();
+            // TODO: optimize, only need to know the Ids exist
+            if (imageIds != default && imageIds.Count > 0)
+            {
+                foreach (var imageId in imageIds)
+                {
+                    var entity = await images.TryFindImageAsync(imageId, token);
+                    if (entity != default)
+                        imagesEntities.Add(entity);
+                }
+            }
+            return imagesEntities;
+        }
+
+        async Task<List<AudioEntity>> FindAudiosFromIdsAsync(IReadOnlyList<long>? audioIds, CancellationToken token)
+        {
+            var audioEntities = new List<AudioEntity>();
+            // TODO: optimize, only need to know the Ids exist
+            if (audioIds != default && audioIds.Count > 0)
+            {
+                foreach (var audioId in audioIds)
+                {
+                    var entity = await audios.TryFindAudioAsync(audioId, token);
+                    if (entity != default)
+                        audioEntities.Add(entity);
+                }
+            }
+            return audioEntities;
+        }
     }
 }
