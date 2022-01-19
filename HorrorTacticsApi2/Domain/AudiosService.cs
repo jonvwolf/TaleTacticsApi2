@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HorrorTacticsApi2.Domain
 {
-    public class AudioService
+    public class AudiosService
     {
         readonly IHorrorDbContext _context;
         readonly AudioModelEntityHandler _imeHandler;
         readonly FileUploadHandler _fileUploadHandler;
 
-        public AudioService(IHorrorDbContext context, AudioModelEntityHandler handler, FileUploadHandler fileUploadHandler)
+        public AudiosService(IHorrorDbContext context, AudioModelEntityHandler handler, FileUploadHandler fileUploadHandler)
         {
             _context = context;
             _imeHandler = handler;

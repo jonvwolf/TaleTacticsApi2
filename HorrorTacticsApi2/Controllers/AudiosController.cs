@@ -18,9 +18,9 @@ namespace HorrorTacticsApi2.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class AudiosController : ControllerBase
     {
-        readonly AudioService _service;
+        readonly AudiosService _service;
         
-        public AudiosController(AudioService service)
+        public AudiosController(AudiosService service)
         { 
             _service = service;
         }

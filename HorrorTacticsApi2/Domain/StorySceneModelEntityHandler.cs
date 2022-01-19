@@ -16,11 +16,11 @@ namespace HorrorTacticsApi2.Domain
         const string Separator = "֎";
 
         readonly ImagesService images;
-        readonly AudioService audios;
+        readonly AudiosService audios;
         readonly ImageModelEntityHandler imageHandler;
         readonly AudioModelEntityHandler audioHandler;
 
-        public StorySceneModelEntityHandler(ImagesService images, AudioService audios, 
+        public StorySceneModelEntityHandler(ImagesService images, AudiosService audios, 
             ImageModelEntityHandler imageHandler, AudioModelEntityHandler audioHandler)
         {
             this.images = images;

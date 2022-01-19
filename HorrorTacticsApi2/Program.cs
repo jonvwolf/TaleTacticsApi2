@@ -60,10 +60,17 @@ try
         return services.GetRequiredService<HorrorDbContext>();
     });
 
-    builder.Services.AddScoped<AudioModelEntityHandler>();
-    builder.Services.AddScoped<AudioService>();
+
     builder.Services.AddScoped<ImageModelEntityHandler>();
+    builder.Services.AddScoped<AudioModelEntityHandler>();
+    builder.Services.AddScoped<StorySceneModelEntityHandler>();
+    builder.Services.AddScoped<StoryModelEntityHandler>();
+
     builder.Services.AddScoped<ImagesService>();
+    builder.Services.AddScoped<AudiosService>();
+    builder.Services.AddScoped<StoryScenesService>();
+    builder.Services.AddScoped<StoriesService>();
+
     builder.Services.AddSingleton<FileUploadHandler>();
     builder.Services.AddSingleton<IFileIO, PhysicalFileIO>();
     builder.Services.AddHttpContextAccessor();
