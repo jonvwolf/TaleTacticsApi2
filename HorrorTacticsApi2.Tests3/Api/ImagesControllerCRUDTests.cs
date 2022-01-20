@@ -55,7 +55,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await Delete_Should_Delete_Image(client, readImageDto2);
         }
 
-        static async Task<ReadImageModel> Post_Should_Create_Image(HttpClient client, string name)
+        public static async Task<ReadImageModel> Post_Should_Create_Image(HttpClient client, string name)
         {
             // arrange
             using var form = new MultipartFormDataFile(JpgImageBytes, name + ".jpg");
@@ -143,7 +143,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             return images;
         }
 
-        static async Task GetImageByIdAndAssertAsync(HttpClient client, ReadImageModel model)
+        public static async Task GetImageByIdAndAssertAsync(HttpClient client, ReadImageModel model)
         {
             // arrange
 

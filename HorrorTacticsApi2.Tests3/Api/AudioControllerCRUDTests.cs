@@ -28,7 +28,7 @@ namespace HorrorTacticsApi2.Tests3.Api
     {
         static readonly byte[] AudioMp3Bytes = Convert.FromBase64String("SUQzAwAAAAAAFFRYWFgAAAAKAAAAU29mdHdhcmUA//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAAE5ADg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg//////////////////////////////////////////////////////////////////8AAAA8TEFNRTMuMTAwBK8AAAAAAAAAABUgJAa+QQABzAAABOSpYC5WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//vAxAAAC6wBR6AAAAntBei896SZBKSSTktaJJIAAAAABh4eHjwAAAAADDw8PfgAAH///gf/+kM/5A8PDw8M/8BAeHh4eGAAAAAAeHh4eGAAAAAAeHh4eGAAAAAAeHh4eGAAAAAAeHh4ekAAAAEB4eP/V1UxMsggAACXWXUGyGpByg5QcomompBSdCbCbCbCbCbAkCQJIUKFDEFBQoKCgoJBQUFBQoKCgoJBQUFBQoKCgoJBQUFBQoKCgoJBQUFBQoKCgoqCgoL/hQUFFQUFBf////////6DBQUFBV/+KDBQUFBQKCgoKDBQUFBQKkxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqTEFNRTMuMTAwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr/+xDE1gPAAAGkAAAAIAAANIAAAASqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqg==");
         readonly ApiTestsCollection _collection;
-        const string Path = "secured/audio";
+        const string Path = "secured/audios";
         public AudioControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
             _collection = apiTestsCollection;
@@ -56,7 +56,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await Delete_Should_Delete_Audio(client, readAudioDto2);
         }
 
-        static async Task<ReadAudioModel> Post_Should_Create_Audio(HttpClient client, string name)
+        public static async Task<ReadAudioModel> Post_Should_Create_Audio(HttpClient client, string name)
         {
             // arrange
             using var form = new MultipartFormDataFile(AudioMp3Bytes, name + ".mp3");
@@ -82,11 +82,11 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             // arrange
             // act
-            var images = await GetImagesAsync(client);
+            var images = await GetAudiosAsync(client);
 
             // assert
             Assert.Equal(1, images?.Count);
-            AssertImageDto(imageDto, images?[0]);
+            AssertAudioDto(imageDto, images?[0]);
         }
 
         static async Task<ReadAudioModel> Put_Should_Update_Audio(HttpClient client, ReadAudioModel model)
@@ -103,7 +103,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Id, readModel.Id);
             Assert.NotEqual(model.Name, readModel.Name);
             var updated = model with { Name = updateModel.Name };
-            AssertImageDto(updated, readModel);
+            AssertAudioDto(updated, readModel);
 
             return readModel;
         }
@@ -112,12 +112,12 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             // arrange
             // act
-            var images = await GetImagesAsync(client);
+            var images = await GetAudiosAsync(client);
 
             // assert
             Assert.Equal(2, images?.Count);
-            AssertImageDto(imageDto, images?[0]);
-            AssertImageDto(imageDto2, images?[1]);
+            AssertAudioDto(imageDto, images?[0]);
+            AssertAudioDto(imageDto2, images?[1]);
         }
 
         static async Task Delete_Should_Delete_Audio(HttpClient client, ReadAudioModel model)
@@ -131,7 +131,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
 
-        static async Task<IList<ReadAudioModel>> GetImagesAsync(HttpClient client)
+        static async Task<IList<ReadAudioModel>> GetAudiosAsync(HttpClient client)
         {
             // arrange
 
@@ -144,7 +144,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             return images;
         }
 
-        static async Task GetAudioByIdAndAssertAsync(HttpClient client, ReadAudioModel model)
+        public static async Task GetAudioByIdAndAssertAsync(HttpClient client, ReadAudioModel model)
         {
             // arrange
 
@@ -154,10 +154,10 @@ namespace HorrorTacticsApi2.Tests3.Api
             // assert
             var image = await Helper.VerifyAndGetAsync<ReadAudioModel>(response, StatusCodes.Status200OK);
 
-            AssertImageDto(model, image);
+            AssertAudioDto(model, image);
         }
 
-        static void AssertImageDto(ReadAudioModel expected, ReadAudioModel? imageDto)
+        static void AssertAudioDto(ReadAudioModel expected, ReadAudioModel? imageDto)
         {
             Assert.NotNull(imageDto);
             Assert.Equal(expected.Id, imageDto?.Id);

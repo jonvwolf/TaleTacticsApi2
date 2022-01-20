@@ -45,25 +45,5 @@ namespace HorrorTacticsApi2.Controllers
 
             return Ok(model);
         }
-        
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneModel>> Put([FromRoute] long id, [FromBody] UpdateStorySceneModel model, CancellationToken token)
-        {
-            return Ok(await _service.UpdateStorySceneAsync(id, model, true, token));
-        }
-
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
-        {
-            await _service.DeleteStorySceneAsync(id, token);
-            return NoContent();
-        }
     }
 }

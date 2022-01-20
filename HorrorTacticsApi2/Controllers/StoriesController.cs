@@ -26,7 +26,7 @@ namespace HorrorTacticsApi2.Controllers
             this.sceneService = sceneService;
         }
 
-        [HttpGet("{storyId}/scene/{id}")]
+        [HttpGet("{storyId}/scenes/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
@@ -42,10 +42,12 @@ namespace HorrorTacticsApi2.Controllers
             if (model == default)
                 return NotFound();
 
+            // TODO: check scene belongs to the storyId
+
             return Ok(model);
         }
 
-        [HttpPost("{storyId}/scene")]
+        [HttpPost("{storyId}/scenes")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
@@ -53,6 +55,39 @@ namespace HorrorTacticsApi2.Controllers
         {
             var readModel = await sceneService.CreateStorySceneAsync(storyId, model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
+        }
+
+        [HttpPut("{storyId}/scenes/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStorySceneModel>> Put([FromRoute] long storyId, [FromRoute] long id, [FromBody] UpdateStorySceneModel model, CancellationToken token)
+        {
+            // TODO: performance
+            var storyModel = await service.TryFindStoryAsync(storyId, false, token);
+            if (storyModel == default)
+                return NotFound();
+
+            // TODO: check scene belongs to the storyId
+
+            return Ok(await sceneService.UpdateStorySceneAsync(id, model, true, token));
+        }
+
+        [HttpDelete("{storyId}/scenes/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> Delete([FromRoute] long storyId, [FromRoute] long id, CancellationToken token)
+        {
+            // TODO: performance
+            var storyModel = await service.TryFindStoryAsync(storyId, false, token);
+            if (storyModel == default)
+                return NotFound();
+
+            // TODO: check scene belongs to the storyId
+
+            await sceneService.DeleteStorySceneAsync(id, token);
+            return NoContent();
         }
 
         [HttpGet]

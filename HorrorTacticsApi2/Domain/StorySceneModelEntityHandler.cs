@@ -143,6 +143,7 @@ namespace HorrorTacticsApi2.Domain
             {
                 foreach (var imageId in imageIds)
                 {
+                    // TODO: includeAll should be here too for the TryFind
                     var entity = await images.TryFindImageAsync(imageId, token);
                     if (entity != default)
                         imagesEntities.Add(entity);
@@ -159,6 +160,7 @@ namespace HorrorTacticsApi2.Domain
             {
                 foreach (var audioId in audioIds)
                 {
+                    // TODO: includeAll should be here too for the TryFind
                     var entity = await audios.TryFindAudioAsync(audioId, token);
                     if (entity != default)
                         audioEntities.Add(entity);
