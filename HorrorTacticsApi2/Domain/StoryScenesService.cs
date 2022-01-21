@@ -54,7 +54,7 @@ namespace HorrorTacticsApi2.Domain
         public async Task<ReadStorySceneModel> UpdateStorySceneAsync(long id, UpdateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
             imeHandler.Validate(model, basicValidated);
-            var entity = await FindStorySceneAsync(id, false, token);
+            var entity = await FindStorySceneAsync(id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"StoryScene with Id {id} not found");
 

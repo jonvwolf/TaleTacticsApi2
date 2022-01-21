@@ -54,6 +54,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await Get_Should_Return_One_Audio(client, readAudioDto2);
 
             await Delete_Should_Delete_Audio(client, readAudioDto2);
+            // TODO: check FileEntity and physical file (in memory) are also deleted
         }
 
         public static async Task<ReadAudioModel> Post_Should_Create_Audio(HttpClient client, string name)

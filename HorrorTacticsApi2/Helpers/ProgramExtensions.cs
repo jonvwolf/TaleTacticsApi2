@@ -1,5 +1,4 @@
 ﻿using HorrorTacticsApi2.Data;
-using HorrorTacticsApi2.Migrations;
 using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +44,8 @@ namespace HorrorTacticsApi2.Helpers
                     applyMigrations = true;
 
                 // If not migrations have been apply, it means the database is empty
-                if (!string.IsNullOrEmpty(pendingMigrations.FirstOrDefault(x => x.EndsWith("_" + nameof(Initialization)))))
+                // TODO: change this to `nameof(Initialization)`
+                if (!string.IsNullOrEmpty(pendingMigrations.FirstOrDefault(x => x.EndsWith("_Initialization"))))
                     applyMigrations = true;
 
                 if (applyMigrations)

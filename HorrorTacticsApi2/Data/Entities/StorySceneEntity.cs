@@ -23,7 +23,6 @@ namespace HorrorTacticsApi2.Data.Entities
         [MaxLength(1000)]
         public string Timers { get; set; } = string.Empty;
 
-        // TODO: make sure these are not cascade deleted
         public List<ImageEntity> Images { get; protected set; } = new();
         public List<AudioEntity> Audios { get; protected set; } = new();
 

@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HorrorTacticsApi2.Data
 {
@@ -33,10 +34,23 @@ namespace HorrorTacticsApi2.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
             modelBuilder.Entity<FileEntity>()
                 .Property(x => x.Format)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<StorySceneEntity>()
+                .HasMany(x => x.Audios)
+                .WithMany(x => x.Scenes);
+
+            modelBuilder.Entity<StorySceneEntity>()
+                .HasMany(x => x.Images)
+                .WithMany(x => x.Scenes);
+        }
+
+        public Task<IDbContextTransaction> CreateTransactionAsync()
+        {
+            return Database.BeginTransactionAsync();
         }
     }
 }

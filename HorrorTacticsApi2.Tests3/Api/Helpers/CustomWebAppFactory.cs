@@ -5,6 +5,7 @@ using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -46,7 +47,13 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
             builder.ConfigureServices(services =>
             {
                 services.RemoveAll<DbContextOptions<HorrorDbContext>>();
-                services.AddSingleton(_db.Options);
+                services.RemoveAll<IHorrorDbContext>();
+                services.RemoveAll<HorrorDbContext>();
+                
+                services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options => {
+                     options.UseSqlite(_db.Connection);
+                     options.EnableSensitiveDataLogging();
+                 });
 
                 services.RemoveAll<IFileIO>();
                 services.AddSingleton<IFileIO, TestInMemoryFileIO>();

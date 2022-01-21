@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HorrorTacticsApi2.Data
 {
@@ -11,5 +12,7 @@ namespace HorrorTacticsApi2.Data
         public DbSet<StorySceneEntity> StoryScenes { get; }
         public DbSet<StoryEntity> Stories { get; }
         Task<int> SaveChangesWrappedAsync(CancellationToken cancellationToken = default);
+
+        Task<IDbContextTransaction> CreateTransactionAsync();
     }
 }

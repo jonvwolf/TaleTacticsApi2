@@ -58,6 +58,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var storySceneModel = await Post_Should_Create_StoryScene(client, createStoryScene, storyDto.Id);
             var storySceneModel2 = await Post_Should_Create_StoryScene(client, createStoryScene, storyDto.Id);
 
+            // TODO: update storyscene2 with the same images
             var updateStoryScene = new UpdateStorySceneModel(
                 new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
                 default,
@@ -72,15 +73,18 @@ namespace HorrorTacticsApi2.Tests3.Api
             var updatedSceneModel = await Put_Should_Update_StoryScene(client, updateStoryScene, storyDto.Id, storySceneModel.Id);
 
             var readSceneModel = await Get_Should_Return_StoryScene(client, storyDto.Id, storySceneModel.Id, updatedSceneModel);
-            var getReadStoryModel = await Get_Should_Return_Story(client, storyDto.Id, storyDto, readSceneModel);
-            var listStories = await Get_Should_Return_Stories(client, storyDto, readSceneModel);
+            var getReadStoryModel = await Get_Should_Return_Story(client, storyDto.Id, updatedDto, readSceneModel);
+            var listStories = await Get_Should_Return_Stories(client, updatedDto, readSceneModel);
 
             await Delete_Should_Delete_Story(client, storyDto.Id);
             await Get_Should_Return_Story_NotFound(client, storyDto.Id);
+            await Get_Should_Return_StoryScene_NotFound(client, storyDto.Id, storySceneModel.Id);
 
             await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto);
             await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto2);
             await AudioControllerCRUDTests.GetAudioByIdAndAssertAsync(client, audioDto);
+
+            // TODO: check when deleting Image, Scene is not deleted
         }
 
         static async Task<ReadStorySceneModel> Get_Should_Return_StoryScene(HttpClient client, long storyId, long storySceneId, ReadStorySceneModel model)
@@ -232,11 +236,11 @@ namespace HorrorTacticsApi2.Tests3.Api
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
             Assert.True(readModel.Id > 0);
-            Assert.Equal(model.Images?.Count, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
+            Assert.Equal(model.Images?.Count ?? 0, readModel.Images.Count);
+            Assert.Equal(model.Audios?.Count ?? 1, readModel.Audios.Count);
+            Assert.Equal(model.Texts?.Count ?? 0, readModel.Texts.Count);
             //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
-            Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
+            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
             return readModel;
         }
 
@@ -248,7 +252,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             using var response = await client.DeleteAsync(Path + $"/{storyId}/scenes/{storySceneId}");
 
             // assert
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
 
         static async Task Delete_Should_Delete_Story(HttpClient client, long storyId)
@@ -259,7 +263,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             using var response = await client.DeleteAsync(Path + $"/{storyId}");
 
             // assert
-            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
     }
 }

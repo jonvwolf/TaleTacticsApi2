@@ -52,12 +52,8 @@ try
 
     builder.AddJwt();
 
-    builder.Services.AddDbContext<HorrorDbContext>(options =>
-        options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY))
-    );
-    builder.Services.AddScoped<IHorrorDbContext>(services =>
-    {
-        return services.GetRequiredService<HorrorDbContext>();
+    builder.Services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options => {
+        options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
     });
 
 
@@ -150,7 +146,7 @@ try
         }
         else if (app.Environment.EnvironmentName == Constants.APITESTING_ENV_NAME)
         {
-
+            // Do not use error handler
         }
         else
         {

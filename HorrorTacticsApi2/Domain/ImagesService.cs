@@ -77,10 +77,18 @@ namespace HorrorTacticsApi2.Domain
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
-            _fileUploadHandler.DeleteUploadedFile(entity.File.Filename);
+            string filename = entity.File.Filename;
 
+            using var transaction = await _context.CreateTransactionAsync();
+
+            // TODO: repeated code in Audio
+            _context.Files.Remove(entity.File);
             _context.Images.Remove(entity);
             await _context.SaveChangesWrappedAsync(token);
+            await transaction.CommitAsync(token);
+
+            // TODO: move physical file to a trash folder, if entity fails to be removed, bring back the file
+            _fileUploadHandler.DeleteUploadedFile(filename);
         }
 
         public async Task<ImageEntity?> TryFindImageAsync(long id, CancellationToken token)

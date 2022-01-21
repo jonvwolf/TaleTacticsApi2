@@ -53,6 +53,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await Get_Should_Return_One_Image(client, readImageDto2);
 
             await Delete_Should_Delete_Image(client, readImageDto2);
+            // TODO: check FileEntity and physical file (in memory) are also deleted
         }
 
         public static async Task<ReadImageModel> Post_Should_Create_Image(HttpClient client, string name)
@@ -119,7 +120,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             AssertImageDto(imageDto2, images?[1]);
         }
 
-        static async Task Delete_Should_Delete_Image(HttpClient client, ReadImageModel model)
+        public static async Task Delete_Should_Delete_Image(HttpClient client, ReadImageModel model)
         {
             // arrange
 
