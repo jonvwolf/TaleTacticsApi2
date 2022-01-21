@@ -1,25 +1,9 @@
-﻿using HorrorTacticsApi2.Data;
-using HorrorTacticsApi2.Domain.Dtos;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
-using System;
+﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using Microsoft.Extensions.Logging;
 using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Xunit;
-using System.Net.Http.Headers;
-using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Models.Stories;
 
 namespace HorrorTacticsApi2.Tests3.Api
@@ -85,6 +69,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await AudioControllerCRUDTests.GetAudioByIdAndAssertAsync(client, audioDto);
 
             // TODO: check when deleting Image, Scene is not deleted
+            // TODO: actually check the values (nested values)
         }
 
         static async Task<ReadStorySceneModel> Get_Should_Return_StoryScene(HttpClient client, long storyId, long storySceneId, ReadStorySceneModel model)

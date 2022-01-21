@@ -1,24 +1,11 @@
-﻿using HorrorTacticsApi2.Data;
-using HorrorTacticsApi2.Domain.Dtos;
-using Microsoft.AspNetCore.Hosting;
+﻿using HorrorTacticsApi2.Domain.Dtos;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-using Microsoft.Extensions.Logging;
 using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Xunit;
-using System.Net.Http.Headers;
 using HorrorTacticsApi2.Data.Entities;
 
 namespace HorrorTacticsApi2.Tests3.Api
