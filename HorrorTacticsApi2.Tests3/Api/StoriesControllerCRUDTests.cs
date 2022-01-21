@@ -12,6 +12,8 @@ namespace HorrorTacticsApi2.Tests3.Api
     {
         readonly ApiTestsCollection _collection;
         const string Path = "secured/stories";
+        const string PathStoryScenes = "secured/storyscenes";
+
         public StoriesControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
             _collection = apiTestsCollection;
@@ -60,6 +62,9 @@ namespace HorrorTacticsApi2.Tests3.Api
             var getReadStoryModel = await Get_Should_Return_Story(client, storyDto.Id, updatedDto, readSceneModel);
             var listStories = await Get_Should_Return_Stories(client, updatedDto, readSceneModel);
 
+            // TODO: move this to its own test collection
+            await StoryScenes_Get_Should_Return_StoryScene(client, readSceneModel.Id, readSceneModel);
+
             await Delete_Should_Delete_Story(client, storyDto.Id);
             await Get_Should_Return_Story_NotFound(client, storyDto.Id);
             await Get_Should_Return_StoryScene_NotFound(client, storyDto.Id, storySceneModel.Id);
@@ -70,6 +75,24 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             // TODO: check when deleting Image, Scene is not deleted
             // TODO: actually check the values (nested values)
+        }
+
+        static async Task<ReadStorySceneModel> StoryScenes_Get_Should_Return_StoryScene(HttpClient client, long storySceneId, ReadStorySceneModel model)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(PathStoryScenes + $"/{storySceneId}");
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
+            Assert.Equal(model.Id, readModel.Id);
+            Assert.Equal(model.Images?.Count, readModel.Images.Count);
+            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
+            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
+            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
+            return readModel;
         }
 
         static async Task<ReadStorySceneModel> Get_Should_Return_StoryScene(HttpClient client, long storyId, long storySceneId, ReadStorySceneModel model)

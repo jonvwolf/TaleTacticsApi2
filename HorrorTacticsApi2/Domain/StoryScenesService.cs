@@ -21,15 +21,6 @@ namespace HorrorTacticsApi2.Domain
             this.stories = stories;
         }
 
-        public async Task<IList<ReadStorySceneModel>> GetAllStoryScenesAsync(CancellationToken token)
-        {
-            var list = new List<ReadStorySceneModel>();
-            var stories = await GetQuery(true).ToListAsync(token);
-            stories.ForEach(story => { list.Add(imeHandler.CreateReadModel(story)); });
-
-            return list;
-        }
-
         public async Task<ReadStorySceneModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
         {
             var entity = await FindStorySceneAsync(id, includeAll, token);

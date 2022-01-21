@@ -25,14 +25,6 @@ namespace HorrorTacticsApi2.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<IList<ReadStorySceneModel>>> Get(CancellationToken token)
-        {
-            return Ok(await _service.GetAllStoryScenesAsync(token));
-        }
-
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
