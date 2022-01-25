@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Xunit;
 using HorrorTacticsApi2.Domain.Models.Stories;
+using HorrorTacticsApi2.Domain.Models.Games;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
@@ -13,6 +14,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         readonly ApiTestsCollection _collection;
         const string Path = "secured/stories";
         const string PathStoryScenes = "secured/storyscenes";
+        const string PathGames = "games";
 
         public StoriesControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
@@ -53,6 +55,10 @@ namespace HorrorTacticsApi2.Tests3.Api
                 default
             );
 
+            var createdGame = await Post_Should_Create_Game(client, storyDto.Id);
+            // TODO: move this to its own test collection
+            await Games_Get_Should_Return_GameConfiguration(client, createdGame.GameCode);
+
             await Delete_Should_Delete_StoryScene(client, storyDto.Id, storySceneModel2.Id);
             await Get_Should_Return_StoryScene_NotFound(client, storyDto.Id, storySceneModel2.Id);
 
@@ -77,6 +83,32 @@ namespace HorrorTacticsApi2.Tests3.Api
             // TODO: actually check the values (nested values)
         }
 
+        static async Task<ReadGameCreatedModel> Post_Should_Create_Game(HttpClient client, long storyId)
+        {
+            // arrange
+            var model = new CreateGameModel(storyId);
+
+            // act
+            using var response = await client.PostAsync(Path + "/game", Helper.GetContent(model));
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<ReadGameCreatedModel>(response, StatusCodes.Status201Created);
+            Assert.True(readModel.GameCode.Length > 0);
+            return readModel;
+        }
+        static async Task<ReadGameConfiguration> Games_Get_Should_Return_GameConfiguration(HttpClient client, string gameCode)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(PathGames + $"/{gameCode}/configuration");
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<ReadGameConfiguration>(response, StatusCodes.Status200OK);
+            Assert.Equal(1, readModel.Audios.Count);
+            Assert.Equal(1, readModel.Images.Count);
+            return readModel;
+        }
         static async Task<ReadStorySceneModel> StoryScenes_Get_Should_Return_StoryScene(HttpClient client, long storySceneId, ReadStorySceneModel model)
         {
             // arrange

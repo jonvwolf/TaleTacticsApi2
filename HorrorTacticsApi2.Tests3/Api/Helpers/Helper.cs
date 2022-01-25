@@ -32,19 +32,19 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
                     + Environment.NewLine + "Response string: " + Environment.NewLine + str);
             }
 
+            T? obj;
             try
             {
-                var obj = JsonConvert.DeserializeObject<T>(str);
-
-                Assert.NotNull(obj);
-                if (obj == null)
-                    throw new InvalidOperationException("This will never be executed");
-                return obj;
+                obj = JsonConvert.DeserializeObject<T>(str);
             }
             catch (Exception ex)
             {
                 throw new AggregateException(str, ex);
-            } 
+            }
+
+            if (obj == null)
+                throw new InvalidOperationException($"Deserialized object is null: '{str}'");
+            return obj;
         }
     }
 }

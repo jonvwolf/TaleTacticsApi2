@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Models.Games;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -20,10 +21,13 @@ namespace HorrorTacticsApi2.Controllers
     {
         readonly StoriesService service;
         readonly StoryScenesService sceneService;
-        public StoriesController(StoriesService service, StoryScenesService sceneService)
+        readonly GamesService games;
+
+        public StoriesController(StoriesService service, StoryScenesService sceneService, GamesService games)
         { 
             this.service = service;
             this.sceneService = sceneService;
+            this.games = games;
         }
 
         [HttpGet("{storyId}/scenes/{id}")]
@@ -138,6 +142,16 @@ namespace HorrorTacticsApi2.Controllers
         {
             await service.DeleteStoryAsync(id, token);
             return NoContent();
+        }
+
+        [HttpPost("game")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadGameCreatedModel>> PostGame([FromBody] CreateGameModel model, CancellationToken token)
+        {
+            var game = await games.CreateGameAsync(model.StoryId, token);
+            return CreatedAtAction(nameof(GamesController.GetConfiguration), nameof(GamesController).Replace("Controller", ""), new { gameCode = game.GameCode }, game);
         }
     }
 }

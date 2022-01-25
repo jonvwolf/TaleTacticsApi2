@@ -2,6 +2,7 @@ using HorrorTacticsApi2;
 using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.IO;
+using HorrorTacticsApi2.Game;
 using HorrorTacticsApi2.Helpers;
 using HorrorTacticsApi2.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -61,11 +62,15 @@ try
     builder.Services.AddScoped<AudioModelEntityHandler>();
     builder.Services.AddScoped<StorySceneModelEntityHandler>();
     builder.Services.AddScoped<StoryModelEntityHandler>();
+    builder.Services.AddScoped<GameModelStateHandler>();
 
     builder.Services.AddScoped<ImagesService>();
     builder.Services.AddScoped<AudiosService>();
     builder.Services.AddScoped<StoryScenesService>();
     builder.Services.AddScoped<StoriesService>();
+    builder.Services.AddScoped<GamesService>();
+
+    builder.Services.AddSingleton<GameSaver>();
 
     builder.Services.AddSingleton<FileUploadHandler>();
     builder.Services.AddSingleton<IFileIO, PhysicalFileIO>();
