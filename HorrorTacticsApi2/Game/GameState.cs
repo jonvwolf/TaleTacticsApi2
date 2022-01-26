@@ -2,6 +2,9 @@
 
 namespace HorrorTacticsApi2.Game
 {
+    /// <summary>
+    /// Public properties are immutable
+    /// </summary>
     public class GameState
     {
         public ReadStoryModel Story { get; }

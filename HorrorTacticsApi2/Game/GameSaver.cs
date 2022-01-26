@@ -63,6 +63,14 @@ namespace HorrorTacticsApi2.Game
             }
         }
 
+        public bool DoesGameCodeExist(string gameCode)
+        {
+            lock (lockObj)
+            {
+                return games.ContainsKey(gameCode);
+            }
+        }
+
         static string GenerateGameCode(int length, Random random)
         {
             var sb = new StringBuilder(length);

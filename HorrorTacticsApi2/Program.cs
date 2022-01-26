@@ -4,6 +4,7 @@ using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Game;
 using HorrorTacticsApi2.Helpers;
+using HorrorTacticsApi2.Hubs;
 using HorrorTacticsApi2.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -83,6 +84,9 @@ try
         return physicalProvider;
     });
 
+    builder.Services
+        .AddSignalR()
+        .AddNewtonsoftJsonProtocol();
     builder.Services
         .AddControllers()
         .AddNewtonsoftJson();
@@ -167,6 +171,7 @@ try
 
         app.UseSerilogRequestLogging();
 
+        app.MapHub<GameHub>("/game-hub");
         app.MapControllers();
 
         app.Run();
