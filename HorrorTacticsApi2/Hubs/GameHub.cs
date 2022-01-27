@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace HorrorTacticsApi2.Hubs
 {
+    /// <summary>
+    /// TODO: check JSON security options (newtonsoft) example: can't bind to a different type
+    /// </summary>
     public class GameHub : Hub<IGameClient>
     {
         readonly GameSaver games;

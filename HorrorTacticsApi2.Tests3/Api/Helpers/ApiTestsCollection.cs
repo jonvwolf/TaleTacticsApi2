@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.TestHost;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,11 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
         public HttpClient CreateClient()
         {
             return WebAppFactory.CreateClient();
+        }
+
+        public TestServer GetServer()
+        {
+            return WebAppFactory.Server;
         }
 
         protected virtual void Dispose(bool disposing)
