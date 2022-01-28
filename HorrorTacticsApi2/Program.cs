@@ -59,7 +59,8 @@ try
         options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
     });
 
-    builder.Services.AddSingleton<IObjectValidator, ObjectValidator>();
+    // ObjectValidator should only be used for Hub validations
+    builder.Services.AddSingleton<IObjectValidator<HubObjectValidator>, HubObjectValidator>();
 
     builder.Services.AddScoped<ImageModelEntityHandler>();
     builder.Services.AddScoped<AudioModelEntityHandler>();

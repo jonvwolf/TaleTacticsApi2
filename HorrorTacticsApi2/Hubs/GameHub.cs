@@ -13,9 +13,9 @@ namespace HorrorTacticsApi2.Hubs
     public class GameHub : Hub<IGameClient>
     {
         readonly GameSaver games;
-        readonly IObjectValidator validator;
+        readonly IObjectValidator<HubObjectValidator> validator;
 
-        public GameHub(GameSaver saver, IObjectValidator validator)
+        public GameHub(GameSaver saver, IObjectValidator<HubObjectValidator> validator)
         {
             games = saver;
             this.validator = validator;

@@ -3,5 +3,5 @@
 namespace HorrorTacticsApi2.Hubs.Models
 {
     public record MinigameCommandModel(
-        [Range(1, long.MaxValue)] long MinigameId);
+        [property: Range(1, long.MaxValue)] long MinigameId);
 }

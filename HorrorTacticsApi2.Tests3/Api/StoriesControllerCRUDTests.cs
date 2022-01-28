@@ -213,7 +213,11 @@ namespace HorrorTacticsApi2.Tests3.Api
             });
             Assert.Contains("user is unauthorized", exception.Message);
 
-            //await hub.InvokeAsync("JoinGameAsPlayer", new { anotherx = gameCode, another = "LOL" });
+            var unexpectedEx = await Assert.ThrowsAsync<HubException>(async () =>
+            {
+                await hub.InvokeAsync("JoinGameAsPlayer", new GameCodeModel(""));
+            });
+            Assert.Contains("GameCodeModel: The GameCode field is required.", unexpectedEx.Message);
 
             await hub.StopAsync();
         }

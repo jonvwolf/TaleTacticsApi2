@@ -3,6 +3,6 @@
 namespace HorrorTacticsApi2.Hubs.Models
 {
     public record PlayerTextLogModel(
-        [MinLength(1), MaxLength(100), Required] string Message,
-        [MinLength(1), MaxLength(100), Required] string PlayerName);
+        [property: MinLength(1), MaxLength(100), Required] string Message,
+        [property: MinLength(1), MaxLength(100), Required] string PlayerName);
 }

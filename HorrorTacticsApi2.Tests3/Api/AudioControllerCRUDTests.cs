@@ -30,6 +30,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await Get_Should_Return_One_Audio(client, readAudioDto);
             var readAudioDto2 = await Post_Should_Create_Audio(client, "audio2");
             var readAudioDto1_1 = await Put_Should_Update_Audio(client, readAudioDto);
+            await Put_Should_Return_BadRequest(client, readAudioDto);
 
             await GetAudioByIdAndAssertAsync(client, readAudioDto2);
             await GetAudioByIdAndAssertAsync(client, readAudioDto1_1);
@@ -94,6 +95,19 @@ namespace HorrorTacticsApi2.Tests3.Api
             AssertAudioDto(updated, readModel);
 
             return readModel;
+        }
+
+        static async Task Put_Should_Return_BadRequest(HttpClient client, ReadAudioModel model)
+        {
+            // arrange
+            var updateModel = new UpdateImageModel("");
+
+            // act
+            using var response = await client.PutAsync(Path + $"/{model.Id}", Helper.GetContent(updateModel));
+            var strResponse = await response.Content.ReadAsStringAsync();
+            // assert
+            Assert.Equal(StatusCodes.Status400BadRequest, (int)response.StatusCode);
+            Assert.Contains("The field Name must be a string or array type with a minimum length of", strResponse);
         }
 
         static async Task Get_Should_Return_Two_Audios(HttpClient client, ReadAudioModel imageDto, ReadAudioModel imageDto2)
