@@ -2,6 +2,7 @@
 {
     public static class Constants
     {
+        public const string HUB_PATH = "/game-hub";
         public const string FILE_APPLY_MIGRATIONS = "apply-migrations.txt";
         public const string ENV_PREFIX = "HT_";
 

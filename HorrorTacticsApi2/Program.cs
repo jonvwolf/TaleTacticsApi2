@@ -6,6 +6,7 @@ using HorrorTacticsApi2.Game;
 using HorrorTacticsApi2.Helpers;
 using HorrorTacticsApi2.Hubs;
 using HorrorTacticsApi2.Swagger;
+using Jonwolfdev.Utils6.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -58,6 +59,7 @@ try
         options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
     });
 
+    builder.Services.AddSingleton<IObjectValidator, ObjectValidator>();
 
     builder.Services.AddScoped<ImageModelEntityHandler>();
     builder.Services.AddScoped<AudioModelEntityHandler>();
@@ -171,7 +173,7 @@ try
 
         app.UseSerilogRequestLogging();
 
-        app.MapHub<GameHub>("/game-hub");
+        app.MapHub<GameHub>(Constants.HUB_PATH);
         app.MapControllers();
 
         app.Run();

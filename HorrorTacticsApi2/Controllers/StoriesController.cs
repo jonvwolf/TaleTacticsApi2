@@ -144,6 +144,7 @@ namespace HorrorTacticsApi2.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpPost("game")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

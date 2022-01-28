@@ -21,7 +21,26 @@ namespace HorrorTacticsApi2.Helpers
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer();
+            }).AddJwtBearer(options =>
+            {
+                // This is to get access_token for hub connections
+                options.Events = new JwtBearerEvents()
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(path))
+                            return Task.CompletedTask;
+
+                        if (path.StartsWithSegments(Constants.HUB_PATH))
+                            context.Token = accessToken;
+
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 

@@ -134,7 +134,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             return hub;
         }
 
-        void TestGameHubAsPlayer_Part2(HubConnection hub, string gameCode)
+        static void TestGameHubAsPlayer_Part2(HubConnection hub, string gameCode)
         {
             var gameCodeModel = new GameCodeModel(gameCode);
 
@@ -212,6 +212,8 @@ namespace HorrorTacticsApi2.Tests3.Api
                 await hub.InvokeAsync("JoinGameAsHm", new GameCodeModel(gameCode));
             });
             Assert.Contains("user is unauthorized", exception.Message);
+
+            //await hub.InvokeAsync("JoinGameAsPlayer", new { anotherx = gameCode, another = "LOL" });
 
             await hub.StopAsync();
         }
