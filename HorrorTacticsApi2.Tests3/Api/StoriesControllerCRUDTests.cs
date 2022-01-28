@@ -53,7 +53,7 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             var createStoryScene = new CreateStorySceneModel(
                 new List<string>(){ "Text ñ", "Hola ñ" },
-                default,
+                new List<long>() { 1 },
                 default,
                 new List<long>() { imageDto.Id },
                 new List<long>() { audioDto.Id }
@@ -261,6 +261,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var readModel = await Helper.VerifyAndGetAsync<ReadGameConfiguration>(response, StatusCodes.Status200OK);
             Assert.Equal(1, readModel.Audios.Count);
             Assert.Equal(1, readModel.Images.Count);
+            Assert.Equal(1, readModel.Minigames.Count);
             return readModel;
         }
         static async Task<ReadStorySceneModel> StoryScenes_Get_Should_Return_StoryScene(HttpClient client, long storySceneId, ReadStorySceneModel model)
@@ -276,7 +277,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count, readModel.Images.Count);
             Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
             Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
             Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
             return readModel;
         }
@@ -294,7 +295,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count, readModel.Images.Count);
             Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
             Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
             Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
             return readModel;
         }
@@ -338,7 +339,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count, readModel.StoryScenes[0].Images.Count);
             Assert.Equal(model.Audios?.Count, readModel.StoryScenes[0].Audios.Count);
             Assert.Equal(model.Texts?.Count, readModel.StoryScenes[0].Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count, readModel.StoryScenes[0].Minigames.Count);
             Assert.Equal(model.Timers?.Count, readModel.StoryScenes[0].Timers.Count);
             return readModel;
         }
@@ -362,7 +363,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count, readModel.StoryScenes[0].Images.Count);
             Assert.Equal(model.Audios?.Count, readModel.StoryScenes[0].Audios.Count);
             Assert.Equal(model.Texts?.Count, readModel.StoryScenes[0].Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count, readModel.StoryScenes[0].Minigames.Count);
             Assert.Equal(model.Timers?.Count, readModel.StoryScenes[0].Timers.Count);
             return list;
         }
@@ -397,7 +398,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count, readModel.Images.Count);
             Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
             Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
             Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
 
             return readModel;
@@ -433,7 +434,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(model.Images?.Count ?? 0, readModel.Images.Count);
             Assert.Equal(model.Audios?.Count ?? 1, readModel.Audios.Count);
             Assert.Equal(model.Texts?.Count ?? 0, readModel.Texts.Count);
-            //Assert.Equal(model.Minigames?.Count, readModel.Minigames);
+            Assert.Equal(model.Minigames?.Count ?? 1, readModel.Minigames.Count);
             Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
             return readModel;
         }

@@ -26,6 +26,8 @@ namespace HorrorTacticsApi2.Data.Entities
         public List<ImageEntity> Images { get; protected set; } = new();
         public List<AudioEntity> Audios { get; protected set; } = new();
 
+        public long Minigames { get; protected set; }
+
         public StorySceneEntity()
         {
 
@@ -33,13 +35,15 @@ namespace HorrorTacticsApi2.Data.Entities
 
         public StorySceneEntity(StoryEntity parent,
             string texts, string timers, 
-            IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios)
+            IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames)
         {
             Texts = texts;
             Timers = timers;
             // TODO: be consistent, in some other models/entities are not doing this...
             Images = images.ToList();
             Audios = audios.ToList();
+            // TODO: change this
+            Minigames = minigames.Count > 0 ? minigames[0] : 0;
             ParentStory = parent;
         }
     }

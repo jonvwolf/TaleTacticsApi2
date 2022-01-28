@@ -3,6 +3,7 @@ using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
 using HorrorTacticsApi2.Domain.Models.Audio;
+using HorrorTacticsApi2.Domain.Models.Minigames;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using Microsoft.Extensions.Options;
 
@@ -66,7 +67,8 @@ namespace HorrorTacticsApi2.Domain
                 CreateTextsFromList(model.Texts),
                 CreateTimersFromList(model.Timers),
                 await FindImagesFromIdsAsync(model.Images, token),
-                await FindAudiosFromIdsAsync(model.Audios, token)
+                await FindAudiosFromIdsAsync(model.Audios, token),
+                model.Minigames ?? new List<long>()
             );
         }
 
@@ -101,8 +103,13 @@ namespace HorrorTacticsApi2.Domain
             var timers = CreateTimersFromString(entity.Timers);
             var texts = CreateTextsFromString(entity.Texts);
 
+            // TODo: change this
+            var minigames = new List<ReadMinigameModel>();
+            if (entity.Minigames > 0)
+                minigames.Add(new ReadMinigameModel(1, "find_in_image"));
+
             // TODO: should I do `ToList`? inside Models?
-            return new ReadStorySceneModel(entity.Id, texts, timers, images, audios);
+            return new ReadStorySceneModel(entity.Id, texts, timers, images, audios, minigames);
         }
 
         static string CreateTextsFromList(IReadOnlyList<string>? textList)
