@@ -2,7 +2,7 @@
 {
     public class FormatHelper
     {
-        // TODO: Test that they both match
+        // TODO: Test that they both match (key vs FormatHelper.Format)
         public static readonly IReadOnlyDictionary<string, FormatHelper> AllowedImageExtensionsForUpload = new Dictionary<string, FormatHelper>()
         {
             { "." + FileFormatEnum.JPEG.ToString().ToLowerInvariant(), new FormatHelper(FileFormatEnum.JPEG, new List<byte[]>()

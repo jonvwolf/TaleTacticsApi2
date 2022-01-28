@@ -151,7 +151,6 @@ try
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            // TODO: what is the difference of having devexception page and not having it?
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
             app.UseSwaggerUI();

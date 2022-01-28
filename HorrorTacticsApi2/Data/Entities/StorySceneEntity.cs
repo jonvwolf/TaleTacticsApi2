@@ -40,6 +40,7 @@ namespace HorrorTacticsApi2.Data.Entities
             Texts = texts;
             Timers = timers;
             // TODO: be consistent, in some other models/entities are not doing this...
+            // -> It should be AddRange, right?
             Images = images.ToList();
             Audios = audios.ToList();
             // TODO: change this

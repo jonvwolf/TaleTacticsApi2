@@ -96,7 +96,6 @@ namespace HorrorTacticsApi2.Hubs
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
 
-            // TODO: make sure HubException does not give stack trace or something
             if (!games.DoesGameCodeExist(gameCode.GameCode))
                 throw new HubException("Game code does not exist");
         }

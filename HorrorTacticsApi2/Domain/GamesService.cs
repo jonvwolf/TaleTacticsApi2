@@ -21,7 +21,7 @@ namespace HorrorTacticsApi2.Domain
             // TODO: performance, only need to check if it exists
             var story = await stories.TryGetAsync(storyId, token) ?? throw new HtNotFoundException($"Story id not found: {storyId}");
 
-            // TODO: remember that services do not handle records/models
+            // TODO: remember that services do not handle records/models. Change this
             return new ReadGameCreatedModel(gameSaver.CreateGame(story));
         }
 
