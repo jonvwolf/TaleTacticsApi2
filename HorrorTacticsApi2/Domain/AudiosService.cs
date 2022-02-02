@@ -35,6 +35,21 @@ namespace HorrorTacticsApi2.Domain
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
+        public async Task<Stream> GetStreamFileAsync(string filename, bool isBasicValidated, CancellationToken token)
+        {
+            if (!isBasicValidated)
+                throw new NotImplementedException();
+
+            var entity = await TryFindAudioAsync(filename, token);
+            if (entity == default)
+                throw new HtNotFoundException("File not found");
+
+            // this is fine as long as it is validated against database value
+            var stream = _fileUploadHandler.GetFileStream(filename);
+
+            return stream;
+        }
+
         public async Task<ReadAudioModel> CreateAudioAsync(CancellationToken token)
         {
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
@@ -95,6 +110,13 @@ namespace HorrorTacticsApi2.Domain
         public async Task<AudioEntity?> TryFindAudioAsync(long id, CancellationToken token)
         {
             var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
+
+            return entity;
+        }
+
+        public async Task<AudioEntity?> TryFindAudioAsync(string filename, CancellationToken token)
+        {
+            var entity = await GetQuery().SingleOrDefaultAsync(x => x.File.Filename == filename, token);
 
             return entity;
         }

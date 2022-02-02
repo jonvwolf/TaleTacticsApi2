@@ -27,6 +27,22 @@ namespace HorrorTacticsApi2.Domain
             _io = io;
         }
 
+        public Stream GetFileStream(string filename)
+        {
+            var fullpath = Path.Combine(_options.UploadPath, filename);
+
+            try
+            {
+                var stream = File.OpenRead(fullpath);
+                return stream;
+            }
+            catch (Exception)
+            {
+                _logger.LogError("File does not exist: {filename}", filename);
+                throw;
+            }
+        }
+
         public async Task<FileUploaded> HandleAsync(IReadOnlyDictionary<string, FormatHelper> allowedExtensions, CancellationToken token)
         {
             // Documentation:

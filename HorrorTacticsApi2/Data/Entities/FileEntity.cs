@@ -1,9 +1,11 @@
 ﻿using HorrorTacticsApi2.Common;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HorrorTacticsApi2.Data.Entities
 {
+    [Index(nameof(Filename))]
     public class FileEntity : IValidatableEntity
     {
         public static readonly FileEntity EmptyFile = new();

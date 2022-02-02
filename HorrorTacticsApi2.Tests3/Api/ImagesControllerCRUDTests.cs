@@ -60,6 +60,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(0, (int)readModel.Width);
             Assert.False(readModel.IsScanned);
             Assert.False(string.IsNullOrWhiteSpace(readModel.AbsoluteUrl));
+            Assert.StartsWith("http://localhost/images/", readModel.AbsoluteUrl);
             Assert.EndsWith(".jpg", readModel.AbsoluteUrl);
 
             return readModel;

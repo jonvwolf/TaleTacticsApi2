@@ -16,5 +16,18 @@
         public const string APITESTING_ENV_NAME = "ApiTesting";
 
         public const string SecuredApiPath = "secured";
+
+        public const string FileImageApiPathWithVars = "images/{filename}";
+        public const string FileAudioApiPathWithVars = "audios/{filename}";
+
+        public static string GetFileImageApiPath(string filename)
+        {
+            return FileImageApiPathWithVars.Replace("{filename}", filename);
+        }
+
+        public static string GetFileAudioApiPath(string filename)
+        {
+            return FileAudioApiPathWithVars.Replace("{filename}", filename);
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace HorrorTacticsApi2.Domain
         readonly AudioModelEntityHandler audioHandler;
 
         public StorySceneModelEntityHandler(ImagesService images, AudiosService audios, 
-            ImageModelEntityHandler imageHandler, AudioModelEntityHandler audioHandler)
+            ImageModelEntityHandler imageHandler, AudioModelEntityHandler audioHandler, IHttpContextAccessor context) : base(context)
         {
             this.images = images;
             this.audios = audios;

@@ -10,7 +10,7 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class ImageModelEntityHandler : ModelEntityHandler
     {
-        public ImageModelEntityHandler()
+        public ImageModelEntityHandler(IHttpContextAccessor context) : base(context)
         {
         }
         public void Validate(UpdateImageModel model, bool basicValidated)
@@ -44,7 +44,7 @@ namespace HorrorTacticsApi2.Domain
 
         public ReadImageModel CreateReadModel(ImageEntity entity)
         {
-            string absoluteUrl = GetUrlForFile(entity.File.Filename);
+            string absoluteUrl = GetUrlForFile(entity.File.Filename, entity.File.Format);
             return new ReadImageModel(
                 entity.Id, 
                 entity.File.Name, 

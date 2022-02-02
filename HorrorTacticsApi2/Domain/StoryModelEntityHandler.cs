@@ -12,7 +12,7 @@ namespace HorrorTacticsApi2.Domain
     public class StoryModelEntityHandler : ModelEntityHandler
     {
         readonly StorySceneModelEntityHandler scene;
-        public StoryModelEntityHandler(StorySceneModelEntityHandler scene)
+        public StoryModelEntityHandler(StorySceneModelEntityHandler scene, IHttpContextAccessor context) : base(context)
         {
             this.scene = scene;
         }

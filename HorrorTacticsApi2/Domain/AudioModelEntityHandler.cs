@@ -11,7 +11,7 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class AudioModelEntityHandler : ModelEntityHandler
     {
-        public AudioModelEntityHandler()
+        public AudioModelEntityHandler(IHttpContextAccessor context) : base(context)
         {
         }
         public void Validate(UpdateAudioModel model, bool basicValidated)
@@ -48,7 +48,7 @@ namespace HorrorTacticsApi2.Domain
 
         public ReadAudioModel CreateReadModel(AudioEntity entity)
         {
-            string absoluteUrl = GetUrlForFile(entity.File.Filename);
+            string absoluteUrl = GetUrlForFile(entity.File.Filename, entity.File.Format);
             return new ReadAudioModel(
                 entity.Id,
                 entity.File.Name,
@@ -58,7 +58,6 @@ namespace HorrorTacticsApi2.Domain
                 absoluteUrl,
                 entity.File.IsVirusScanned);
         }
-
 
 
     }

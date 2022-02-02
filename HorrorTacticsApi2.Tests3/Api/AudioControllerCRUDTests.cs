@@ -62,6 +62,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.False(readModel.IsBgm);
             Assert.False(readModel.IsScanned);
             Assert.False(string.IsNullOrWhiteSpace(readModel.AbsoluteUrl));
+            Assert.StartsWith("http://localhost/audios/", readModel.AbsoluteUrl);
             Assert.EndsWith(".mp3", readModel.AbsoluteUrl);
 
             return readModel;
