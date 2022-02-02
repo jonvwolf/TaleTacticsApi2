@@ -4,6 +4,25 @@ namespace HorrorTacticsApi2.Domain.IO
 {
     public class PhysicalFileIO : IFileIO
     {
+        readonly ILogger<PhysicalFileIO> logger;
+        public PhysicalFileIO(ILogger<PhysicalFileIO> logger)
+        {
+            this.logger = logger;
+        }
+        public Stream GetFileStream(string fullpath)
+        {
+            try
+            {
+                var stream = File.OpenRead(fullpath);
+                return stream;
+            }
+            catch (Exception)
+            {
+                logger.LogError("File does not exist: {fullpath}", fullpath);
+                throw;
+            }
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", 
             "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", 
             Justification = "Can't make it work with 'Memory'-based overloads")]

@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -45,6 +46,24 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
             if (obj == null)
                 throw new InvalidOperationException($"Deserialized object is null: '{str}'");
             return obj;
+        }
+
+        internal async static Task<byte[]> GetFile(HttpResponseMessage response)
+        {
+            Assert.NotNull(response);
+            Assert.NotNull(response.Content);
+
+            if ((int)response.StatusCode != StatusCodes.Status200OK)
+            {
+                var str = await response.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"The status code is different from expected. Actual: {response.StatusCode}"
+                    + Environment.NewLine + "Response string: " + Environment.NewLine + str);
+            }
+
+            using var stream = new MemoryStream();
+            await response.Content.CopyToAsync(stream);
+
+            return stream.ToArray();
         }
     }
 }

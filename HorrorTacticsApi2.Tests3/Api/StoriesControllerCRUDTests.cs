@@ -22,7 +22,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         const string Path = "secured/stories";
         const string PathStoryScenes = "secured/storyscenes";
         const string PathGames = "games";
-
+        
         bool Hub_Hm_Received_Player_Log_Logged_In;
         bool Hub_Hm_Received_Player_Log_Image;
         bool Hub_Hm_Received_Player_Log_Audio;
@@ -41,7 +41,6 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             using var client = _collection.CreateClient();
             
-
             var storyDto = await Post_Should_Create_Story(client, "story title", "Description ñ");
             var updatedDto = await Put_Should_Update_Story(client, "story changed ñ", "Description changed", storyDto);
 
@@ -73,7 +72,9 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             var createdGame = await Post_Should_Create_Game(client, storyDto.Id);
             // TODO: move this to its own test collection
-            await Games_Get_Should_Return_GameConfiguration(client, createdGame.GameCode);
+            var gameConfig = await Games_Get_Should_Return_GameConfiguration(client, createdGame.GameCode);
+            await Get_Audio_Should_Return_File(client, gameConfig);
+            await Get_Image_Should_Return_File(client, gameConfig);
 
             // TODO: move this to its own test collection (HUB TESTING)
             await using var hmHub = await TestGameHubAsHmAsync_Part1(_collection.GetServer(), createdGame.GameCode, _collection.WebAppFactory.Token);
@@ -122,6 +123,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             // TODO: actually check the values (nested values)
         }
 
+        #region Hub testing
         static async Task<HubConnection> TestGameHubAsPlayerAsync_Part1(TestServer server, string gameCode)
         {
             var gameCodeModel = new GameCodeModel(gameCode);
@@ -236,7 +238,9 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             return hubConnection;
         }
+        #endregion
 
+        #region Game testing
         static async Task<ReadGameCreatedModel> Post_Should_Create_Game(HttpClient client, long storyId)
         {
             // arrange
@@ -264,6 +268,9 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(1, readModel.Minigames.Count);
             return readModel;
         }
+        #endregion
+
+        #region StoryScenes testing
         static async Task<ReadStorySceneModel> StoryScenes_Get_Should_Return_StoryScene(HttpClient client, long storySceneId, ReadStorySceneModel model)
         {
             // arrange
@@ -300,23 +307,72 @@ namespace HorrorTacticsApi2.Tests3.Api
             return readModel;
         }
 
-        static async Task Get_Should_Return_Story_NotFound(HttpClient client, long storyId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(Path + $"/{storyId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
-        }
-
         static async Task Get_Should_Return_StoryScene_NotFound(HttpClient client, long storyId, long storySceneId)
         {
             // arrange
 
             // act
             using var response = await client.GetAsync(Path + $"/{storyId}/scenes/{storySceneId}");
+
+            // assert
+            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
+        }
+
+        static async Task<ReadStorySceneModel> Post_Should_Create_StoryScene(HttpClient client, CreateStorySceneModel model, long storyId)
+        {
+            // arrange
+
+            // act
+            using var response = await client.PostAsync(Path + $"/{storyId}/scenes", Helper.GetContent(model));
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status201Created);
+            Assert.True(readModel.Id > 0);
+            Assert.Equal(model.Images?.Count, readModel.Images.Count);
+            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
+            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
+            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
+            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
+
+            return readModel;
+        }
+        static async Task<ReadStorySceneModel> Put_Should_Update_StoryScene(HttpClient client, UpdateStorySceneModel model, long storyId, long storySceneId)
+        {
+            // arrange
+
+            // act
+            using var response = await client.PutAsync(Path + $"/{storyId}/scenes/{storySceneId}", Helper.GetContent(model));
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
+            Assert.True(readModel.Id > 0);
+            Assert.Equal(model.Images?.Count ?? 0, readModel.Images.Count);
+            Assert.Equal(model.Audios?.Count ?? 1, readModel.Audios.Count);
+            Assert.Equal(model.Texts?.Count ?? 0, readModel.Texts.Count);
+            Assert.Equal(model.Minigames?.Count ?? 1, readModel.Minigames.Count);
+            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
+            return readModel;
+        }
+
+        static async Task Delete_Should_Delete_StoryScene(HttpClient client, long storyId, long storySceneId)
+        {
+            // arrange
+
+            // act
+            using var response = await client.DeleteAsync(Path + $"/{storyId}/scenes/{storySceneId}");
+
+            // assert
+            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
+        }
+        #endregion
+
+        #region Story testing
+        static async Task Get_Should_Return_Story_NotFound(HttpClient client, long storyId)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(Path + $"/{storyId}");
 
             // assert
             Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
@@ -385,25 +441,6 @@ namespace HorrorTacticsApi2.Tests3.Api
             return readModel;
         }
 
-        static async Task<ReadStorySceneModel> Post_Should_Create_StoryScene(HttpClient client, CreateStorySceneModel model, long storyId)
-        {
-            // arrange
-            
-            // act
-            using var response = await client.PostAsync(Path + $"/{storyId}/scenes", Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status201Created);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(model.Images?.Count, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
-
-            return readModel;
-        }
-
         static async Task<ReadStoryModel> Put_Should_Update_Story(HttpClient client, string title, string desc, ReadStoryModel original)
         {
             // arrange
@@ -421,35 +458,6 @@ namespace HorrorTacticsApi2.Tests3.Api
             return readModel;
         }
 
-        static async Task<ReadStorySceneModel> Put_Should_Update_StoryScene(HttpClient client, UpdateStorySceneModel model, long storyId, long storySceneId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.PutAsync(Path + $"/{storyId}/scenes/{storySceneId}", Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(model.Images?.Count ?? 0, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count ?? 1, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count ?? 0, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count ?? 1, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
-            return readModel;
-        }
-
-        static async Task Delete_Should_Delete_StoryScene(HttpClient client, long storyId, long storySceneId)
-        {
-            // arrange
-            
-            // act
-            using var response = await client.DeleteAsync(Path + $"/{storyId}/scenes/{storySceneId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
-        }
-
         static async Task Delete_Should_Delete_Story(HttpClient client, long storyId)
         {
             // arrange
@@ -460,6 +468,36 @@ namespace HorrorTacticsApi2.Tests3.Api
             // assert
             Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
+        #endregion
+
+        #region File testing
+        static async Task Get_Image_Should_Return_File(HttpClient client, ReadGameConfiguration config)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(config.Images[0].AbsoluteUrl);
+
+            // assert
+            var imageBytes = await Helper.GetFile(response);
+
+            Assert.NotEmpty(imageBytes);
+            Assert.Equal(ImagesControllerCRUDTests.JpgImageBytes, imageBytes);
+        }
+        static async Task Get_Audio_Should_Return_File(HttpClient client, ReadGameConfiguration config)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(config.Audios[0].AbsoluteUrl);
+
+            // assert
+            var audioBytes = await Helper.GetFile(response);
+
+            Assert.NotEmpty(audioBytes);
+            Assert.Equal(AudioControllerCRUDTests.AudioMp3Bytes, audioBytes);
+        }
+        #endregion
 
         protected virtual void Dispose(bool disposing)
         {

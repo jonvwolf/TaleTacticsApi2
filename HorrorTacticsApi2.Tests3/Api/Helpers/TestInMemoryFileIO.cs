@@ -41,5 +41,21 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
                 }
             }
         }
+
+        public Stream GetFileStream(string fullpath)
+        {
+            lock (locker)
+            {
+                if (_db.ContainsKey(fullpath))
+                {
+                    var stream = new MemoryStream(_db[fullpath].ToArray());
+                    return stream;
+                }
+                else
+                {
+                    throw new FileNotFoundException($"Test. File not found: {fullpath}");
+                }
+            }
+        }
     }
 }

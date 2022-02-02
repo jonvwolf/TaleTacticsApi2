@@ -37,7 +37,7 @@ namespace HorrorTacticsApi2.Controllers
         {
             // TODO: check filename is validated
             // TODO: add some basic regex to the filename
-            var stream = await service.GetStreamFileAsync(filename, true, token);
+            var stream = await image.GetStreamFileAsync(filename, true, token);
             // stream is disposed by the framework
             return File(stream, MediaTypeNames.Image.Jpeg, filename);
         }
@@ -53,7 +53,7 @@ namespace HorrorTacticsApi2.Controllers
         {
             // TODO: check filename is validated
             // TODO: add some basic regex to the filename
-            var stream = await image.GetStreamFileAsync(filename, true, token);
+            var stream = await service.GetStreamFileAsync(filename, true, token);
             // stream is disposed by the framework
             return File(stream, "audio/mpeg", filename);
         }
