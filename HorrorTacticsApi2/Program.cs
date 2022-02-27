@@ -147,7 +147,7 @@ try
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("HorrorTactics starting up...");
 
-            if (app.Environment.EnvironmentName == Constants.APITESTING_ENV_NAME)
+            if (app.Environment.EnvironmentName.StartsWith(Constants.APITESTING_ENV_NAME))
             {
                 var executor = scope.ServiceProvider.GetService<IApiTestingExecutor>();
                 if (executor != default)
@@ -164,7 +164,7 @@ try
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-        else if (app.Environment.EnvironmentName == Constants.APITESTING_ENV_NAME)
+        else if (app.Environment.EnvironmentName.StartsWith(Constants.APITESTING_ENV_NAME))
         {
             // Do not use error handler
         }

@@ -1,12 +1,15 @@
-﻿using HorrorTacticsApi2.Data;
+﻿using HorrorTacticsApi2.ApiHelpers;
+using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Tests3.Api.Helpers;
 using Jonwolfdev.Utils6.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -26,39 +29,51 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class CustomWebAppFactory : WebApplicationFactory<Program>
     {
-        readonly SqliteInMemory _db;
-        readonly CustomWebAppFactoryOptions _options;
+        public CustomWebAppFactoryOptions Options { get; set; } = new();
         bool _disposedValue;
 
         public string MainPassword { get; protected set; } = "";
         public string Token { get; protected set; } = "";
 
-        public CustomWebAppFactory(CustomWebAppFactoryOptions? options = null)
+        public CustomWebAppFactory()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Constants.APITESTING_ENV_NAME);
-            _options = options ?? new CustomWebAppFactoryOptions();
-            _db = new SqliteInMemory();
+            string? env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (string.IsNullOrEmpty(env) || !env.StartsWith(Constants.APITESTING_ENV_NAME))
+                throw new InvalidOperationException($"Can't run API integration tests while not using {Constants.APITESTING_ENV_NAME} as env");
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             base.ConfigureWebHost(builder);
 
-            builder.ConfigureServices(services =>
-            {
+            builder.ConfigureServices((context, services) =>
+            { 
+                // Can't use anything that has log calls because Serilog will throw an exception...
+                // Use ApiTestingExecutor to do operations that required logging
+
                 services.RemoveAll<DbContextOptions<HorrorDbContext>>();
                 services.RemoveAll<IHorrorDbContext>();
                 services.RemoveAll<HorrorDbContext>();
-                
-                services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options => {
-                     options.UseSqlite(_db.Connection);
-                     options.EnableSensitiveDataLogging();
-                 });
-
                 services.RemoveAll<IFileIO>();
+
+                services.AddSingleton<IApiTestingExecutor, ApiTestingExecutor>();
+                services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options =>
+                {
+                    string connectionStrings = context.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY);
+                    string apiTestingDbReplaceValue = context.Configuration.GetValue<string>(Constants.APITESTING_DB_REPLACE_VALUE_Key);
+
+                    if (!connectionStrings.Contains(apiTestingDbReplaceValue))
+                        throw new InvalidOperationException("Connection string does not have Db replace value: " + apiTestingDbReplaceValue);
+
+                    // TODO: Only have 1 database for the entire API testing...
+                    options.UseNpgsql(connectionStrings.Replace(apiTestingDbReplaceValue, this.Options.DbName));
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                });
+
                 services.AddSingleton<IFileIO, TestInMemoryFileIO>();
 
-                var sp = services.BuildServiceProvider();
+                using var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 MainPassword = scope.ServiceProvider.GetRequiredService<IOptions<AppSettings>>().Value.MainPassword;
 
@@ -82,7 +97,7 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
             {
                 if (disposing)
                 {
-                    _db.Dispose();
+                    
                 }
 
                 _disposedValue = true;
