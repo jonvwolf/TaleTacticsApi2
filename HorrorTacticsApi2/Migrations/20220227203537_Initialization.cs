@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -12,13 +13,13 @@ namespace HorrorTacticsApi2.Migrations
                 name: "Files",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
-                    Format = table.Column<string>(type: "TEXT", nullable: false),
-                    Filename = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    SizeInBytes = table.Column<long>(type: "INTEGER", nullable: false),
-                    IsVirusScanned = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Format = table.Column<string>(type: "text", nullable: false),
+                    Filename = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SizeInBytes = table.Column<long>(type: "bigint", nullable: false),
+                    IsVirusScanned = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,10 +30,10 @@ namespace HorrorTacticsApi2.Migrations
                 name: "Stories",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Title = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
-                    Description = table.Column<string>(type: "TEXT", maxLength: 600, nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Description = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,11 +44,11 @@ namespace HorrorTacticsApi2.Migrations
                 name: "Audios",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    IsBgm = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DurationSeconds = table.Column<uint>(type: "INTEGER", nullable: false),
-                    FileId = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IsBgm = table.Column<bool>(type: "boolean", nullable: false),
+                    DurationSeconds = table.Column<long>(type: "bigint", nullable: false),
+                    FileId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,11 +65,11 @@ namespace HorrorTacticsApi2.Migrations
                 name: "Images",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Width = table.Column<uint>(type: "INTEGER", nullable: false),
-                    Height = table.Column<uint>(type: "INTEGER", nullable: false),
-                    FileId = table.Column<long>(type: "INTEGER", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Width = table.Column<long>(type: "bigint", nullable: false),
+                    Height = table.Column<long>(type: "bigint", nullable: false),
+                    FileId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,11 +86,12 @@ namespace HorrorTacticsApi2.Migrations
                 name: "StoryScenes",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ParentStoryId = table.Column<long>(type: "INTEGER", nullable: false),
-                    Texts = table.Column<string>(type: "TEXT", maxLength: 15000, nullable: false),
-                    Timers = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ParentStoryId = table.Column<long>(type: "bigint", nullable: false),
+                    Texts = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: false),
+                    Timers = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Minigames = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -106,8 +108,8 @@ namespace HorrorTacticsApi2.Migrations
                 name: "AudioEntityStorySceneEntity",
                 columns: table => new
                 {
-                    AudiosId = table.Column<long>(type: "INTEGER", nullable: false),
-                    ScenesId = table.Column<long>(type: "INTEGER", nullable: false)
+                    AudiosId = table.Column<long>(type: "bigint", nullable: false),
+                    ScenesId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -130,8 +132,8 @@ namespace HorrorTacticsApi2.Migrations
                 name: "ImageEntityStorySceneEntity",
                 columns: table => new
                 {
-                    ImagesId = table.Column<long>(type: "INTEGER", nullable: false),
-                    ScenesId = table.Column<long>(type: "INTEGER", nullable: false)
+                    ImagesId = table.Column<long>(type: "bigint", nullable: false),
+                    ScenesId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -159,6 +161,11 @@ namespace HorrorTacticsApi2.Migrations
                 name: "IX_Audios_FileId",
                 table: "Audios",
                 column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Files_Filename",
+                table: "Files",
+                column: "Filename");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ImageEntityStorySceneEntity_ScenesId",

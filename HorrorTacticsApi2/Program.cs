@@ -1,4 +1,5 @@
 using HorrorTacticsApi2;
+using HorrorTacticsApi2.ApiHelpers;
 using HorrorTacticsApi2.Data;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.IO;
@@ -39,7 +40,7 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
-
+    
     builder.Host.UseSerilog((ctx, lc) =>
     {
         lc
@@ -56,7 +57,7 @@ try
     builder.AddJwt();
 
     builder.Services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options => {
-        options.UseSqlite(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
+        options.UseNpgsql(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
     });
 
     // ObjectValidator should only be used for Hub validations
@@ -145,6 +146,14 @@ try
             using var scope = app.Services.CreateScope();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("HorrorTactics starting up...");
+
+            if (app.Environment.EnvironmentName == Constants.APITESTING_ENV_NAME)
+            {
+                var executor = scope.ServiceProvider.GetService<IApiTestingExecutor>();
+                if (executor != default)
+                    await executor.StartAsync(app);
+            }
+
             await scope.ServiceProvider.MigrateDbAsync();
         }
 

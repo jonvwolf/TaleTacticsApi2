@@ -62,7 +62,7 @@ namespace HorrorTacticsApi2.Helpers
                 if (settings.Value.ByPassApplyMigrationFileCheck)
                     applyMigrations = true;
 
-                // If not migrations have been apply, it means the database is empty
+                // If no migrations have been applied, it means the database is empty
                 // TODO: change this to `nameof(Initialization)`
                 if (!string.IsNullOrEmpty(pendingMigrations.FirstOrDefault(x => x.EndsWith("_Initialization"))))
                     applyMigrations = true;

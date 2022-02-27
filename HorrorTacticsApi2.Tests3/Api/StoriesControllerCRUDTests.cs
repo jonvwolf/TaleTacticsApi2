@@ -34,6 +34,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         public StoriesControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
             _collection = apiTestsCollection;
+            _collection.WebAppFactory.Options.DbName = nameof(StoriesControllerCRUDTests);
         }
 
         [Fact]

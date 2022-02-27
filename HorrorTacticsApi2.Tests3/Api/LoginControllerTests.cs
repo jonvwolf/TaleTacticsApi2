@@ -19,6 +19,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         public LoginControllerTests(ApiTestsCollection factory)
         {
             _factory = factory;
+            _factory.WebAppFactory.Options.DbName = nameof(LoginControllerTests);
         }
 
         [Fact]

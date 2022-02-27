@@ -8,8 +8,6 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
     public class CustomWebAppFactoryOptions
     {
-        public CustomWebAppFactoryOptions()
-        {
-        }
+        public string DbName { get; set; } = string.Empty;
     }
 }

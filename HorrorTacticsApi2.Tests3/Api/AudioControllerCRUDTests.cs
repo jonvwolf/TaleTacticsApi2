@@ -19,6 +19,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         public AudioControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
             _collection = apiTestsCollection;
+            _collection.WebAppFactory.Options.DbName = nameof(AudioControllerCRUDTests);
         }
 
         [Fact]
