@@ -4,7 +4,6 @@ namespace HorrorTacticsApi2.Hubs
 {
     public interface IGameClient
     {
-        Task HmReceivePlayerList(ReadPlayerListModel model);
         Task HmReceiveLog(PlayerTextLogModel model);
         Task PlayerReceiveImageCommand(ImageCommandModel model);
         Task PlayerReceiveAudioCommand(AudioCommandModel model);
