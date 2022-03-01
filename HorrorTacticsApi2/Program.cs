@@ -9,6 +9,7 @@ using HorrorTacticsApi2.Hubs;
 using HorrorTacticsApi2.Swagger;
 using Jonwolfdev.Utils6.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -157,6 +158,18 @@ try
             await scope.ServiceProvider.MigrateDbAsync();
         }
 
+        // TODO: change this to a appsettings bool variable
+        if (app.Environment.IsProduction())
+        {
+            // From https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-apache?view=aspnetcore-3.1
+            // For apache2 hosting (reverse proxy)
+            // If proxy ip is different from localhost, go to the guide (and add `knownproxies`)
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+        }
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -175,7 +188,9 @@ try
 
         app.UseCors();
 
-        app.UseHttpsRedirection();
+        // TODO: change this to a appsettings bool variable
+        if (!app.Environment.IsProduction())
+            app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseAuthorization();

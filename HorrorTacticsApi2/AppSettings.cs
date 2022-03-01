@@ -4,14 +4,14 @@ namespace HorrorTacticsApi2
 {
     public class AppSettings
     {
-        [Required, MinLength(2)]
+        [Required, MinLength(3)]
         public string MainPassword { get; set; } = "";
         [Range(64, 49152)]
         public int FileSizeLimitInKB { get; set; }
 
         public bool ByPassApplyMigrationFileCheck { get; set; }
 
-        [Required, MinLength(1)]
+        [Required, MinLength(3)]
         public string UploadPath { get; set; } = "";
 
         [Range(3, 20)]
