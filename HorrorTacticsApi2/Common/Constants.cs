@@ -13,7 +13,7 @@
         public const string MULTIPART_FORMDATA = "multipart/form-data";
         public const string FORMDATA = "form-data";
 
-        public const string APITESTING_ENV_NAME = "ApiTesting";
+        public const string APITESTING_ENV_NAME = "ApiTesting_local";
         public const string APITESTING_DB_REPLACE_VALUE_Key = "ApiTesting_Replace_Db_Value";
 
         public const string SecuredApiPath = "secured";
