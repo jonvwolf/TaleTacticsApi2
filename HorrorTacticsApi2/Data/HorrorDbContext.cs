@@ -39,13 +39,13 @@ namespace HorrorTacticsApi2.Data
                 .Property(x => x.Format)
                 .HasConversion<string>();
 
-            modelBuilder.Entity<StorySceneEntity>()
+            modelBuilder.Entity<StorySceneCommandEntity>()
                 .HasMany(x => x.Audios)
-                .WithMany(x => x.Scenes);
+                .WithMany(x => x.SceneCommands);
 
-            modelBuilder.Entity<StorySceneEntity>()
+            modelBuilder.Entity<StorySceneCommandEntity>()
                 .HasMany(x => x.Images)
-                .WithMany(x => x.Scenes);
+                .WithMany(x => x.SceneCommands);
         }
 
         public Task<IDbContextTransaction> CreateTransactionAsync()

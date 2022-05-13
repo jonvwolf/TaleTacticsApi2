@@ -29,13 +29,11 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadStorySceneModel> CreateStorySceneAsync(long storyId, CreateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            imeHandler.Validate(model, basicValidated);
-
             var story = await stories.TryFindStoryAsync(storyId, true, token);
             if (story == default)
                 throw new HtNotFoundException($"Story with id {storyId} not found");
 
-            var entity = await imeHandler.CreateEntityAsync(model, story, token);
+            var entity = imeHandler.CreateEntity(model, story);
             context.StoryScenes.Add(entity);
             await context.SaveChangesWrappedAsync(token);
 
@@ -44,12 +42,11 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadStorySceneModel> UpdateStorySceneAsync(long id, UpdateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            imeHandler.Validate(model, basicValidated);
             var entity = await FindStorySceneAsync(id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"StoryScene with Id {id} not found");
 
-            await imeHandler.UpdateEntityAsync(model, entity, token);
+            imeHandler.UpdateEntity(model, entity);
 
             await context.SaveChangesWrappedAsync(token);
 
@@ -80,14 +77,14 @@ namespace HorrorTacticsApi2.Domain
             if (includeAll)
             {
                 // TODO: this should be organized (code)
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 query = query
-                        .Include(x => x.Audios)
-                            .ThenInclude(x => x.File)
-                        .Include(x => x.Images)
-                            .ThenInclude(x => x.File);
+                        .Include(x=>x.Commands)
+                            .ThenInclude(x => x.Audios)
+                                .ThenInclude(x => x.File)
+                        .Include(x => x.Commands)
+                            .ThenInclude(x => x.Images)
+                                .ThenInclude(x => x.File);
                     ;
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             }
             return query;
         }

@@ -85,16 +85,16 @@ namespace HorrorTacticsApi2.Domain
             if (includeAll)
             {
                 // TODO: this should be organized (code)
-#pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
                 query = query
                         .Include(x => x.Scenes)
-                            .ThenInclude(x => x.Audios)
-                            .ThenInclude(x => x.File)
+                            .ThenInclude(x=>x.Commands)
+                                .ThenInclude(x => x.Audios)
+                                .ThenInclude(x => x.File)
                         .Include(x => x.Scenes)
-                            .ThenInclude(x => x.Images)
-                            .ThenInclude(x => x.File);
+                            .ThenInclude(x => x.Commands)
+                                .ThenInclude(x => x.Images)
+                                .ThenInclude(x => x.File);
                     ;
-#pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             }
             return query;
         }

@@ -12,7 +12,7 @@ namespace HorrorTacticsApi2.Data.Entities
 
         [Required]
         public FileEntity File { get; set; } = FileEntity.EmptyFile;
-        public List<StorySceneEntity> Scenes { get; set; } = new();
+        public List<StorySceneCommandEntity> SceneCommands { get; set; } = new();
 
         public AudioEntity()
         {

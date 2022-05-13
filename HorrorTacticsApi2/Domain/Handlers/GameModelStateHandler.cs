@@ -16,10 +16,13 @@ namespace HorrorTacticsApi2.Domain
 
             for (int i = 0; i < state.Story.StoryScenes.Count; i++)
             {
-                // Remove duplicates while adding them to the list
-                images.AddRange(state.Story.StoryScenes[i].Images);
-                audios.AddRange(state.Story.StoryScenes[i].Audios);
-                minigames.AddRange(state.Story.StoryScenes[i].Minigames);
+                for(int c = 0; c < state.Story.StoryScenes[i].StorySceneCommands.Count; c++)
+                {
+                    // Remove duplicates while adding them to the list
+                    images.AddRange(state.Story.StoryScenes[i].StorySceneCommands[c].Images);
+                    audios.AddRange(state.Story.StoryScenes[i].StorySceneCommands[c].Audios);
+                    minigames.AddRange(state.Story.StoryScenes[i].StorySceneCommands[c].Minigames);
+                }
             }
 
             // TODO: performance?

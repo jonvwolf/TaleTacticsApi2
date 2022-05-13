@@ -6,27 +6,19 @@ namespace HorrorTacticsApi2.Data.Entities
 {
     public class StorySceneEntity
     {
+        public static readonly StorySceneEntity EmptyStoryScene = new();
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         [Required]
         public StoryEntity ParentStory { get; set; } = StoryEntity.EmptyStory;
 
-        /// <summary>
-        /// Validation length is specific (no need to share)
-        /// </summary>
-        [MaxLength(15000)]
-        public string Texts { get; set; } = string.Empty;
-        /// <summary>
-        /// Validation length is specific (no need to share)
-        /// </summary>
-        [MaxLength(1000)]
-        public string Timers { get; set; } = string.Empty;
+        [StringLength(ValidationConstants.StoryScene_Title_MaxStringLength, MinimumLength = ValidationConstants.StoryScene_Title_MinStringLength), Required]
+        public string Title { get; set; } = string.Empty;
 
-        public List<ImageEntity> Images { get; protected set; } = new();
-        public List<AudioEntity> Audios { get; protected set; } = new();
-
-        public long Minigames { get; protected set; }
+        [Required]
+        public List<StorySceneCommandEntity> Commands { get; set; } = new();
 
         public StorySceneEntity()
         {
@@ -34,17 +26,10 @@ namespace HorrorTacticsApi2.Data.Entities
         }
 
         public StorySceneEntity(StoryEntity parent,
-            string texts, string timers, 
-            IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames)
+            IReadOnlyList<StorySceneCommandEntity> commands, string title)
         {
-            Texts = texts;
-            Timers = timers;
-            // TODO: be consistent, in some other models/entities are not doing this...
-            // -> It should be AddRange, right?
-            Images = images.ToList();
-            Audios = audios.ToList();
-            // TODO: change this
-            Minigames = minigames.Count > 0 ? minigames[0] : 0;
+            Title = title;
+            Commands = commands.ToList();
             ParentStory = parent;
         }
     }
