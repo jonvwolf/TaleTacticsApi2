@@ -32,6 +32,7 @@ var logConfig = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning);
 
+// TODO: this could be read from serilog-init.json configuration, to make it more configurable
 if (enableInitLogging)
     logConfig.WriteTo.File("./logs/ht-log-init.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug);
 
