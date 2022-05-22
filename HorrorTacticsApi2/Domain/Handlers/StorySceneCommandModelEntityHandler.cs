@@ -114,6 +114,16 @@ namespace HorrorTacticsApi2.Domain.Handlers
             return new ReadStorySceneCommandModel(entity.Id, entity.Title, texts, timers, images, audios, minigames);
         }
 
+        public List<ReadStorySceneCommandModel> CreateReadModel(List<StorySceneCommandEntity> entities)
+        {
+            var list = new List<ReadStorySceneCommandModel>(entities.Count);
+            foreach (var item in entities)
+            {
+                list.Add(CreateReadModel(item));
+            }
+            return list;
+        }
+
         static string CreateTextsFromList(IReadOnlyList<string>? textList)
         {
             string texts = string.Empty;

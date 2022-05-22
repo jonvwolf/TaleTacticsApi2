@@ -63,7 +63,7 @@ namespace HorrorTacticsApi2.Domain
             await context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<StorySceneEntity?> FindStorySceneAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<StorySceneEntity?> FindStorySceneAsync(long id, bool includeAll, CancellationToken token)
         {
             var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 
