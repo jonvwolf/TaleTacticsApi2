@@ -51,7 +51,8 @@ namespace HorrorTacticsApi2.Tests3.Api
             var audioDto = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio");
             //var audioDto2 = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio2");
 
-            var createStoryScene = new CreateStorySceneModel(
+            var createStoryScene = new CreateStorySceneCommandModel(
+                "This is the title ñ",
                 new List<string>(){ "Text ñ", "Hola ñ" },
                 new List<long>() { 1 },
                 default,
@@ -63,7 +64,8 @@ namespace HorrorTacticsApi2.Tests3.Api
             var storySceneModel2 = await Post_Should_Create_StoryScene(client, createStoryScene, storyDto.Id);
 
             // TODO: update storyscene2 with the same images
-            var updateStoryScene = new UpdateStorySceneModel(
+            var updateStoryScene = new UpdateStorySceneCommandModel(
+                "Updated title ú",
                 new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
                 default,
                 default,
