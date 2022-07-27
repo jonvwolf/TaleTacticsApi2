@@ -27,6 +27,16 @@ namespace HorrorTacticsApi2.Domain
             return entity == default ? default : imeHandler.CreateReadModel(entity);
         }
 
+        public async Task<List<ReadStorySceneModel>> GetAllAsync(long storyId, bool includeAll, CancellationToken token)
+        {
+            var list = await GetQuery(includeAll)
+                .Where(x => x.ParentStory.Id == storyId)
+                .Select(x => imeHandler.CreateReadModel(x))
+                .ToListAsync(token);
+
+            return list;
+        }
+
         public async Task<ReadStorySceneModel> CreateStorySceneAsync(long storyId, CreateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
             var story = await stories.TryFindStoryAsync(storyId, true, token);
@@ -78,13 +88,13 @@ namespace HorrorTacticsApi2.Domain
             {
                 // TODO: this should be organized (code)
                 query = query
-                        .Include(x=>x.Commands)
+                        .Include(x => x.Commands)
                             .ThenInclude(x => x.Audios)
                                 .ThenInclude(x => x.File)
                         .Include(x => x.Commands)
                             .ThenInclude(x => x.Images)
                                 .ThenInclude(x => x.File);
-                    ;
+                ;
             }
             return query;
         }

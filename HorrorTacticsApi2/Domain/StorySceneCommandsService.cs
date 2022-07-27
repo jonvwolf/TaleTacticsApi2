@@ -24,7 +24,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadStorySceneCommandModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
         {
-            var entity = await FindCommand(id, includeAll, token);
+            var entity = await FindCommandAsync(id, includeAll, token);
             return entity == default ? default : handler.CreateReadModel(entity);
         }
 
@@ -50,7 +50,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task<ReadStorySceneCommandModel> UpdateCommandAsync(long id, UpdateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
         {
-            var entity = await FindCommand(id, true, token);
+            var entity = await FindCommandAsync(id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"Command with Id {id} not found");
 
@@ -64,7 +64,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task DeleteCommandAsync(long id, CancellationToken token)
         {
-            var entity = await FindCommand(id, false, token);
+            var entity = await FindCommandAsync(id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"Command with Id {id} not found");
 
@@ -72,7 +72,7 @@ namespace HorrorTacticsApi2.Domain
             await context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<StorySceneCommandEntity?> FindCommand(long id, bool includeAll, CancellationToken token)
+        async Task<StorySceneCommandEntity?> FindCommandAsync(long id, bool includeAll, CancellationToken token)
         {
             var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 
@@ -94,8 +94,9 @@ namespace HorrorTacticsApi2.Domain
             {
                 // TODO: this should be organized (code)
                 query = query
-                        .Include(x => x.ParentStoryScene)
-                        .ThenInclude(x => x.ParentStory)
+                        .Include(x => x.ParentStoryScene).ThenInclude(x => x.ParentStory)
+                        .Include(x => x.Audios).ThenInclude(x => x.File)
+                        .Include(x => x.Images).ThenInclude(x => x.File)
                     ;
             }
             return query;

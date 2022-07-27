@@ -15,15 +15,15 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class StorySceneCommandsController : ControllerBase
+    public class CommandsController : ControllerBase
     {
         readonly StorySceneCommandsService _service;
-        public StorySceneCommandsController(StorySceneCommandsService service)
+        public CommandsController(StorySceneCommandsService service)
         {
             _service = service;
         }
 
-        [HttpGet("storyscenes/[controller]/{id}")]
+        [HttpGet("scenes/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
@@ -36,20 +36,17 @@ namespace HorrorTacticsApi2.Controllers
             return Ok(model);
         }
 
-        [HttpGet("storyscenes/{idStoryScene}/[controller]")]
+        [HttpGet("scenes/{idStoryScene}/[controller]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<List<ReadStorySceneCommandModel>>> GetAll([FromRoute] long idStoryScene, CancellationToken token)
         {
             var model = await _service.GetAllAsync(idStoryScene, true, token);
-            if (model == default)
-                return NotFound();
-
+            
             return Ok(model);
         }
 
-        [HttpPost("storyscenes/{idStoryScene}/[controller]")]
+        [HttpPost("scenes/{idStoryScene}/[controller]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -60,7 +57,7 @@ namespace HorrorTacticsApi2.Controllers
             return Ok(dto);
         }
 
-        [HttpPut("storyscenes/[controller]/{id}")]
+        [HttpPut("scenes/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +68,7 @@ namespace HorrorTacticsApi2.Controllers
             return Ok(dto);
         }
 
-        [HttpDelete("storyscenes/[controller]/{id}")]
+        [HttpDelete("scenes/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
