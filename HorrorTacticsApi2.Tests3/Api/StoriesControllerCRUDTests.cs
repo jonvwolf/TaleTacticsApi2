@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 using System;
+using HorrorTacticsApi2.Domain.Models.Minigames;
+using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Models.Audio;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
@@ -21,6 +24,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         readonly ApiTestsCollection _collection;
         const string Path = "secured/stories";
         const string PathStoryScenes = "secured/storyscenes";
+        const string PathStorySceneCommands = "secured/storyscenes/storyscenecommands";
         const string PathGames = "games";
         
         bool Hub_Hm_Received_Player_Log_Logged_In;
@@ -37,41 +41,86 @@ namespace HorrorTacticsApi2.Tests3.Api
             _collection.WebAppFactory.Options.DbName = nameof(StoriesControllerCRUDTests);
         }
 
-        [Fact]
-        public async Task Should_Do_Crud_Without_Errors()
+        public async Task<ReadStoryModel> Test2(HttpClient client)
         {
-            using var client = _collection.CreateClient();
-            
-            var storyDto = await Post_Should_Create_Story(client, "story title", "Description ñ");
-            var updatedDto = await Put_Should_Update_Story(client, "story changed ñ", "Description changed", storyDto);
-
             var imageDto = await ImagesControllerCRUDTests.Post_Should_Create_Image(client, "imagex");
             var imageDto2 = await ImagesControllerCRUDTests.Post_Should_Create_Image(client, "imagex2");
 
             var audioDto = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio");
-            //var audioDto2 = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio2");
+            var audioDto2 = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio2");
 
-            var createStoryScene = new CreateStorySceneCommandModel(
-                "This is the title ñ",
-                new List<string>(){ "Text ñ", "Hola ñ" },
-                new List<long>() { 1 },
-                default,
-                new List<long>() { imageDto.Id },
-                new List<long>() { audioDto.Id }
+            var storyDto = await EndpointHelpers.StoryEndpoints.CreateAndAssertAsync(client, new CreateStoryModel("story title", "description x"));
+            var updatedStoryDto = await EndpointHelpers.StoryEndpoints.PutAndAssertAsync(client, storyDto.Id, new UpdateStoryModel("updated x", "updated desc"));
+
+            var expectedStory1 = new ReadStoryModel(storyDto.Id, "updated x", "updated desc", new List<ReadStorySceneModel>());
+
+            var receivedStoryDto1 = await EndpointHelpers.StoryEndpoints.GetAsync(client, storyDto.Id);
+            EndpointHelpers.StoryEndpoints.AssertModels(expectedStory1, receivedStoryDto1);
+
+            var storySceneDto = await EndpointHelpers.StorySceneEndpoints.CreateAndAssertAsync(client, storyDto.Id, new CreateStorySceneModel("scene title"));
+            var updatedStorySceneDto = await EndpointHelpers.StorySceneEndpoints.PutAndAssertAsync(client, storySceneDto.Id, new UpdateStorySceneModel("updated title"));
+
+            var expectedStoryScene1 = new ReadStorySceneModel(storySceneDto.Id, "updated title", new List<ReadStorySceneCommandModel>());
+            var expectedStory2 = expectedStory1 with
+            {
+                StoryScenes = new List<ReadStorySceneModel>() { expectedStoryScene1 }
+            };
+
+            var receivedStoryDto2 = await EndpointHelpers.StoryEndpoints.GetAsync(client, storyDto.Id);
+            EndpointHelpers.StoryEndpoints.AssertModels(expectedStory2, receivedStoryDto2);
+
+            var storySceneCommandDto = await EndpointHelpers.StorySceneCommandsEndpoints.CreateAndAssertAsync(client, storySceneDto.Id,
+                new CreateStorySceneCommandModel(
+                    "command 1",
+                    new List<string>() { "Text ñ", "Hola ñ" },
+                    Minigames: new List<long>() { 1 },
+                    Timers: default,
+                    new List<long>() { imageDto.Id },
+                    new List<long>() { audioDto.Id }
+                )
             );
 
-            var storySceneModel = await Post_Should_Create_StoryScene(client, createStoryScene, storyDto.Id);
-            var storySceneModel2 = await Post_Should_Create_StoryScene(client, createStoryScene, storyDto.Id);
+            var updatedStorySceneCommandDto = await EndpointHelpers.StorySceneCommandsEndpoints.PutAndAssertAsync(client, storySceneCommandDto.Id,
+                new UpdateStorySceneCommandModel(
+                    "Updated title ú",
+                    new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
+                    Minigames: default,
+                    Timers: new List<uint>() { 10 },
+                    new List<long>() { imageDto.Id, imageDto2.Id },
+                    new List<long>() { audioDto2.Id }
+                )
+            );
 
-            // TODO: update storyscene2 with the same images
-            var updateStoryScene = new UpdateStorySceneCommandModel(
+            var expectedStorySceneCommand1 = new ReadStorySceneCommandModel(
+                updatedStorySceneCommandDto.Id,
                 "Updated title ú",
                 new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
-                default,
-                default,
-                new List<long>() { imageDto.Id, imageDto2.Id },
-                default
+                Timers: new List<uint>() { 10 },
+                new List<ReadImageModel>() { imageDto, imageDto2 },
+                new List<ReadAudioModel>() { audioDto2 },
+                Minigames: new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") }
             );
+
+            var expectedStoryScene2 = expectedStoryScene1 with
+            {
+                StorySceneCommands = new List<ReadStorySceneCommandModel>() { expectedStorySceneCommand1 }
+            };
+            var expectedStory3 = expectedStory1 with
+            {
+                StoryScenes = new List<ReadStorySceneModel>() { expectedStoryScene2 }
+            };
+
+            var receivedStoryDto3 = await EndpointHelpers.StoryEndpoints.GetAsync(client, storyDto.Id);
+            EndpointHelpers.StoryEndpoints.AssertModels(expectedStory3, receivedStoryDto3);
+
+            return receivedStoryDto3;
+        }
+
+        [Fact]
+        public async Task Should_Do_Crud_Without_Errors()
+        {
+            using var client = _collection.CreateClient();
+            var storyDto = await Test2(client);
 
             var createdGame = await Post_Should_Create_Game(client, storyDto.Id);
             // TODO: move this to its own test collection
@@ -102,21 +151,25 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.True(Hub_Hm_Received_Player_Log_Text);
             Assert.True(Hub_Hm_Received_Player_Log_Minigame);
 
-            await Delete_Should_Delete_StoryScene(client, storyDto.Id, storySceneModel2.Id);
-            await Get_Should_Return_StoryScene_NotFound(client, storyDto.Id, storySceneModel2.Id);
+            await Delete_Should_Delete_StorySceneCommand(client, storySceneCommandModel2.Id);
+            await Get_Should_Return_StorySceneCommand_NotFound(client, storySceneCommandModel2.Id);
 
-            var updatedSceneModel = await Put_Should_Update_StoryScene(client, updateStoryScene, storyDto.Id, storySceneModel.Id);
+            var updatedSceneCommandModel = await Put_Should_Update_StorySceneCommand(client, updateStoryScene, storySceneCommandModel.Id);
 
-            var readSceneModel = await Get_Should_Return_StoryScene(client, storyDto.Id, storySceneModel.Id, updatedSceneModel);
+            await GetStoryScene_Should_Return_Ok(client, storySceneDto.Id,
+                new List<CreateStorySceneCommandModel>() { updatedSceneCommandModel },
+                updatedStorySceneDto);
+
+            var readSceneModel = await StoryScenes_Get_Should_Return_StorySceneCommand(client, storySceneCommandModel.Id, updatedSceneCommandModel);
             var getReadStoryModel = await Get_Should_Return_Story(client, storyDto.Id, updatedDto, readSceneModel);
             var listStories = await Get_Should_Return_Stories(client, updatedDto, readSceneModel);
 
             // TODO: move this to its own test collection
-            await StoryScenes_Get_Should_Return_StoryScene(client, readSceneModel.Id, readSceneModel);
+            await StoryScenes_Get_Should_Return_StorySceneCommand(client, readSceneModel.Id, readSceneModel);
 
             await Delete_Should_Delete_Story(client, storyDto.Id);
             await Get_Should_Return_Story_NotFound(client, storyDto.Id);
-            await Get_Should_Return_StoryScene_NotFound(client, storyDto.Id, storySceneModel.Id);
+            await Get_Should_Return_StorySceneCommand_NotFound(client, storyDto.Id, storySceneCommandModel.Id);
 
             await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto);
             await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto2);
@@ -270,206 +323,6 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Equal(1, readModel.Images.Count);
             Assert.Equal(1, readModel.Minigames.Count);
             return readModel;
-        }
-        #endregion
-
-        #region StoryScenes testing
-        static async Task<ReadStorySceneModel> StoryScenes_Get_Should_Return_StoryScene(HttpClient client, long storySceneId, ReadStorySceneModel model)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(PathStoryScenes + $"/{storySceneId}");
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
-            Assert.Equal(model.Id, readModel.Id);
-            Assert.Equal(model.Images?.Count, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
-            return readModel;
-        }
-
-        static async Task<ReadStorySceneModel> Get_Should_Return_StoryScene(HttpClient client, long storyId, long storySceneId, ReadStorySceneModel model)
-        {
-            // arrange
-            
-            // act
-            using var response = await client.GetAsync(Path + $"/{storyId}/scenes/{storySceneId}");
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
-            Assert.Equal(model.Id, readModel.Id);
-            Assert.Equal(model.Images?.Count, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count, readModel.Timers.Count);
-            return readModel;
-        }
-
-        static async Task Get_Should_Return_StoryScene_NotFound(HttpClient client, long storyId, long storySceneId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(Path + $"/{storyId}/scenes/{storySceneId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
-        }
-
-        static async Task<ReadStorySceneModel> Post_Should_Create_StoryScene(HttpClient client, CreateStorySceneModel model, long storyId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.PostAsync(Path + $"/{storyId}/scenes", Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status201Created);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(model.Images?.Count, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
-
-            return readModel;
-        }
-        static async Task<ReadStorySceneModel> Put_Should_Update_StoryScene(HttpClient client, UpdateStorySceneModel model, long storyId, long storySceneId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.PutAsync(Path + $"/{storyId}/scenes/{storySceneId}", Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(model.Images?.Count ?? 0, readModel.Images.Count);
-            Assert.Equal(model.Audios?.Count ?? 1, readModel.Audios.Count);
-            Assert.Equal(model.Texts?.Count ?? 0, readModel.Texts.Count);
-            Assert.Equal(model.Minigames?.Count ?? 1, readModel.Minigames.Count);
-            Assert.Equal(model.Timers?.Count ?? 0, readModel.Timers.Count);
-            return readModel;
-        }
-
-        static async Task Delete_Should_Delete_StoryScene(HttpClient client, long storyId, long storySceneId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.DeleteAsync(Path + $"/{storyId}/scenes/{storySceneId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
-        }
-        #endregion
-
-        #region Story testing
-        static async Task Get_Should_Return_Story_NotFound(HttpClient client, long storyId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(Path + $"/{storyId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
-        }
-
-        static async Task<ReadStoryModel> Get_Should_Return_Story(HttpClient client, long storyId, ReadStoryModel modelStory, ReadStorySceneModel model)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(Path + $"/{storyId}");
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStoryModel>(response, StatusCodes.Status200OK);
-            Assert.Equal(modelStory.Id, readModel.Id);
-            Assert.Equal(modelStory.Description, readModel.Description);
-            Assert.Equal(modelStory.Title, readModel.Title);
-
-            Assert.Equal(1, readModel.StoryScenes.Count);
-            Assert.Equal(model.Images?.Count, readModel.StoryScenes[0].Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.StoryScenes[0].Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.StoryScenes[0].Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.StoryScenes[0].Minigames.Count);
-            Assert.Equal(model.Timers?.Count, readModel.StoryScenes[0].Timers.Count);
-            return readModel;
-        }
-
-        static async Task<List<ReadStoryModel>> Get_Should_Return_Stories(HttpClient client, ReadStoryModel modelStory, ReadStorySceneModel model)
-        {
-            // arrange
-
-            // act
-            using var response = await client.GetAsync(Path);
-
-            // assert
-            var list = await Helper.VerifyAndGetAsync<List<ReadStoryModel>>(response, StatusCodes.Status200OK);
-            Assert.Single(list);
-            var readModel = list[0];
-            Assert.Equal(modelStory.Id, readModel.Id);
-            Assert.Equal(modelStory.Description, readModel.Description);
-            Assert.Equal(modelStory.Title, readModel.Title);
-
-            Assert.Equal(1, readModel.StoryScenes.Count);
-            Assert.Equal(model.Images?.Count, readModel.StoryScenes[0].Images.Count);
-            Assert.Equal(model.Audios?.Count, readModel.StoryScenes[0].Audios.Count);
-            Assert.Equal(model.Texts?.Count, readModel.StoryScenes[0].Texts.Count);
-            Assert.Equal(model.Minigames?.Count, readModel.StoryScenes[0].Minigames.Count);
-            Assert.Equal(model.Timers?.Count, readModel.StoryScenes[0].Timers.Count);
-            return list;
-        }
-
-        static async Task<ReadStoryModel> Post_Should_Create_Story(HttpClient client, string title, string desc)
-        {
-            // arrange
-            var model = new CreateStoryModel(title, desc);
-
-            // act
-            using var response = await client.PostAsync(Path, Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStoryModel>(response, StatusCodes.Status201Created);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(desc, readModel.Description);
-            Assert.Equal(title, readModel.Title);
-            Assert.Empty(readModel.StoryScenes);
-            return readModel;
-        }
-
-        static async Task<ReadStoryModel> Put_Should_Update_Story(HttpClient client, string title, string desc, ReadStoryModel original)
-        {
-            // arrange
-            var model = new UpdateStoryModel(title, desc);
-
-            // act
-            using var response = await client.PutAsync(Path + $"/{original.Id}", Helper.GetContent(model));
-
-            // assert
-            var readModel = await Helper.VerifyAndGetAsync<ReadStoryModel>(response, StatusCodes.Status200OK);
-            Assert.True(readModel.Id > 0);
-            Assert.Equal(desc, readModel.Description);
-            Assert.Equal(title, readModel.Title);
-            Assert.Equal(original.StoryScenes, readModel.StoryScenes);
-            return readModel;
-        }
-
-        static async Task Delete_Should_Delete_Story(HttpClient client, long storyId)
-        {
-            // arrange
-
-            // act
-            using var response = await client.DeleteAsync(Path + $"/{storyId}");
-
-            // assert
-            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
         }
         #endregion
 
