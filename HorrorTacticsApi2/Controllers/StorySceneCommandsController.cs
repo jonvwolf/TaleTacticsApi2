@@ -17,61 +17,68 @@ namespace HorrorTacticsApi2.Controllers
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public class StorySceneCommandsController : ControllerBase
     {
-        readonly StorySceneCommandsService service;
-        
+        readonly StorySceneCommandsService _service;
         public StorySceneCommandsController(StorySceneCommandsService service)
-        { 
-            this.service = service;
+        {
+            _service = service;
         }
 
-        [HttpGet("scenes/[controller]/{id}")]
+        [HttpGet("storyscenes/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneCommandModel>> Get([FromRoute] long storySceneCommandId, CancellationToken token)
+        public async Task<ActionResult<ReadStorySceneCommandModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var cmd = await service.TryGetAsync(storySceneCommandId, true, token);
-            if (cmd == default)
+            var model = await _service.TryGetAsync(id, true, token);
+            if (model == default)
                 return NotFound();
 
-            return Ok(cmd);
+            return Ok(model);
         }
 
-        [HttpPost("scenes/{sceneId}/[controller]")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneCommandModel>> Post([FromRoute] long storySceneId, [FromBody] CreateStorySceneCommandModel model, CancellationToken token)
+        [HttpGet("storyscenes/{idStoryScene}/[controller]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<List<ReadStorySceneCommandModel>>> GetAll([FromRoute] long idStoryScene, CancellationToken token)
         {
-            var readModel = await service.CreateStorySceneCommandAsync(storySceneId, model, true, token);
-            return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
+            var model = await _service.GetAllAsync(idStoryScene, true, token);
+            if (model == default)
+                return NotFound();
+
+            return Ok(model);
         }
 
-        [HttpPut("scenes/[controller]/{id}")]
+        [HttpPost("storyscenes/{idStoryScene}/[controller]")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<ReadStorySceneModel>> Put([FromRoute] long id, [FromBody] UpdateStorySceneCommandModel model, CancellationToken token)
+        [Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStorySceneCommandModel>> Post([FromRoute] long idStoryScene, [FromBody] CreateStorySceneCommandModel model, CancellationToken token)
         {
-            return Ok(await service.UpdateStorySceneCommandAsync(id, model, true, token));
+            var dto = await _service.CreateCommandAsync(idStoryScene, model, true, token);
+            return Ok(dto);
         }
 
-        [HttpDelete("scenes/[controller]/{id}")]
+        [HttpPut("storyscenes/[controller]/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public async Task<ActionResult<ReadStorySceneCommandModel>> Put([FromRoute] long id, [FromBody] UpdateStorySceneCommandModel model, CancellationToken token)
+        {
+            var dto = await _service.UpdateCommandAsync(id, model, true, token);
+            return Ok(dto);
+        }
+
+        [HttpDelete("storyscenes/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await service.DeleteStorySceneCommandAsync(id, token);
+            await _service.DeleteCommandAsync(id, token);
             return NoContent();
-        }
-
-        [HttpGet("scenes/{sceneId}/[controller]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [Produces(MediaTypeNames.Application.Json)]
-        public async Task<ActionResult<IList<ReadStorySceneCommandModel>>> Get(CancellationToken token)
-        {
-            return Ok(await service.GetAllAsync(true, token));
         }
     }
 }

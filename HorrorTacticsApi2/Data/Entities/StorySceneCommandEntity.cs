@@ -10,7 +10,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public long Id { get; set; }
 
         [Required]
-        public StorySceneEntity ParentStory { get; set; } = StorySceneEntity.EmptyStoryScene;
+        public StorySceneEntity ParentStoryScene { get; set; } = StorySceneEntity.EmptyStoryScene;
 
         [StringLength(ValidationConstants.StorySceneCommand_Title_MaxStringLength, 
             MinimumLength = ValidationConstants.StorySceneCommand_Title_MinStringLength), Required]
@@ -40,7 +40,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public StorySceneCommandEntity(StorySceneEntity parent, string title, string texts, string timers, 
             IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames)
         {
-            ParentStory = parent;
+            ParentStoryScene = parent;
             Title = title;
             Texts = texts;
             Timers = timers;

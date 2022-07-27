@@ -12,70 +12,76 @@ namespace HorrorTacticsApi2.Domain
     public class StorySceneCommandsService
     {
         readonly IHorrorDbContext context;
-        readonly StorySceneCommandModelEntityHandler imeHandler;
+        readonly StorySceneCommandModelEntityHandler handler;
         readonly StoryScenesService scenes;
 
-        public StorySceneCommandsService(IHorrorDbContext context, StorySceneCommandModelEntityHandler handler, StoryScenesService stories)
+        public StorySceneCommandsService(IHorrorDbContext context, StorySceneCommandModelEntityHandler handler, StoryScenesService scenes)
         {
             this.context = context;
-            imeHandler = handler;
-            this.scenes = stories;
+            this.handler = handler;
+            this.scenes = scenes;
         }
 
         public async Task<ReadStorySceneCommandModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
         {
-            var entity = await FindStorySceneCommandAsync(id, includeAll, token);
-            return entity == default ? default : imeHandler.CreateReadModel(entity);
+            var entity = await FindCommand(id, includeAll, token);
+            return entity == default ? default : handler.CreateReadModel(entity);
         }
 
-        public Task<List<ReadStorySceneCommandModel>> GetAllAsync(bool includeAll, CancellationToken token)
+        public async Task<List<ReadStorySceneCommandModel>> GetAllAsync(long storySceneId, bool includeAll, CancellationToken token)
         {
-            return GetQuery(includeAll).Select(x => imeHandler.CreateReadModel(x)).ToListAsync(token);
+            var entities = await FindCommandsAsync(includeAll, storySceneId, token);
+            return handler.CreateReadModel(entities);
         }
 
-        public async Task<ReadStorySceneCommandModel> CreateStorySceneCommandAsync(long storySceneId, CreateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneCommandModel> CreateCommandAsync(long sceneId, CreateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
         {
-            imeHandler.Validate(model, basicValidated);
-            //todo: validate. add methods to mark it as validated for models
-            var story = await scenes.FindStorySceneAsync(storySceneId, true, token);
-            if (story == default)
-                throw new HtNotFoundException($"Story with id {storySceneId} not found");
+            var scene = await scenes.FindStorySceneAsync(sceneId, true, token);
+            if (scene == default)
+                throw new HtNotFoundException($"Scene with id {sceneId} not found");
 
-            var entity = await imeHandler.CreateEntityAsync(model, story, token);
+            handler.Validate(model, basicValidated);
+            var entity = await handler.CreateEntityAsync(model, scene, token);
             context.StorySceneCommands.Add(entity);
             await context.SaveChangesWrappedAsync(token);
 
-            return imeHandler.CreateReadModel(entity);
+            return handler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStorySceneCommandModel> UpdateStorySceneCommandAsync(long id, UpdateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneCommandModel> UpdateCommandAsync(long id, UpdateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
         {
-            imeHandler.Validate(model, basicValidated);
-
-            var entity = await FindStorySceneCommandAsync(id, true, token);
+            var entity = await FindCommand(id, true, token);
             if (entity == default)
-                throw new HtNotFoundException($"StorySceneCommand with Id {id} not found");
+                throw new HtNotFoundException($"Command with Id {id} not found");
 
-            await imeHandler.UpdateEntityAsync(model, entity, token);
+            handler.Validate(model, basicValidated);
+            await handler.UpdateEntityAsync(model, entity, token);
 
             await context.SaveChangesWrappedAsync(token);
 
-            return imeHandler.CreateReadModel(entity);
+            return handler.CreateReadModel(entity);
         }
 
-        public async Task DeleteStorySceneCommandAsync(long id, CancellationToken token)
+        public async Task DeleteCommandAsync(long id, CancellationToken token)
         {
-            var entity = await FindStorySceneCommandAsync(id, false, token);
+            var entity = await FindCommand(id, false, token);
             if (entity == default)
-                throw new HtNotFoundException($"StorySceneCommand with Id {id} not found");
+                throw new HtNotFoundException($"Command with Id {id} not found");
 
             context.StorySceneCommands.Remove(entity);
             await context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<StorySceneCommandEntity?> FindStorySceneCommandAsync(long id, bool includeAll, CancellationToken token)
+        async Task<StorySceneCommandEntity?> FindCommand(long id, bool includeAll, CancellationToken token)
         {
             var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
+
+            return entity;
+        }
+
+        async Task<List<StorySceneCommandEntity>> FindCommandsAsync(bool includeAll, long storySceneId, CancellationToken token)
+        {
+            var entity = await GetQuery(includeAll).Where(x => x.ParentStoryScene.Id == storySceneId).ToListAsync(token);
 
             return entity;
         }
@@ -88,10 +94,8 @@ namespace HorrorTacticsApi2.Domain
             {
                 // TODO: this should be organized (code)
                 query = query
-                        .Include(x => x.Audios)
-                                .ThenInclude(x => x.File)
-                        .Include(x => x.Images)
-                            .ThenInclude(x => x.File);
+                        .Include(x => x.ParentStoryScene)
+                        .ThenInclude(x => x.ParentStory)
                     ;
             }
             return query;
