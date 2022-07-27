@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
-    public class SqliteInMemory : IDisposable
+    class SqliteInMemory : IDisposable
     {
         public DbConnection Connection { get; }
         

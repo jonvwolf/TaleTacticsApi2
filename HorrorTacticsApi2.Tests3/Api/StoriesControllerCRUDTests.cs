@@ -41,13 +41,14 @@ namespace HorrorTacticsApi2.Tests3.Api
             _collection.WebAppFactory.Options.DbName = nameof(StoriesControllerCRUDTests);
         }
 
-        public async Task<ReadStoryModel> Test2(HttpClient client)
+        public async Task<ReadStoryModel> CreateStory(HttpClient client, bool delete = false)
         {
             var imageDto = await ImagesControllerCRUDTests.Post_Should_Create_Image(client, "imagex");
             var imageDto2 = await ImagesControllerCRUDTests.Post_Should_Create_Image(client, "imagex2");
 
             var audioDto = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio");
             var audioDto2 = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio2");
+            var audioDto3 = await AudioControllerCRUDTests.Post_Should_Create_Audio(client, "audio3");
 
             var storyDto = await EndpointHelpers.StoryEndpoints.CreateAndAssertAsync(client, new CreateStoryModel("story title", "description x"));
             var updatedStoryDto = await EndpointHelpers.StoryEndpoints.PutAndAssertAsync(client, storyDto.Id, new UpdateStoryModel("updated x", "updated desc"));
@@ -113,6 +114,64 @@ namespace HorrorTacticsApi2.Tests3.Api
             var receivedStoryDto3 = await EndpointHelpers.StoryEndpoints.GetAsync(client, storyDto.Id);
             EndpointHelpers.StoryEndpoints.AssertModels(expectedStory3, receivedStoryDto3);
 
+
+            //////
+            var sceneToDelete = await EndpointHelpers.StorySceneEndpoints.CreateAndAssertAsync(client, storyDto.Id, new CreateStorySceneModel("scene title to delete"));
+            var sceneCommandToDelete = await EndpointHelpers.StorySceneCommandsEndpoints.CreateAndAssertAsync(client, sceneToDelete.Id, new CreateStorySceneCommandModel(
+                    "command 1",
+                    new List<string>() { "Text ñ", "Hola ñ" },
+                    Minigames: new List<long>() { 1 },
+                    Timers: default,
+                    new List<long>() { imageDto.Id },
+                    new List<long>() { audioDto.Id, audioDto3.Id }
+                ));
+
+            await AudioControllerCRUDTests.Delete_Should_Delete_Audio(client, audioDto3);
+
+            var sceneToDelete2 = sceneToDelete with
+            {
+                StorySceneCommands = new List<ReadStorySceneCommandModel>() { 
+                    new ReadStorySceneCommandModel(
+                        sceneCommandToDelete.Id,
+                        "command 1",
+                        new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
+                        Timers: new List<uint>(),
+                        new List<ReadImageModel>() { imageDto },
+                        new List<ReadAudioModel>() { audioDto },
+                        new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") }
+                    ) 
+                }
+            };
+            var expectedStory4 = expectedStory1 with
+            {
+                StoryScenes = new List<ReadStorySceneModel>() { expectedStoryScene2, sceneToDelete2 }
+            };
+            // Test: A new scene was created with a new command. Audio was deleted and make sure the scene command wasn't deleted
+            var receivedStoryDto4 = await EndpointHelpers.StoryEndpoints.GetAsync(client, storyDto.Id);
+            EndpointHelpers.StoryEndpoints.AssertModels(expectedStory4, receivedStoryDto4);
+
+            // Test: Delete command does not delete scene
+            await EndpointHelpers.StorySceneCommandsEndpoints.DeleteAndAssertAsync(client, expectedStory4.StoryScenes[1].StorySceneCommands[0].Id);
+            var checkSceneToDelete = await EndpointHelpers.StorySceneEndpoints.GetAsync(client, expectedStory4.StoryScenes[1].Id);
+            Assert.Equal(checkSceneToDelete.Title, checkSceneToDelete.Title);
+
+            await EndpointHelpers.StorySceneEndpoints.DeleteAndAssertAsync(client, expectedStory4.StoryScenes[1].Id);
+
+            //////
+
+            if (delete)
+            {
+                await EndpointHelpers.StoryEndpoints.DeleteAndAssertAsync(client, expectedStory4.Id);
+
+                await EndpointHelpers.StorySceneEndpoints.GetAndAssertNotFoundAsync(client, expectedStory4.StoryScenes[0].Id);
+                await EndpointHelpers.StorySceneCommandsEndpoints.GetAndAssertNotFoundAsync(client, expectedStory4.StoryScenes[0].StorySceneCommands[0].Id);
+
+                await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto);
+                await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto2);
+                await AudioControllerCRUDTests.GetAudioByIdAndAssertAsync(client, audioDto);
+                await AudioControllerCRUDTests.GetAudioByIdAndAssertAsync(client, audioDto2);
+            }
+            
             return receivedStoryDto3;
         }
 
@@ -120,7 +179,8 @@ namespace HorrorTacticsApi2.Tests3.Api
         public async Task Should_Do_Crud_Without_Errors()
         {
             using var client = _collection.CreateClient();
-            var storyDto = await Test2(client);
+            await CreateStory(client, true);
+            var storyDto = await CreateStory(client);
 
             var createdGame = await Post_Should_Create_Game(client, storyDto.Id);
             // TODO: move this to its own test collection
@@ -151,32 +211,6 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.True(Hub_Hm_Received_Player_Log_Text);
             Assert.True(Hub_Hm_Received_Player_Log_Minigame);
 
-            await Delete_Should_Delete_StorySceneCommand(client, storySceneCommandModel2.Id);
-            await Get_Should_Return_StorySceneCommand_NotFound(client, storySceneCommandModel2.Id);
-
-            var updatedSceneCommandModel = await Put_Should_Update_StorySceneCommand(client, updateStoryScene, storySceneCommandModel.Id);
-
-            await GetStoryScene_Should_Return_Ok(client, storySceneDto.Id,
-                new List<CreateStorySceneCommandModel>() { updatedSceneCommandModel },
-                updatedStorySceneDto);
-
-            var readSceneModel = await StoryScenes_Get_Should_Return_StorySceneCommand(client, storySceneCommandModel.Id, updatedSceneCommandModel);
-            var getReadStoryModel = await Get_Should_Return_Story(client, storyDto.Id, updatedDto, readSceneModel);
-            var listStories = await Get_Should_Return_Stories(client, updatedDto, readSceneModel);
-
-            // TODO: move this to its own test collection
-            await StoryScenes_Get_Should_Return_StorySceneCommand(client, readSceneModel.Id, readSceneModel);
-
-            await Delete_Should_Delete_Story(client, storyDto.Id);
-            await Get_Should_Return_Story_NotFound(client, storyDto.Id);
-            await Get_Should_Return_StorySceneCommand_NotFound(client, storyDto.Id, storySceneCommandModel.Id);
-
-            await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto);
-            await ImagesControllerCRUDTests.GetImageByIdAndAssertAsync(client, imageDto2);
-            await AudioControllerCRUDTests.GetAudioByIdAndAssertAsync(client, audioDto);
-
-            // TODO: check when deleting Image, Scene is not deleted
-            // TODO: actually check the values (nested values)
         }
 
         #region Hub testing
@@ -320,7 +354,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             // assert
             var readModel = await Helper.VerifyAndGetAsync<ReadGameConfiguration>(response, StatusCodes.Status200OK);
             Assert.Equal(1, readModel.Audios.Count);
-            Assert.Equal(1, readModel.Images.Count);
+            Assert.Equal(2, readModel.Images.Count);
             Assert.Equal(1, readModel.Minigames.Count);
             return readModel;
         }

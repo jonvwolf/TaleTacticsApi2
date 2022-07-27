@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace HorrorTacticsApi2.Migrations
 {
-    public partial class Initialization : Migration
+    public partial class InitialMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -89,9 +89,7 @@ namespace HorrorTacticsApi2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ParentStoryId = table.Column<long>(type: "bigint", nullable: false),
-                    Texts = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: false),
-                    Timers = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Minigames = table.Column<long>(type: "bigint", nullable: false)
+                    Title = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -105,57 +103,80 @@ namespace HorrorTacticsApi2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AudioEntityStorySceneEntity",
+                name: "StorySceneCommands",
                 columns: table => new
                 {
-                    AudiosId = table.Column<long>(type: "bigint", nullable: false),
-                    ScenesId = table.Column<long>(type: "bigint", nullable: false)
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ParentStorySceneId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    Texts = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: false),
+                    Timers = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Minigames = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AudioEntityStorySceneEntity", x => new { x.AudiosId, x.ScenesId });
+                    table.PrimaryKey("PK_StorySceneCommands", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AudioEntityStorySceneEntity_Audios_AudiosId",
-                        column: x => x.AudiosId,
-                        principalTable: "Audios",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AudioEntityStorySceneEntity_StoryScenes_ScenesId",
-                        column: x => x.ScenesId,
+                        name: "FK_StorySceneCommands_StoryScenes_ParentStorySceneId",
+                        column: x => x.ParentStorySceneId,
                         principalTable: "StoryScenes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ImageEntityStorySceneEntity",
+                name: "AudioEntityStorySceneCommandEntity",
                 columns: table => new
                 {
-                    ImagesId = table.Column<long>(type: "bigint", nullable: false),
-                    ScenesId = table.Column<long>(type: "bigint", nullable: false)
+                    AudiosId = table.Column<long>(type: "bigint", nullable: false),
+                    SceneCommandsId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ImageEntityStorySceneEntity", x => new { x.ImagesId, x.ScenesId });
+                    table.PrimaryKey("PK_AudioEntityStorySceneCommandEntity", x => new { x.AudiosId, x.SceneCommandsId });
                     table.ForeignKey(
-                        name: "FK_ImageEntityStorySceneEntity_Images_ImagesId",
+                        name: "FK_AudioEntityStorySceneCommandEntity_Audios_AudiosId",
+                        column: x => x.AudiosId,
+                        principalTable: "Audios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AudioEntityStorySceneCommandEntity_StorySceneCommands_Scene~",
+                        column: x => x.SceneCommandsId,
+                        principalTable: "StorySceneCommands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ImageEntityStorySceneCommandEntity",
+                columns: table => new
+                {
+                    ImagesId = table.Column<long>(type: "bigint", nullable: false),
+                    SceneCommandsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImageEntityStorySceneCommandEntity", x => new { x.ImagesId, x.SceneCommandsId });
+                    table.ForeignKey(
+                        name: "FK_ImageEntityStorySceneCommandEntity_Images_ImagesId",
                         column: x => x.ImagesId,
                         principalTable: "Images",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ImageEntityStorySceneEntity_StoryScenes_ScenesId",
-                        column: x => x.ScenesId,
-                        principalTable: "StoryScenes",
+                        name: "FK_ImageEntityStorySceneCommandEntity_StorySceneCommands_Scene~",
+                        column: x => x.SceneCommandsId,
+                        principalTable: "StorySceneCommands",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AudioEntityStorySceneEntity_ScenesId",
-                table: "AudioEntityStorySceneEntity",
-                column: "ScenesId");
+                name: "IX_AudioEntityStorySceneCommandEntity_SceneCommandsId",
+                table: "AudioEntityStorySceneCommandEntity",
+                column: "SceneCommandsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Audios_FileId",
@@ -168,14 +189,19 @@ namespace HorrorTacticsApi2.Migrations
                 column: "Filename");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ImageEntityStorySceneEntity_ScenesId",
-                table: "ImageEntityStorySceneEntity",
-                column: "ScenesId");
+                name: "IX_ImageEntityStorySceneCommandEntity_SceneCommandsId",
+                table: "ImageEntityStorySceneCommandEntity",
+                column: "SceneCommandsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Images_FileId",
                 table: "Images",
                 column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StorySceneCommands_ParentStorySceneId",
+                table: "StorySceneCommands",
+                column: "ParentStorySceneId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoryScenes_ParentStoryId",
@@ -186,10 +212,10 @@ namespace HorrorTacticsApi2.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AudioEntityStorySceneEntity");
+                name: "AudioEntityStorySceneCommandEntity");
 
             migrationBuilder.DropTable(
-                name: "ImageEntityStorySceneEntity");
+                name: "ImageEntityStorySceneCommandEntity");
 
             migrationBuilder.DropTable(
                 name: "Audios");
@@ -198,10 +224,13 @@ namespace HorrorTacticsApi2.Migrations
                 name: "Images");
 
             migrationBuilder.DropTable(
-                name: "StoryScenes");
+                name: "StorySceneCommands");
 
             migrationBuilder.DropTable(
                 name: "Files");
+
+            migrationBuilder.DropTable(
+                name: "StoryScenes");
 
             migrationBuilder.DropTable(
                 name: "Stories");

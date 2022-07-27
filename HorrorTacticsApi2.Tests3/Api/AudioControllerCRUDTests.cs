@@ -124,7 +124,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             AssertAudioDto(imageDto2, images?[1]);
         }
 
-        static async Task Delete_Should_Delete_Audio(HttpClient client, ReadAudioModel model)
+        public static async Task Delete_Should_Delete_Audio(HttpClient client, ReadAudioModel model)
         {
             // arrange
 

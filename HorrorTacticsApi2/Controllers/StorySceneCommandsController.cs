@@ -54,7 +54,7 @@ namespace HorrorTacticsApi2.Controllers
         public async Task<ActionResult<ReadStorySceneCommandModel>> Post([FromRoute] long idStoryScene, [FromBody] CreateStorySceneCommandModel model, CancellationToken token)
         {
             var dto = await _service.CreateCommandAsync(idStoryScene, model, true, token);
-            return Ok(dto);
+            return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
         }
 
         [HttpPut("scenes/[controller]/{id}")]

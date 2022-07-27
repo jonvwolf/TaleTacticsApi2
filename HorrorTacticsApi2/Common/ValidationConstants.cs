@@ -17,10 +17,10 @@
         public const int StoryScene_Title_MaxStringLength = 60;
         public const int StoryScene_Title_MinStringLength = 1;
 
-        public const int StorySceneCommand_Title_MaxStringLength = 12;
+        public const int StorySceneCommand_Title_MaxStringLength = 60;
         public const int StorySceneCommand_Title_MinStringLength = 1;
 
-        public const int StoryScene_Items_List_MaxLength = 10;
+        public const int StoryScene_Items_List_MaxLength = 30;
 
     }
 }

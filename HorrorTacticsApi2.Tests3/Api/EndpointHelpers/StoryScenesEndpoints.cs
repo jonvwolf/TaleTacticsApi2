@@ -20,6 +20,12 @@ namespace HorrorTacticsApi2.Tests3.Api.EndpointHelpers
             return await Helper.VerifyAndGetAsync<ReadStorySceneModel>(response, StatusCodes.Status200OK);
         }
 
+        public static async Task GetAndAssertNotFoundAsync(HttpClient client, long id)
+        {
+            using var response = await client.GetAsync($"secured/stories/scenes/{id}");
+            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
+        }
+
         public static async Task<List<ReadStorySceneModel>> GetAllAsync(HttpClient client, long storyId)
         {
             using var response = await client.GetAsync($"secured/stories/{storyId}/scenes");

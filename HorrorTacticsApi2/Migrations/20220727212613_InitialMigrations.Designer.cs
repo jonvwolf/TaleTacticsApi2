@@ -11,31 +11,31 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HorrorTacticsApi2.Migrations
 {
     [DbContext(typeof(HorrorDbContext))]
-    [Migration("20220227203537_Initialization")]
-    partial class Initialization
+    [Migration("20220727212613_InitialMigrations")]
+    partial class InitialMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.2")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AudioEntityStorySceneEntity", b =>
+            modelBuilder.Entity("AudioEntityStorySceneCommandEntity", b =>
                 {
                     b.Property<long>("AudiosId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ScenesId")
+                    b.Property<long>("SceneCommandsId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("AudiosId", "ScenesId");
+                    b.HasKey("AudiosId", "SceneCommandsId");
 
-                    b.HasIndex("ScenesId");
+                    b.HasIndex("SceneCommandsId");
 
-                    b.ToTable("AudioEntityStorySceneEntity");
+                    b.ToTable("AudioEntityStorySceneCommandEntity");
                 });
 
             modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.AudioEntity", b =>
@@ -144,7 +144,7 @@ namespace HorrorTacticsApi2.Migrations
                     b.ToTable("Stories");
                 });
 
-            modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneEntity", b =>
+            modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneCommandEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -155,7 +155,7 @@ namespace HorrorTacticsApi2.Migrations
                     b.Property<long>("Minigames")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ParentStoryId")
+                    b.Property<long>("ParentStorySceneId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Texts")
@@ -168,6 +168,34 @@ namespace HorrorTacticsApi2.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentStorySceneId");
+
+                    b.ToTable("StorySceneCommands");
+                });
+
+            modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ParentStoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ParentStoryId");
@@ -175,22 +203,22 @@ namespace HorrorTacticsApi2.Migrations
                     b.ToTable("StoryScenes");
                 });
 
-            modelBuilder.Entity("ImageEntityStorySceneEntity", b =>
+            modelBuilder.Entity("ImageEntityStorySceneCommandEntity", b =>
                 {
                     b.Property<long>("ImagesId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ScenesId")
+                    b.Property<long>("SceneCommandsId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("ImagesId", "ScenesId");
+                    b.HasKey("ImagesId", "SceneCommandsId");
 
-                    b.HasIndex("ScenesId");
+                    b.HasIndex("SceneCommandsId");
 
-                    b.ToTable("ImageEntityStorySceneEntity");
+                    b.ToTable("ImageEntityStorySceneCommandEntity");
                 });
 
-            modelBuilder.Entity("AudioEntityStorySceneEntity", b =>
+            modelBuilder.Entity("AudioEntityStorySceneCommandEntity", b =>
                 {
                     b.HasOne("HorrorTacticsApi2.Data.Entities.AudioEntity", null)
                         .WithMany()
@@ -198,9 +226,9 @@ namespace HorrorTacticsApi2.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HorrorTacticsApi2.Data.Entities.StorySceneEntity", null)
+                    b.HasOne("HorrorTacticsApi2.Data.Entities.StorySceneCommandEntity", null)
                         .WithMany()
-                        .HasForeignKey("ScenesId")
+                        .HasForeignKey("SceneCommandsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -227,6 +255,17 @@ namespace HorrorTacticsApi2.Migrations
                     b.Navigation("File");
                 });
 
+            modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneCommandEntity", b =>
+                {
+                    b.HasOne("HorrorTacticsApi2.Data.Entities.StorySceneEntity", "ParentStoryScene")
+                        .WithMany("Commands")
+                        .HasForeignKey("ParentStorySceneId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentStoryScene");
+                });
+
             modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneEntity", b =>
                 {
                     b.HasOne("HorrorTacticsApi2.Data.Entities.StoryEntity", "ParentStory")
@@ -238,7 +277,7 @@ namespace HorrorTacticsApi2.Migrations
                     b.Navigation("ParentStory");
                 });
 
-            modelBuilder.Entity("ImageEntityStorySceneEntity", b =>
+            modelBuilder.Entity("ImageEntityStorySceneCommandEntity", b =>
                 {
                     b.HasOne("HorrorTacticsApi2.Data.Entities.ImageEntity", null)
                         .WithMany()
@@ -246,9 +285,9 @@ namespace HorrorTacticsApi2.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HorrorTacticsApi2.Data.Entities.StorySceneEntity", null)
+                    b.HasOne("HorrorTacticsApi2.Data.Entities.StorySceneCommandEntity", null)
                         .WithMany()
-                        .HasForeignKey("ScenesId")
+                        .HasForeignKey("SceneCommandsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -256,6 +295,11 @@ namespace HorrorTacticsApi2.Migrations
             modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StoryEntity", b =>
                 {
                     b.Navigation("Scenes");
+                });
+
+            modelBuilder.Entity("HorrorTacticsApi2.Data.Entities.StorySceneEntity", b =>
+                {
+                    b.Navigation("Commands");
                 });
 #pragma warning restore 612, 618
         }
