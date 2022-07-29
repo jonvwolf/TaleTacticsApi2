@@ -22,7 +22,7 @@ namespace HorrorTacticsApi2.Domain
             // TODO: improve this?
             string subPath = format switch
             {
-                FileFormatEnum.JPG or FileFormatEnum.JPEG => Constants.GetFileImageApiPath(filename),
+                FileFormatEnum.JPG or FileFormatEnum.JPEG or FileFormatEnum.PNG => Constants.GetFileImageApiPath(filename),
                 FileFormatEnum.MP3 => Constants.GetFileAudioApiPath(filename),
                 _ => throw new InvalidOperationException("Unkown format or invalid value: " + format.ToString()),
             };
