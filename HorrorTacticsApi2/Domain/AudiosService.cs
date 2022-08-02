@@ -73,12 +73,39 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
+        public async Task<ReadAudioModel> ReplaceAudioFileAsync(long id, CancellationToken token)
+        {
+            var entity = await TryFindAudioAsync(id, token);
+            if (entity == default)
+                throw new HtNotFoundException($"Audio with Id {id} not found");
+
+            var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
+
+            string oldFileToDelete;
+
+            try
+            {
+                oldFileToDelete = _imeHandler.UpdateEntity(entity, uploadedFile);
+                await _context.SaveChangesWrappedAsync(token);
+            }
+            catch (Exception)
+            {
+                _fileUploadHandler.TryDeleteUploadedFile(uploadedFile);
+                throw;
+            }
+
+            _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
+
+            return _imeHandler.CreateReadModel(entity);
+            
+        }
+
         public async Task<ReadAudioModel> UpdateAudioAsync(long id, UpdateAudioModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
             var entity = await TryFindAudioAsync(id, token);
             if (entity == default)
-                throw new HtNotFoundException($"Image with Id {id} not found");
+                throw new HtNotFoundException($"Audio with Id {id} not found");
 
             _imeHandler.UpdateEntity(model, entity);
 
@@ -91,7 +118,7 @@ namespace HorrorTacticsApi2.Domain
         {
             var entity = await TryFindAudioAsync(id, token);
             if (entity == default)
-                throw new HtNotFoundException($"Image with Id {id} not found");
+                throw new HtNotFoundException($"Audio with Id {id} not found");
 
             string filename = entity.File.Filename;
 

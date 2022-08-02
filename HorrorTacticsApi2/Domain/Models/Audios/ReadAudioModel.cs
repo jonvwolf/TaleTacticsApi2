@@ -12,5 +12,6 @@ namespace HorrorTacticsApi2.Domain.Models.Audio
         [JsonConverter(typeof(StringEnumConverter))]
         FileFormatEnum Format, 
         string AbsoluteUrl,
-        bool IsScanned);
+        bool IsScanned,
+        long size);
 }

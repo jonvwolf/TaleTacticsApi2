@@ -67,6 +67,16 @@ namespace HorrorTacticsApi2.Controllers
             return Ok(await _service.UpdateImageAsync(id, model, true, token));
         }
 
+        [HttpPut("{id}/file")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Consumes(Constants.MULTIPART_FORMDATA), Produces(MediaTypeNames.Application.Json)]
+        [DisableFormValueModelBinding]
+        public async Task<ActionResult<ReadImageModel>> PutFile([FromRoute] long id, CancellationToken token)
+        {
+            return Ok(await _service.ReplaceImageFileAsync(id, token));
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

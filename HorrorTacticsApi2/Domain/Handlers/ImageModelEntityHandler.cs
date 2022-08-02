@@ -37,6 +37,25 @@ namespace HorrorTacticsApi2.Domain
             entity.Height = h;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="newFile"></param>
+        /// <returns>Returns the file to be deleted</returns>
+        public string UpdateEntity(ImageEntity entity, FileUploaded newFile)
+        {
+            string oldFile = entity.File.Filename;
+
+            entity.File.Format = newFile.Format;
+            entity.File.Filename = newFile.Filename;
+            entity.File.IsVirusScanned = false;
+            entity.File.SizeInBytes = newFile.SizeInBytes;
+
+            // TODO: update width/height AFTER virus scan
+            return oldFile;
+        }
+
         public void UpdateEntity(UpdateImageModel model, ImageEntity entity)
         {
             entity.File.Name = model.Name;
@@ -52,7 +71,8 @@ namespace HorrorTacticsApi2.Domain
                 entity.Height, 
                 entity.File.Format, 
                 absoluteUrl,
-                entity.File.IsVirusScanned);
+                entity.File.IsVirusScanned,
+                entity.File.SizeInBytes);
         }
 
 

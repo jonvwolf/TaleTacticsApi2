@@ -117,7 +117,7 @@ namespace HorrorTacticsApi2.Domain
             }
         }
 
-        bool TryDeleteUploadedFile(string path)
+        public bool TryDeleteUploadedFile(string path)
         {
             try
             {

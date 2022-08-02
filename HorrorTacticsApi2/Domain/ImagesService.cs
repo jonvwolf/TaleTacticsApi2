@@ -72,6 +72,33 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
+        public async Task<ReadImageModel> ReplaceImageFileAsync(long id, CancellationToken token)
+        {
+            var entity = await TryFindImageAsync(id, token);
+            if (entity == default)
+                throw new HtNotFoundException($"Image with Id {id} not found");
+
+            var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedImageExtensionsForUpload, token);
+
+            string oldFileToDelete;
+
+            try
+            {
+                oldFileToDelete = _imeHandler.UpdateEntity(entity, uploadedFile);
+                await _context.SaveChangesWrappedAsync(token);
+            }
+            catch (Exception)
+            {
+                _fileUploadHandler.TryDeleteUploadedFile(uploadedFile);
+                throw;
+            }
+
+            _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
+
+            return _imeHandler.CreateReadModel(entity);
+
+        }
+
         public async Task<ReadImageModel> UpdateImageAsync(long id, UpdateImageModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);

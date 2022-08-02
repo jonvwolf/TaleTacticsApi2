@@ -13,6 +13,7 @@ namespace HorrorTacticsApi2.Domain.Dtos
         [JsonConverter(typeof(StringEnumConverter))]
         FileFormatEnum Format, 
         string AbsoluteUrl,
-        bool IsScanned
+        bool IsScanned,
+        long size
     );
 }

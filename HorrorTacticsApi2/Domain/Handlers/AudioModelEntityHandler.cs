@@ -28,22 +28,33 @@ namespace HorrorTacticsApi2.Domain
         {
             var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes);
 
-            // TODO: later update this values
+            // TODO: update duration AFTER virus scan
             return new AudioEntity(htFile, false, 0);
         }
 
-        public void UpdateEntity(AudioEntity entity, bool? isBgm = default, uint? duration = default)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="newFile"></param>
+        /// <returns>Returns the file to be deleted</returns>
+        public string UpdateEntity(AudioEntity entity, FileUploaded newFile)
         {
-            if (isBgm.HasValue)
-                entity.IsBgm = isBgm.Value;
+            string oldFile = entity.File.Filename;
 
-            if (duration.HasValue)
-                entity.DurationSeconds = duration.Value;
+            entity.File.Format = newFile.Format;
+            entity.File.Filename = newFile.Filename;
+            entity.File.IsVirusScanned = false;
+            entity.File.SizeInBytes = newFile.SizeInBytes;
+
+            // TODO: update duration AFTER virus scan
+            return oldFile;
         }
 
         public void UpdateEntity(UpdateAudioModel model, AudioEntity entity)
         {
             entity.File.Name = model.Name;
+            entity.IsBgm = model.IsBgm;
         }
 
         public ReadAudioModel CreateReadModel(AudioEntity entity)
@@ -56,7 +67,8 @@ namespace HorrorTacticsApi2.Domain
                 entity.DurationSeconds,
                 entity.File.Format,
                 absoluteUrl,
-                entity.File.IsVirusScanned);
+                entity.File.IsVirusScanned,
+                entity.File.SizeInBytes);
         }
 
 
