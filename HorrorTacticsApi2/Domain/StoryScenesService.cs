@@ -31,6 +31,7 @@ namespace HorrorTacticsApi2.Domain
         {
             var list = await GetQuery(includeAll)
                 .Where(x => x.ParentStory.Id == storyId)
+                .OrderBy(x => x.Title)
                 .Select(x => imeHandler.CreateReadModel(x))
                 .ToListAsync(token);
 
