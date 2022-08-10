@@ -2,7 +2,7 @@
 {
     public static class ValidationConstants
     {
-        public const string RegularExpressionForAllStrings = @"^[\P{Cc}]*$";
+        public const string RegularExpressionForAllStrings = @"^[\r\n\P{Cc}]*$";
         public const int RegularExpressionTimeoutMilliseconds = 2500;
 
         public const int File_Name_MaxStringLength = 300;

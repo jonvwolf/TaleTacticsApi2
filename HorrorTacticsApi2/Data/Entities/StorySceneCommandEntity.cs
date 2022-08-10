@@ -30,7 +30,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public List<ImageEntity> Images { get; protected set; } = new();
         public List<AudioEntity> Audios { get; protected set; } = new();
 
-        public long Minigames { get; protected set; }
+        public long Minigames { get; set; }
 
         public StorySceneCommandEntity()
         {

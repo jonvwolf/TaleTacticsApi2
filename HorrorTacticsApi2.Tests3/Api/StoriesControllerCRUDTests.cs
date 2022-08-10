@@ -119,7 +119,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var sceneToDelete = await EndpointHelpers.StorySceneEndpoints.CreateAndAssertAsync(client, storyDto.Id, new CreateStorySceneModel("scene title to delete"));
             var sceneCommandToDelete = await EndpointHelpers.StorySceneCommandsEndpoints.CreateAndAssertAsync(client, sceneToDelete.Id, new CreateStorySceneCommandModel(
                     "command 1",
-                    "Text ñ Hola ñ",
+                    "Text ñ Hola ñ \r\n\n\r",
                     Minigames: new List<long>() { 1 },
                     Timers: default,
                     new List<long>() { imageDto.Id },

@@ -72,6 +72,13 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 if (model.Audios.Count > 0)
                     entity.Audios.AddRange(await FindAudiosFromIdsAsync(model.Audios, token));
             }
+
+            if(model.Minigames != default)
+            {
+                entity.Minigames = 0;
+                if (model.Minigames.Count > 0)
+                    entity.Minigames = 1;
+            }
         }
 
         public ReadStorySceneCommandModel CreateReadModel(StorySceneCommandEntity entity)
