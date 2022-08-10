@@ -27,34 +27,12 @@ namespace HorrorTacticsApi2.Domain.Handlers
         {
             if (!basicValidated)
                 throw new NotImplementedException("basicValidated");
-
-            ValidateTexts(model.Texts);
         }
 
         public void Validate(CreateStorySceneCommandModel model, bool basicValidated)
         {
             if (!basicValidated)
                 throw new NotImplementedException("basicValidated");
-
-            ValidateTexts(model.Texts);
-        }
-
-        static void ValidateTexts(IReadOnlyList<string>? texts)
-        {
-            if (texts != default)
-            {
-                foreach (var text in texts)
-                {
-                    if (text == default)
-                        throw new HtBadRequestException($"One of the texts is null");
-
-                    if (text.Length > ValidationConstants.StoryScene_Text_MaxStringLength)
-                        throw new HtBadRequestException($"One of the texts length is greater than the allowed. Limit: {ValidationConstants.StoryScene_Text_MaxStringLength}");
-
-                    if (text.Contains(Separator))
-                        throw new HtBadRequestException($"Cannot contain {Separator}");
-                }
-            }
         }
 
         public async Task<StorySceneCommandEntity> CreateEntityAsync(CreateStorySceneCommandModel model, StorySceneEntity parent, CancellationToken token)
@@ -62,7 +40,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
             return new StorySceneCommandEntity(
                 parent,
                 model.Title,
-                CreateTextsFromList(model.Texts),
+                model.Texts,
                 CreateTimersFromList(model.Timers),
                 await FindImagesFromIdsAsync(model.Images, token),
                 await FindAudiosFromIdsAsync(model.Audios, token),
@@ -74,8 +52,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
         {
             entity.Title = model.Title;
 
-            if (model.Texts != default)
-                entity.Texts = CreateTextsFromList(model.Texts);
+            entity.Texts = model.Texts;
 
             if (model.Timers != default)
                 entity.Timers = CreateTimersFromList(model.Timers);
@@ -103,15 +80,14 @@ namespace HorrorTacticsApi2.Domain.Handlers
             var audios = entity.Audios.Select(x => audioHandler.CreateReadModel(x)).ToList();
 
             var timers = CreateTimersFromString(entity.Timers);
-            var texts = CreateTextsFromString(entity.Texts);
-
+            
             // TODo: change this
             var minigames = new List<ReadMinigameModel>();
             if (entity.Minigames > 0)
                 minigames.Add(new ReadMinigameModel(1, "find_in_image"));
 
             // TODO: should I do `ToList`? inside Models?
-            return new ReadStorySceneCommandModel(entity.Id, entity.Title, texts, timers, images, audios, minigames);
+            return new ReadStorySceneCommandModel(entity.Id, entity.Title, entity.Texts, timers, images, audios, minigames);
         }
 
         public List<ReadStorySceneCommandModel> CreateReadModel(List<StorySceneCommandEntity> entities)
@@ -124,16 +100,6 @@ namespace HorrorTacticsApi2.Domain.Handlers
             return list;
         }
 
-        static string CreateTextsFromList(IReadOnlyList<string>? textList)
-        {
-            string texts = string.Empty;
-            if (textList != default && textList.Count > 0)
-            {
-                texts = string.Join(Separator, textList);
-            }
-            return texts;
-        }
-
         static string CreateTimersFromList(IReadOnlyList<uint>? timerList)
         {
             string timers = string.Empty;
@@ -142,11 +108,6 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 timers = string.Join(Separator, timerList);
             }
             return timers;
-        }
-
-        static List<string> CreateTextsFromString(string texts)
-        {
-            return texts.Split(Separator, StringSplitOptions.RemoveEmptyEntries).ToList();
         }
 
         static List<uint> CreateTimersFromString(string timers)

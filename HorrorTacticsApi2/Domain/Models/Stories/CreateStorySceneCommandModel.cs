@@ -6,11 +6,14 @@ namespace HorrorTacticsApi2.Domain.Models.Stories
     public record CreateStorySceneCommandModel(
         [MaxLength(ValidationConstants.StorySceneCommand_Title_MaxStringLength),
         MinLength(ValidationConstants.StorySceneCommand_Title_MinStringLength),
-        Required]
+        Required, RegularExpression(ValidationConstants.RegularExpressionForAllStrings,
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)]
         string Title,
 
-        [MaxLength(ValidationConstants.StoryScene_Items_List_MaxLength)]
-        IReadOnlyList<string>? Texts,
+        [MinLength(ValidationConstants.StoryScene_Text_MinStringLength), MaxLength(ValidationConstants.StoryScene_Text_MaxStringLength),
+        RegularExpression(ValidationConstants.RegularExpressionForAllStrings,
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)]
+        string? Texts,
 
         [MaxLength(ValidationConstants.StoryScene_Items_List_MaxLength)]
         IReadOnlyList<long>? Minigames,

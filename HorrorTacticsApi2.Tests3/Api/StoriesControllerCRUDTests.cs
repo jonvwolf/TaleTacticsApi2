@@ -73,7 +73,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var storySceneCommandDto = await EndpointHelpers.StorySceneCommandsEndpoints.CreateAndAssertAsync(client, storySceneDto.Id,
                 new CreateStorySceneCommandModel(
                     "command 1",
-                    new List<string>() { "Text ñ", "Hola ñ" },
+                    null,
                     Minigames: new List<long>() { 1 },
                     Timers: default,
                     new List<long>() { imageDto.Id },
@@ -84,7 +84,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var updatedStorySceneCommandDto = await EndpointHelpers.StorySceneCommandsEndpoints.PutAndAssertAsync(client, storySceneCommandDto.Id,
                 new UpdateStorySceneCommandModel(
                     "Updated title ú",
-                    new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
+                    "Text ñ Hola ñ ñ ñ",
                     Minigames: default,
                     Timers: new List<uint>() { 10 },
                     new List<long>() { imageDto.Id, imageDto2.Id },
@@ -95,7 +95,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var expectedStorySceneCommand1 = new ReadStorySceneCommandModel(
                 updatedStorySceneCommandDto.Id,
                 "Updated title ú",
-                new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
+                "Text ñ Hola ñ ñ ñ",
                 Timers: new List<uint>() { 10 },
                 new List<ReadImageModel>() { imageDto, imageDto2 },
                 new List<ReadAudioModel>() { audioDto2 },
@@ -119,7 +119,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var sceneToDelete = await EndpointHelpers.StorySceneEndpoints.CreateAndAssertAsync(client, storyDto.Id, new CreateStorySceneModel("scene title to delete"));
             var sceneCommandToDelete = await EndpointHelpers.StorySceneCommandsEndpoints.CreateAndAssertAsync(client, sceneToDelete.Id, new CreateStorySceneCommandModel(
                     "command 1",
-                    new List<string>() { "Text ñ", "Hola ñ" },
+                    "Text ñ Hola ñ",
                     Minigames: new List<long>() { 1 },
                     Timers: default,
                     new List<long>() { imageDto.Id },
@@ -134,7 +134,7 @@ namespace HorrorTacticsApi2.Tests3.Api
                     new ReadStorySceneCommandModel(
                         sceneCommandToDelete.Id,
                         "command 1",
-                        new List<string>() { "Text ñ", "Hola ñ", "ñ ñ" },
+                        "Text ñ Hola ñ ñ ñ",
                         Timers: new List<uint>(),
                         new List<ReadImageModel>() { imageDto },
                         new List<ReadAudioModel>() { audioDto },

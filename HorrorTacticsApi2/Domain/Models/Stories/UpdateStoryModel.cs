@@ -6,9 +6,11 @@ namespace HorrorTacticsApi2.Domain.Models.Stories
     public record UpdateStoryModel(
         [MaxLength(ValidationConstants.Story_Title_MaxStringLength),
         MinLength(ValidationConstants.Story_Title_MinStringLength),
-        Required]
+        Required, RegularExpression(ValidationConstants.RegularExpressionForAllStrings,
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)]
         string Title,
         [MaxLength(ValidationConstants.Story_Description_MaxStringLength),
-        Required]
+        Required, RegularExpression(ValidationConstants.RegularExpressionForAllStrings,
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)]
         string Description);
 }

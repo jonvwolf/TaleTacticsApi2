@@ -6,6 +6,7 @@ namespace HorrorTacticsApi2.Domain.Models.Audio
     public record UpdateAudioModel(
         [MaxLength(ValidationConstants.File_Name_MaxStringLength),
         MinLength(ValidationConstants.File_Name_MinStringLength),
-        Required] string Name,
+        Required, RegularExpression(ValidationConstants.RegularExpressionForAllStrings, 
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)] string Name,
         bool IsBgm);
 }

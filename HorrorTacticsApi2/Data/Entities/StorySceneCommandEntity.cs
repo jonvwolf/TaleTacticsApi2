@@ -19,8 +19,8 @@ namespace HorrorTacticsApi2.Data.Entities
         /// <summary>
         /// Validation length is specific (no need to share)
         /// </summary>
-        [MaxLength(15000)]
-        public string Texts { get; set; } = string.Empty;
+        [MaxLength(ValidationConstants.StoryScene_Text_MaxStringLength)]
+        public string? Texts { get; set; } = default;
         /// <summary>
         /// Validation length is specific (no need to share)
         /// </summary>
@@ -37,7 +37,7 @@ namespace HorrorTacticsApi2.Data.Entities
 
         }
 
-        public StorySceneCommandEntity(StorySceneEntity parent, string title, string texts, string timers, 
+        public StorySceneCommandEntity(StorySceneEntity parent, string title, string? texts, string timers, 
             IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames)
         {
             ParentStoryScene = parent;

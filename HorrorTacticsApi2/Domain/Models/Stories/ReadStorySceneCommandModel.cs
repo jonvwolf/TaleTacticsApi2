@@ -7,7 +7,7 @@ namespace HorrorTacticsApi2.Domain.Models.Stories
     public record ReadStorySceneCommandModel(
         long Id,
         string Title,
-        IReadOnlyList<string> Texts,
+        string? Texts,
         IReadOnlyList<uint> Timers,
         IReadOnlyList<ReadImageModel> Images,
         IReadOnlyList<ReadAudioModel> Audios,
