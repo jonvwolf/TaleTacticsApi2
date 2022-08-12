@@ -27,6 +27,9 @@ namespace HorrorTacticsApi2
         [Range(1, int.MaxValue)]
         public int DeleteExpireGamesInHours { get; set; } = 720;
 
+        [Range(1, 1000)]
+        public int MaxGamesPerUser { get; set; }
+
         public int GetFileSizeLimitInBytes()
         {
             return FileSizeLimitInKB * 1024;

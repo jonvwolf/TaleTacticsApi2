@@ -1,4 +1,5 @@
 ﻿using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Models.Games;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using Microsoft.Extensions.Options;
 using System.Text;
@@ -11,6 +12,7 @@ namespace HorrorTacticsApi2.Game
     public class GameSaver
     {
         readonly Dictionary<string, GameState> games = new();
+        
         readonly Random random = new();
 
         const int MaxTriesGameCode = 100;
@@ -29,7 +31,8 @@ namespace HorrorTacticsApi2.Game
 
         public string CreateGame(ReadStoryModel story)
         {
-            for(int i = 0; i < MaxTriesGameCode; i++)
+            // Start at 1 because 0 % 10 will increase the game code length
+            for(int i = 1; i <= MaxTriesGameCode; i++)
             {
                 // If enough tries have passed, increase the game code length
                 if (i % MaxTriesBeforeAdding == 0)
@@ -46,9 +49,9 @@ namespace HorrorTacticsApi2.Game
                     if (games.ContainsKey(code))
                         continue;
 
-                    games[code] = new GameState(story);
+                    games[code] = new GameState(code, story);
+                    return code;
                 }
-                return code;
             }
 
             throw new HtServiceUnavailableException("Couldn't generate a game code... Try again");
@@ -68,6 +71,31 @@ namespace HorrorTacticsApi2.Game
             lock (lockObj)
             {
                 return games.ContainsKey(gameCode);
+            }
+        }
+
+        public void RemoveGame(string gameCode)
+        {
+            lock (lockObj)
+            {
+                games.Remove(gameCode);
+            }
+        }
+
+        public int GetTotalGames()
+        {
+            lock (lockObj)
+            {
+                return games.Count;
+            }
+        }
+
+        public IReadOnlyList<ReadGameStateModel> GetAllGames()
+        {
+            lock (lockObj)
+            {
+                // TODO: only model handlers can do this (create models)
+                return games.Select(pair => new ReadGameStateModel(pair.Key, pair.Value.Story)).ToList();
             }
         }
 

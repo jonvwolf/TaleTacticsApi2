@@ -16,6 +16,7 @@ using System;
 using HorrorTacticsApi2.Domain.Models.Minigames;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Models.Audio;
+using System.Linq;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
@@ -26,7 +27,8 @@ namespace HorrorTacticsApi2.Tests3.Api
         const string PathStoryScenes = "secured/storyscenes";
         const string PathStorySceneCommands = "secured/storyscenes/storyscenecommands";
         const string PathGames = "games";
-        
+        const string PathSecuredGames = "secured/games";
+
         bool Hub_Hm_Received_Player_Log_Logged_In;
         bool Hub_Hm_Received_Player_Log_Image;
         bool Hub_Hm_Received_Player_Log_Audio;
@@ -211,6 +213,11 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.True(Hub_Hm_Received_Player_Log_Text);
             Assert.True(Hub_Hm_Received_Player_Log_Minigame);
 
+            var gameList = await GetAll_Should_Return_Games(client);
+            var item = gameList.FirstOrDefault(x => x.Code == createdGame.GameCode);
+            Assert.NotNull(item);
+            await Delete_Should_Delete_Game(client, createdGame.GameCode);
+            await Get_Should_Return_NotFound(client, createdGame.GameCode);
         }
 
         #region Hub testing
@@ -344,6 +351,42 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.True(readModel.GameCode.Length > 0);
             return readModel;
         }
+
+        static async Task<List<ReadGameStateModel>> GetAll_Should_Return_Games(HttpClient client)
+        {
+            // arrange
+            
+            // act
+            using var response = await client.GetAsync(PathSecuredGames);
+
+            // assert
+            var readModel = await Helper.VerifyAndGetAsync<List<ReadGameStateModel>>(response, StatusCodes.Status200OK);
+            Assert.NotNull(readModel);
+            return readModel;
+        }
+
+        static async Task Get_Should_Return_NotFound(HttpClient client, string gameCode)
+        {
+            // arrange
+
+            // act
+            using var response = await client.GetAsync(PathSecuredGames + "/" + gameCode);
+
+            // assert
+            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
+        }
+
+        static async Task Delete_Should_Delete_Game(HttpClient client, string gameCode)
+        {
+            // arrange
+
+            // act
+            using var response = await client.DeleteAsync(PathSecuredGames + "/" + gameCode);
+
+            // assert
+            Assert.Equal(StatusCodes.Status204NoContent, (int)response.StatusCode);
+        }
+
         static async Task<ReadGameConfiguration> Games_Get_Should_Return_GameConfiguration(HttpClient client, string gameCode)
         {
             // arrange

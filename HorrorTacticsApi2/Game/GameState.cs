@@ -7,12 +7,14 @@ namespace HorrorTacticsApi2.Game
     /// </summary>
     public class GameState
     {
+        public string Code { get; }
         public ReadStoryModel Story { get; }
         public DateTimeOffset CreatedAt { get; }
         public DateTimeOffset AccessedAt { get; protected set; }
 
-        public GameState(ReadStoryModel story)
+        public GameState(string code, ReadStoryModel story)
         {
+            Code = code;
             Story = story;
             CreatedAt = DateTimeOffset.UtcNow;
             AccessedAt = DateTimeOffset.UtcNow;

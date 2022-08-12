@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Models.Games;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ using System.Net.Mime;
 
 namespace HorrorTacticsApi2.Controllers
 {
-    [Route("[controller]")]
+    [Authorize]
     [ApiController]
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -22,13 +23,45 @@ namespace HorrorTacticsApi2.Controllers
             this.games = games;
         }
 
-        [HttpGet("{gameCode}/configuration")]
+        [AllowAnonymous]
+        [HttpGet("[controller]/{gameCode}/configuration")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Application.Json)]
-        public ActionResult<ReadStorySceneModel> GetConfiguration([FromRoute] string gameCode)
+        public ActionResult<ReadGameConfiguration> GetConfiguration([FromRoute] string gameCode)
         {
+            // This endpoint is for the hub clients (not the horror master)
             return Ok(games.GetGameConfiguration(gameCode));
+        }
+
+        [HttpGet($"{Constants.SecuredApiPath}/[controller]/" + "{gameCode}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public ActionResult<ReadGameStateModel> Get([FromRoute] string gameCode)
+        {
+            var item = games.GetAllGames().SingleOrDefault(x => x.Code == gameCode);
+            if (item == default)
+                return NotFound();
+
+            return Ok(item);
+        }
+
+        [HttpGet($"{Constants.SecuredApiPath}/[controller]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public ActionResult<List<ReadGameStateModel>> GetAll()
+        {
+            return Ok(games.GetAllGames());
+        }
+
+        [HttpDelete($"{Constants.SecuredApiPath}/[controller]/" + "{gameCode}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public ActionResult Delete([FromRoute] string gameCode)
+        {
+            games.DeleteGame(gameCode);
+            return NoContent();
         }
     }
 }
