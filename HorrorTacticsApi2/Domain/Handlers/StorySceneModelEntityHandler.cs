@@ -37,7 +37,7 @@ namespace HorrorTacticsApi2.Domain
 
         public ReadStorySceneModel CreateReadModel(StorySceneEntity entity)
         {
-            var list = entity.Commands.Select(x => handler.CreateReadModel(x));
+            var list = entity.Commands.Select(x => handler.CreateReadModel(x)).OrderBy(x => x.Title);
             return new ReadStorySceneModel(entity.Id, entity.Title, list.ToList());
         }
 

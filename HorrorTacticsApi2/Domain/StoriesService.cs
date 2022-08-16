@@ -93,7 +93,7 @@ namespace HorrorTacticsApi2.Domain
                         .Include(x => x.Scenes)
                             .ThenInclude(x => x.Commands)
                                 .ThenInclude(x => x.Images)
-                                .ThenInclude(x => x.File);
+                                .ThenInclude(x => x.File)
                     ;
             }
             return query;

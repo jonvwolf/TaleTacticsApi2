@@ -50,7 +50,7 @@ namespace HorrorTacticsApi2.Domain
 
         public ReadStoryModel CreateReadModel(StoryEntity entity)
         {
-            return new ReadStoryModel(entity.Id, entity.Title, entity.Description, entity.Scenes.Select(x => scene.CreateReadModel(x)).ToList());
+            return new ReadStoryModel(entity.Id, entity.Title, entity.Description, entity.Scenes.Select(x => scene.CreateReadModel(x)).OrderBy(x => x.Title).ToList());
         }
     }
 }
