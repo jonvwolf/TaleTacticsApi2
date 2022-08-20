@@ -36,57 +36,34 @@ namespace HorrorTacticsApi2.Hubs
             validator.Validate(gameCode, nameof(GameCodeModel));
             
             EnsureGameCodeExists(gameCode);
+
             return Groups.AddToGroupAsync(Context.ConnectionId, ConstructGroupNameForPlayer(gameCode.GameCode));
         }
 
         [Authorize]
-        public Task HmSendImageCommand(GameCodeModel gameCode, ImageCommandModel model)
+        public Task HmSendCommand(GameCodeModel gameCode, HmCommandModel model)
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
-            validator.Validate(model, nameof(ImageCommandModel));
+            validator.Validate(model, nameof(HmCommandModel));
 
             EnsureGameCodeExists(gameCode);
-            
-            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveImageCommand(model);
+            Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(new TextLogModel("Command received", "Hub"));
+            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveHmCommand(model);
         }
 
-        [Authorize]
-        public Task HmSendAudioCommand(GameCodeModel gameCode, AudioCommandModel model)
+        public Task PlayerSendBackHmCommand(GameCodeModel gameCode, HmCommandModel model)
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
-            validator.Validate(model, nameof(AudioCommandModel));
+            validator.Validate(model, nameof(HmCommandModel));
 
             EnsureGameCodeExists(gameCode);
-            
-            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveAudioCommand(model);
+            return Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveBackHmCommand(model);
         }
 
-        [Authorize]
-        public Task HmSendTextCommand(GameCodeModel gameCode, TextCommandModel model)
+        public Task PlayerSendLog(GameCodeModel gameCode, TextLogModel model)
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
-            validator.Validate(model, nameof(TextCommandModel));
-
-            EnsureGameCodeExists(gameCode);
-            
-            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveTextCommand(model);
-        }
-
-        [Authorize]
-        public Task HmSendMinigameCommand(GameCodeModel gameCode, MinigameCommandModel model)
-        {
-            validator.Validate(gameCode, nameof(GameCodeModel));
-            validator.Validate(model, nameof(MinigameCommandModel));
-
-            EnsureGameCodeExists(gameCode);
-            
-            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveMinigameCommand(model);
-        }
-
-        public Task PlayerSendLog(GameCodeModel gameCode, PlayerTextLogModel model)
-        {
-            validator.Validate(gameCode, nameof(GameCodeModel));
-            validator.Validate(model, nameof(PlayerTextLogModel));
+            validator.Validate(model, nameof(TextLogModel));
 
             EnsureGameCodeExists(gameCode);
             return Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(model);
@@ -94,8 +71,6 @@ namespace HorrorTacticsApi2.Hubs
 
         void EnsureGameCodeExists(GameCodeModel gameCode)
         {
-            validator.Validate(gameCode, nameof(GameCodeModel));
-
             if (!games.DoesGameCodeExist(gameCode.GameCode))
                 throw new HubException("Game code does not exist");
         }

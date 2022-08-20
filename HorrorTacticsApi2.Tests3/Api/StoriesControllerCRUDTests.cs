@@ -29,13 +29,14 @@ namespace HorrorTacticsApi2.Tests3.Api
         const string PathGames = "games";
         const string PathSecuredGames = "secured/games";
 
+        bool Hub_Hm_Received_Hub_Command_Received;
+        bool Hub_Hm_Received_Player_HmCommand_1;
+        bool Hub_Hm_Received_Player_HmCommand_2;
+        bool Hub_Hm_Received_Player_HmCommand_3;
         bool Hub_Hm_Received_Player_Log_Logged_In;
-        bool Hub_Hm_Received_Player_Log_Image;
-        bool Hub_Hm_Received_Player_Log_Audio;
-        bool Hub_Hm_Received_Player_Log_Text;
-        bool Hub_Hm_Received_Player_Log_Minigame;
+        
         private bool disposedValue;
-        readonly SemaphoreSlim semaphore = new(1, 1);
+        readonly SemaphoreSlim semaphore = new(0, 1);
 
         public StoriesControllerCRUDTests(ApiTestsCollection apiTestsCollection)
         {
@@ -196,22 +197,19 @@ namespace HorrorTacticsApi2.Tests3.Api
             await TestGameHubAsHm_NoToken_Exception_Async(_collection.GetServer(), createdGame.GameCode);
             TestGameHubAsPlayer_Part2(hub, createdGame.GameCode);
 
-            if (!await semaphore.WaitAsync(1000))
-                throw new Exception("Semaphore timed out1");
-
             await TestGameHubAsHmAsync_Part2(hmHub, createdGame.GameCode);
 
             if (!await semaphore.WaitAsync(1000))
-                throw new Exception("Semaphore timed out2");
+                throw new Exception("Semaphore timed out1");
 
             await hub.StopAsync();
             await hmHub.StopAsync();
 
+            Assert.True(Hub_Hm_Received_Hub_Command_Received);
+            Assert.True(Hub_Hm_Received_Player_HmCommand_1);
+            Assert.True(Hub_Hm_Received_Player_HmCommand_2);
+            Assert.True(Hub_Hm_Received_Player_HmCommand_3);
             Assert.True(Hub_Hm_Received_Player_Log_Logged_In);
-            Assert.True(Hub_Hm_Received_Player_Log_Image);
-            Assert.True(Hub_Hm_Received_Player_Log_Audio);
-            Assert.True(Hub_Hm_Received_Player_Log_Text);
-            Assert.True(Hub_Hm_Received_Player_Log_Minigame);
 
             var gameList = await GetAll_Should_Return_Games(client);
             var item = gameList.FirstOrDefault(x => x.Code == createdGame.GameCode);
@@ -228,7 +226,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             await hub.StartAsync();
 
             await hub.InvokeAsync("JoinGameAsPlayer", gameCodeModel);
-            await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new PlayerTextLogModel("Logged in", "Player1"));
+            await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new TextLogModel("Logged in", "Player1"));
 
             return hub;
         }
@@ -237,22 +235,11 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             var gameCodeModel = new GameCodeModel(gameCode);
 
-            hub.On<ImageCommandModel>("PlayerReceiveImageCommand", async (model) =>
+            hub.On("PlayerReceiveHmCommand", (Func<HmCommandModel, Task>)(async (model) =>
             {
-                await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new PlayerTextLogModel("Received image: " + model.ImageId, "Player1"));
-            });
-            hub.On<AudioCommandModel>("PlayerReceiveAudioCommand", async (model) =>
-            {
-                await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new PlayerTextLogModel("Received audio: " + model.AudioId, "Player1"));
-            });
-            hub.On<TextCommandModel>("PlayerReceiveTextCommand", async (model) =>
-            {
-                await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new PlayerTextLogModel("Received text: " + model.Text, "Player1"));
-            });
-            hub.On<MinigameCommandModel>("PlayerReceiveMinigameCommand", async (model) =>
-            {
-                await hub.InvokeAsync("PlayerSendLog", gameCodeModel, new PlayerTextLogModel("Received minigame: " + model.MinigameId, "Player1"));
-            });
+                // player reciprocates whatever it received
+                await hub.InvokeAsync("PlayerSendBackHmCommand", gameCodeModel, model);
+            }));
         }
 
         async Task<HubConnection> TestGameHubAsHmAsync_Part1(TestServer server, string gameCode, string token)
@@ -262,43 +249,48 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             await hub.InvokeAsync("JoinGameAsHm", new GameCodeModel(gameCode));
 
-            hub.On<PlayerTextLogModel>("HmReceiveLog", (model) =>
+            hub.On<TextLogModel>("HmReceiveLog", (model) =>
             {
-                if (!"Player1".Equals(model.PlayerName))
-                    return;
-
-                if ("Logged in".Equals(model.Message))
+                if ("Command received".Equals(model.Message))
+                {
+                    Hub_Hm_Received_Hub_Command_Received = true;
+                }
+                else if ("Logged in".Equals(model.Message) && "Player1".Equals(model.From))
                 {
                     Hub_Hm_Received_Player_Log_Logged_In = true;
                 }
-                else if ("Received image: 1".Equals(model.Message))
+            });
+
+            hub.On<HmCommandModel>("HmReceiveBackHmCommand", (model) =>
+            {
+                if (model.ImageId == 1 && model.Text == "This is my text ñ" && model.AudioIds?.Count > 0 && model.MinigameId == 9)
                 {
-                    Hub_Hm_Received_Player_Log_Image = true;
+                    if (model.AudioIds[0] == 6 && model.AudioIds[1] == 7)
+                    {
+                        Hub_Hm_Received_Player_HmCommand_1 = true;
+                    }
                 }
-                else if ("Received audio: 10".Equals(model.Message))
+                else if (model.ImageId == default && model.Text == "This is my text ñ" && model.AudioIds == default && model.MinigameId == default)
                 {
-                    Hub_Hm_Received_Player_Log_Audio = true;
+                    Hub_Hm_Received_Player_HmCommand_2 = true;
                 }
-                else if ("Received text: Display this text".Equals(model.Message))
+                else if (model.ImageId == 2 && model.Text == default && model.AudioIds != default && model.AudioIds[0] == 8 && model.MinigameId == default)
                 {
-                    Hub_Hm_Received_Player_Log_Text = true;
-                }
-                else if ("Received minigame: 9".Equals(model.Message))
-                {
-                    Hub_Hm_Received_Player_Log_Minigame = true;
+                    Hub_Hm_Received_Player_HmCommand_3 = true;
                     semaphore.Release();
                 }
             });
+
             return hub;
         }
 
         static async Task TestGameHubAsHmAsync_Part2(HubConnection hub, string gameCode)
         {
             var gameCodeModel = new GameCodeModel(gameCode);
-            await hub.InvokeAsync("HmSendImageCommand", gameCodeModel, new ImageCommandModel(1));
-            await hub.InvokeAsync("HmSendAudioCommand", gameCodeModel, new AudioCommandModel(10, false));
-            await hub.InvokeAsync("HmSendTextCommand", gameCodeModel, new TextCommandModel("Display this text"));
-            await hub.InvokeAsync("HmSendMinigameCommand", gameCodeModel, new MinigameCommandModel(9));
+            await hub.InvokeAsync("HmSendCommand", gameCodeModel, new HmCommandModel(new List<long>() { 6, 7 }, 1, 9, "This is my text ñ"));
+            await hub.InvokeAsync("HmSendCommand", gameCodeModel, new HmCommandModel(default, default, default, "This is my text ñ"));
+            await hub.InvokeAsync("HmSendCommand", gameCodeModel, new HmCommandModel(new List<long>() { 8 }, 2, default, default));
+
         }
 
         static async Task TestGameHubAsHm_NoToken_Exception_Async(TestServer server, string gameCode)
