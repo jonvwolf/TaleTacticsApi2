@@ -51,6 +51,17 @@ namespace HorrorTacticsApi2.Hubs
             return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveHmCommand(model);
         }
 
+        [Authorize]
+        public Task HmSendCommandPredefined(GameCodeModel gameCode, HmCommandPredefinedModel model)
+        {
+            validator.Validate(gameCode, nameof(GameCodeModel));
+            validator.Validate(model, nameof(HmCommandPredefinedModel));
+
+            EnsureGameCodeExists(gameCode);
+            Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(new TextLogModel("Command predefined received", "Hub"));
+            return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveHmCommandPredefined(model);
+        }
+
         public Task PlayerSendBackHmCommand(GameCodeModel gameCode, HmCommandModel model)
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
@@ -58,6 +69,15 @@ namespace HorrorTacticsApi2.Hubs
 
             EnsureGameCodeExists(gameCode);
             return Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveBackHmCommand(model);
+        }
+
+        public Task PlayerSendBackHmCommandPredefined(GameCodeModel gameCode, HmCommandPredefinedModel model)
+        {
+            validator.Validate(gameCode, nameof(GameCodeModel));
+            validator.Validate(model, nameof(HmCommandPredefinedModel));
+
+            EnsureGameCodeExists(gameCode);
+            return Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveBackHmCommandPredefined(model);
         }
 
         public Task PlayerSendLog(GameCodeModel gameCode, TextLogModel model)

@@ -6,6 +6,8 @@ namespace HorrorTacticsApi2.Hubs
     {
         Task HmReceiveLog(TextLogModel model);
         Task HmReceiveBackHmCommand(HmCommandModel model);
+        Task HmReceiveBackHmCommandPredefined(HmCommandPredefinedModel model);
         Task PlayerReceiveHmCommand(HmCommandModel model);
+        Task PlayerReceiveHmCommandPredefined(HmCommandPredefinedModel model);
     }
 }
