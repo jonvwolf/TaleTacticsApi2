@@ -72,6 +72,9 @@ try
     builder.Services.AddScoped<StorySceneCommandModelEntityHandler>();
     builder.Services.AddScoped<StoryModelEntityHandler>();
     builder.Services.AddScoped<GameModelStateHandler>();
+    builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<UserModelEntityHandler>();
+    builder.Services.AddSingleton<PasswordHelper>();
 
     builder.Services.AddScoped<ImagesService>();
     builder.Services.AddScoped<AudiosService>();

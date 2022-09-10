@@ -21,6 +21,15 @@
         public const string FileImageApiPathWithVars = "images/{filename}";
         public const string FileAudioApiPathWithVars = "audios/{filename}";
 
+        public const string AdminUsername = "ht-master";
+        public const long AdminUserId = 1;
+
+        public const int PasswordSaltSize = 128;
+        public const int PasswordSize = 256;
+        public const int PasswordIterations = 10000;
+
+        public const string JwtRoleKey = "role";
+
         public static string GetFileImageApiPath(string filename)
         {
             return FileImageApiPathWithVars.Replace("{filename}", filename);

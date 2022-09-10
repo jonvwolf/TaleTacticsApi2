@@ -1,6 +1,8 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
+using HorrorTacticsApi2.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Options;
 
 namespace HorrorTacticsApi2.Data
 {
@@ -12,9 +14,15 @@ namespace HorrorTacticsApi2.Data
         public DbSet<StorySceneEntity> StoryScenes => Set<StorySceneEntity>();
         public DbSet<StorySceneCommandEntity> StorySceneCommands => Set<StorySceneCommandEntity>();
         public DbSet<StoryEntity> Stories => Set<StoryEntity>();
-        public HorrorDbContext(DbContextOptions<HorrorDbContext> options) : base(options)
-        {
+        public DbSet<UserEntity> Users => Set<UserEntity>();
 
+        string adminPassword = string.Empty;
+        readonly PasswordHelper passwordHelper;
+
+        public HorrorDbContext(DbContextOptions<HorrorDbContext> options, IOptions<AppSettings> settings, PasswordHelper passwordHelper) : base(options)
+        {
+            adminPassword = settings.Value.MainPassword;
+            this.passwordHelper = passwordHelper;
         }
 
         public Task<int> SaveChangesWrappedAsync(CancellationToken cancellationToken = default)
@@ -35,7 +43,11 @@ namespace HorrorTacticsApi2.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
+            modelBuilder.Entity<UserEntity>()
+                .Property(x => x.Role)
+                .HasConversion<string>();
+
             modelBuilder.Entity<FileEntity>()
                 .Property(x => x.Format)
                 .HasConversion<string>();
@@ -47,6 +59,21 @@ namespace HorrorTacticsApi2.Data
             modelBuilder.Entity<StorySceneCommandEntity>()
                 .HasMany(x => x.Images)
                 .WithMany(x => x.SceneCommands);
+
+            if (!string.IsNullOrEmpty(adminPassword))
+            {
+                var salt = passwordHelper.GenerateSalt();
+                var password = passwordHelper.GenerateHash(adminPassword, salt);
+
+                modelBuilder.Entity<UserEntity>()
+                    .HasData(new UserEntity(Constants.AdminUsername, password, salt)
+                    {
+                        Id = Constants.AdminUserId,
+                        Role = UserRole.Admin
+                    });
+            }
+
+            adminPassword = string.Empty;
         }
 
         public Task<IDbContextTransaction> CreateTransactionAsync()

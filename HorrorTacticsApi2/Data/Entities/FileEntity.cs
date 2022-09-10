@@ -19,17 +19,20 @@ namespace HorrorTacticsApi2.Data.Entities
         public string Filename { get; set; } = string.Empty;
         public long SizeInBytes { get; set; }
         public bool IsVirusScanned { get; set; }
+        [Required]
+        public UserEntity Owner { get; set; } = UserEntity.EmptyUser;
         public FileEntity()
         {
 
         }
 
-        public FileEntity(string name, FileFormatEnum format, string filename, long size)
+        public FileEntity(string name, FileFormatEnum format, string filename, long size, UserEntity owner)
         {
             Name = name;
             Format = format;
             Filename = filename;
             SizeInBytes = size;
+            Owner = owner;
         }
 
         public void Validate()

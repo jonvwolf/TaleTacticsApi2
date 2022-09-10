@@ -166,6 +166,10 @@ namespace HorrorTacticsApi2.Tests3.Api
 
             if (delete)
             {
+                // Test: (it works) Delete scene also deletes commands
+                //await EndpointHelpers.StorySceneEndpoints.DeleteAndAssertAsync(client, expectedStory4.StoryScenes[0].Id);
+                //await EndpointHelpers.StorySceneCommandsEndpoints.GetAndAssertNotFoundAsync(client, expectedStory4.StoryScenes[0].StorySceneCommands[0].Id);
+
                 await EndpointHelpers.StoryEndpoints.DeleteAndAssertAsync(client, expectedStory4.Id);
 
                 await EndpointHelpers.StorySceneEndpoints.GetAndAssertNotFoundAsync(client, expectedStory4.StoryScenes[0].Id);

@@ -12,6 +12,7 @@ namespace HorrorTacticsApi2.Data
         public DbSet<StorySceneEntity> StoryScenes { get; }
         public DbSet<StorySceneCommandEntity> StorySceneCommands { get; }
         public DbSet<StoryEntity> Stories { get; }
+        public DbSet<UserEntity> Users { get; }
         Task<int> SaveChangesWrappedAsync(CancellationToken cancellationToken = default);
 
         Task<IDbContextTransaction> CreateTransactionAsync();

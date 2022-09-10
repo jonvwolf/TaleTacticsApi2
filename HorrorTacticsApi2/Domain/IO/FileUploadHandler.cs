@@ -76,7 +76,7 @@ namespace HorrorTacticsApi2.Domain
                     if (name.Length > ValidationConstants.File_Name_MaxStringLength)
                         throw new HtBadRequestException($"File name is too long. Max length: {ValidationConstants.File_Name_MaxStringLength}");
 
-                    string filename = Guid.NewGuid().ToString() + "-" + DateTime.Now.ToString("yyyy_MM_dd", CultureInfo.InvariantCulture) + ext;
+                    string filename = Guid.NewGuid().ToString() + "-" + DateTimeOffset.Now.ToString("yyyy_MM_dd", CultureInfo.InvariantCulture) + ext;
                     string path = Path.Combine(_options.UploadPath, filename);
                     long bytesRead;
                     try
