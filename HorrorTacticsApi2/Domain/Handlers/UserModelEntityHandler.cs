@@ -38,5 +38,13 @@ namespace HorrorTacticsApi2.Domain.Handlers
         {
             entity.LastLogin = DateTime.UtcNow;
         }
+
+        public UserEntity GetEntityForReference(UserJwt user)
+        {
+            return new UserEntity()
+            {
+                Id = user.Id
+            };
+        }
     }
 }

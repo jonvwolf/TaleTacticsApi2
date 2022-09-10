@@ -17,7 +17,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class StoriesController : ControllerBase
+    public class StoriesController : HtController
     {
         readonly StoriesService service;
         readonly StoryScenesService sceneService;
@@ -57,7 +57,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Post([FromBody] CreateStoryModel model, CancellationToken token)
         {
-            var readModel = await service.CreateStoryAsync(model, true, token);
+            var readModel = await service.CreateStoryAsync(GetUser(), model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 

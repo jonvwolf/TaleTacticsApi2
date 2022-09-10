@@ -34,11 +34,11 @@ namespace HorrorTacticsApi2.Domain
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStoryModel> CreateStoryAsync(CreateStoryModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStoryModel> CreateStoryAsync(UserJwt user, CreateStoryModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
 
-            var entity = _imeHandler.CreateEntity(model);
+            var entity = _imeHandler.CreateEntity(user, model);
             _context.Stories.Add(entity);
             await _context.SaveChangesWrappedAsync(token);
 

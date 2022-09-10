@@ -1,6 +1,7 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Handlers;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using Microsoft.Extensions.Options;
 
@@ -12,9 +13,11 @@ namespace HorrorTacticsApi2.Domain
     public class StoryModelEntityHandler : ModelEntityHandler
     {
         readonly StorySceneModelEntityHandler scene;
-        public StoryModelEntityHandler(StorySceneModelEntityHandler scene, IHttpContextAccessor context) : base(context)
+        readonly UserModelEntityHandler _userModelEntityHandler;
+        public StoryModelEntityHandler(StorySceneModelEntityHandler scene, IHttpContextAccessor context, UserModelEntityHandler userModelEntityHandler) : base(context)
         {
             this.scene = scene;
+            _userModelEntityHandler = userModelEntityHandler;
         }
 
         public void Validate(UpdateStoryModel model, bool basicValidated)
@@ -37,9 +40,10 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public StoryEntity CreateEntity(CreateStoryModel model)
+        public StoryEntity CreateEntity(UserJwt user, CreateStoryModel model)
         {
-            return new StoryEntity(model.Title, model.Description, new List<StorySceneEntity>());
+            var userEntity = _userModelEntityHandler.GetEntityForReference(user);
+            return new StoryEntity(model.Title, model.Description, new List<StorySceneEntity>(), userEntity);
         }
 
         public void UpdateEntity(UpdateStoryModel model, StoryEntity entity)

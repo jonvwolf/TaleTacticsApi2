@@ -1,6 +1,7 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Handlers;
 using HorrorTacticsApi2.Domain.Models.Audio;
 using Microsoft.Extensions.Options;
 
@@ -11,8 +12,10 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class AudioModelEntityHandler : ModelEntityHandler
     {
-        public AudioModelEntityHandler(IHttpContextAccessor context) : base(context)
+        readonly UserModelEntityHandler _userhandler;
+        public AudioModelEntityHandler(IHttpContextAccessor context, UserModelEntityHandler userHandler) : base(context)
         {
+            _userhandler = userHandler;
         }
         public void Validate(UpdateAudioModel model, bool basicValidated)
         {
@@ -24,9 +27,10 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public AudioEntity CreateEntity(FileUploaded file)
+        public AudioEntity CreateEntity(UserJwt user, FileUploaded file)
         {
-            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes);
+            var userEntity = _userhandler.GetEntityForReference(user);
+            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, userEntity);
 
             // TODO: update duration AFTER virus scan
             return new AudioEntity(htFile, false, 0);

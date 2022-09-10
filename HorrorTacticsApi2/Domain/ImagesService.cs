@@ -49,14 +49,14 @@ namespace HorrorTacticsApi2.Domain
             return stream;
         }
 
-        public async Task<ReadImageModel> CreateImageAsync(CancellationToken token)
+        public async Task<ReadImageModel> CreateImageAsync(UserJwt user, CancellationToken token)
         {
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedImageExtensionsForUpload, token);
 
             ImageEntity entity;
             try
             {
-                entity = _imeHandler.CreateEntity(uploadedFile);
+                entity = _imeHandler.CreateEntity(user, uploadedFile);
 
                 _context.Images.Add(entity);
                 await _context.SaveChangesWrappedAsync(token);

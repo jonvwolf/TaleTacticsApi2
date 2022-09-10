@@ -50,14 +50,14 @@ namespace HorrorTacticsApi2.Domain
             return stream;
         }
 
-        public async Task<ReadAudioModel> CreateAudioAsync(CancellationToken token)
+        public async Task<ReadAudioModel> CreateAudioAsync(UserJwt user, CancellationToken token)
         {
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
 
             AudioEntity entity;
             try
             {
-                entity = _imeHandler.CreateEntity(uploadedFile);
+                entity = _imeHandler.CreateEntity(user, uploadedFile);
 
                 _context.Audios.Add(entity);
                 await _context.SaveChangesWrappedAsync(token);

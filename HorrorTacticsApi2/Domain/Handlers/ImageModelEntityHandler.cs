@@ -1,6 +1,7 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Dtos;
 using HorrorTacticsApi2.Domain.Exceptions;
+using HorrorTacticsApi2.Domain.Handlers;
 using Microsoft.Extensions.Options;
 
 namespace HorrorTacticsApi2.Domain
@@ -10,8 +11,10 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class ImageModelEntityHandler : ModelEntityHandler
     {
-        public ImageModelEntityHandler(IHttpContextAccessor context) : base(context)
+        readonly UserModelEntityHandler _userModelEntityHandler;
+        public ImageModelEntityHandler(IHttpContextAccessor context, UserModelEntityHandler userModelEntityHandler) : base(context)
         {
+            _userModelEntityHandler = userModelEntityHandler;
         }
         public void Validate(UpdateImageModel model, bool basicValidated)
         {
@@ -23,9 +26,10 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public ImageEntity CreateEntity(FileUploaded file)
+        public ImageEntity CreateEntity(UserJwt user, FileUploaded file)
         {
-            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes);
+            var userEntity = _userModelEntityHandler.GetEntityForReference(user);
+            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, userEntity);
 
             return new ImageEntity(htFile, 0, 0);
         }

@@ -19,16 +19,20 @@ namespace HorrorTacticsApi2.Data.Entities
 
         public List<StorySceneEntity> Scenes { get; protected set; } = new List<StorySceneEntity>();
 
+        [Required]
+        public UserEntity Owner { get; set; } = UserEntity.EmptyUser;
+
         public StoryEntity()
         {
 
         }
 
-        public StoryEntity(string title, string desc, IReadOnlyList<StorySceneEntity> scenes)
+        public StoryEntity(string title, string desc, IReadOnlyList<StorySceneEntity> scenes, UserEntity owner)
         {
             Title = title;
             Description = desc;
             Scenes = scenes.ToList();
+            Owner = owner;
         }
     }
 }

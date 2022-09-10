@@ -15,7 +15,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class ImagesController : ControllerBase
+    public class ImagesController : HtController
     {
         readonly ImagesService _service;
         
@@ -53,7 +53,7 @@ namespace HorrorTacticsApi2.Controllers
         public async Task<ActionResult<ReadImageModel>> Post(CancellationToken token)
         {
             // Multi part request is handled by the service (with IHttpContextAccessor)
-            var readModel = await _service.CreateImageAsync(token);
+            var readModel = await _service.CreateImageAsync(GetUser(), token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 

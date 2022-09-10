@@ -9,7 +9,7 @@ namespace HorrorTacticsApi2.Controllers
     {
         UserJwt? userJwt;
 
-        public UserJwt? GetUser()
+        public UserJwt GetUser()
         {
             if (userJwt == default)
             {
@@ -26,6 +26,9 @@ namespace HorrorTacticsApi2.Controllers
                     userJwt = new UserJwt(long.Parse(userId.Value), username.Value, roleEnum);
                 }
             }
+
+            if (userJwt == default)
+                throw new InvalidOperationException("userJwt is default");
             return userJwt;
         }
 
