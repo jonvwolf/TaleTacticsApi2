@@ -88,8 +88,8 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
                     new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
                 }));
 
-                //var db = scope.ServiceProvider.GetRequiredService<HorrorDbContext>();
-                //db.Database.EnsureDeleted();
+                var db = scope.ServiceProvider.GetRequiredService<HorrorDbContext>();
+                db.Database.EnsureDeleted();
             });
         }
 

@@ -17,27 +17,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
-bool enableInitLogging = false;
-if (args.Length > 0)
-{
-    foreach(var arg in args)
-    {
-        if ("init-log".Equals(arg, StringComparison.OrdinalIgnoreCase))
-        {
-            enableInitLogging = true;
-        }
-    }
-}
-
-var logConfig = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("./logs/ht-errors-init-.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning);
-
-// TODO: this could be read from serilog-init.json configuration, to make it more configurable
-if (enableInitLogging)
-    logConfig.WriteTo.File("./logs/ht-log-init.txt", rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug);
-
-Log.Logger = logConfig.CreateBootstrapLogger();
 
 try
 {
@@ -210,14 +189,13 @@ try
         app.Run();
     }
 }
-catch (Exception ex)
+catch (Exception)
 {
-    Log.Fatal(ex, "Unhandled exception");
+    // TODO: write to file?
     throw;
 }
 finally
 {
-    Log.Information("HorrorTactics shutdown.");
     Log.CloseAndFlush();
 }
 
