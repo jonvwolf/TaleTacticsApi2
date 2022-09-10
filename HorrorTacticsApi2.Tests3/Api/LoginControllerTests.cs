@@ -27,7 +27,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             // arrange
             using var client = _factory.CreateClient();
-            var login = new LoginModel(_factory.WebAppFactory.MainPassword);
+            var login = new LoginModel(_factory.WebAppFactory.MainPassword, Constants.AdminUsername);
 
             // act
             var response = await client.PostAsync(Path, Helper.GetContent(login));
@@ -42,7 +42,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             // arrange
             using var client = _factory.CreateClient();
-            var login = new LoginModel(_factory.WebAppFactory.MainPassword + "1");
+            var login = new LoginModel(_factory.WebAppFactory.MainPassword + "1", Constants.AdminUsername);
 
             // act
             var response = await client.PostAsync(Path, Helper.GetContent(login));

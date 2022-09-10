@@ -40,6 +40,7 @@ namespace HorrorTacticsApi2.Controllers
             if (user == default)
                 return NotFound();
             
+            // TODO: this code is copied in API testing
             var jwt = _jwt.GenerateJwtSecurityToken(new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),

@@ -16,9 +16,9 @@ namespace HorrorTacticsApi2.Controllers
                 var user = HttpContext.User;
                 if (user != default && user.Claims != default)
                 {
-                    var userId = GetClaim(JwtRegisteredClaimNames.Sub, user.Claims);
-                    var username = GetClaim(JwtRegisteredClaimNames.UniqueName, user.Claims);
-                    var role = GetClaim(Constants.JwtRoleKey, user.Claims);
+                    var userId = GetClaim(ClaimTypes.NameIdentifier, user.Claims);
+                    var username = GetClaim(JwtRegisteredClaimNames.Sid, user.Claims);
+                    var role = GetClaim(ClaimTypes.Role, user.Claims);
 
                     if (!Enum.TryParse(role.Value, out UserRole roleEnum))
                         roleEnum = UserRole.NotSet;

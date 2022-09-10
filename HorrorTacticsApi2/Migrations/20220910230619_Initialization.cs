@@ -1,14 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace HorrorTacticsApi2.Migrations
 {
-    public partial class InitialMigrations : Migration
+    public partial class Initialization : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<byte[]>(type: "bytea", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    Salt = table.Column<byte[]>(type: "bytea", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Files",
                 columns: table => new
@@ -19,11 +37,18 @@ namespace HorrorTacticsApi2.Migrations
                     Format = table.Column<string>(type: "text", nullable: false),
                     Filename = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     SizeInBytes = table.Column<long>(type: "bigint", nullable: false),
-                    IsVirusScanned = table.Column<bool>(type: "boolean", nullable: false)
+                    IsVirusScanned = table.Column<bool>(type: "boolean", nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Files", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Files_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -33,11 +58,18 @@ namespace HorrorTacticsApi2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Description = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: false)
+                    Description = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Stories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stories_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,7 +142,7 @@ namespace HorrorTacticsApi2.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ParentStorySceneId = table.Column<long>(type: "bigint", nullable: false),
                     Title = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
-                    Texts = table.Column<string>(type: "character varying(15000)", maxLength: 15000, nullable: false),
+                    Texts = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     Timers = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Minigames = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -189,6 +221,11 @@ namespace HorrorTacticsApi2.Migrations
                 column: "Filename");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Files_OwnerId",
+                table: "Files",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ImageEntityStorySceneCommandEntity_SceneCommandsId",
                 table: "ImageEntityStorySceneCommandEntity",
                 column: "SceneCommandsId");
@@ -197,6 +234,11 @@ namespace HorrorTacticsApi2.Migrations
                 name: "IX_Images_FileId",
                 table: "Images",
                 column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stories_OwnerId",
+                table: "Stories",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StorySceneCommands_ParentStorySceneId",
@@ -234,6 +276,9 @@ namespace HorrorTacticsApi2.Migrations
 
             migrationBuilder.DropTable(
                 name: "Stories");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

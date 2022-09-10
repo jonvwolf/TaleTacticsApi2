@@ -24,6 +24,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using HorrorTacticsApi2.Data.Entities;
 
 namespace HorrorTacticsApi2.Tests3.Api.Helpers
 {
@@ -77,8 +78,18 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
                 using var scope = sp.CreateScope();
                 MainPassword = scope.ServiceProvider.GetRequiredService<IOptions<AppSettings>>().Value.MainPassword;
 
+                // TODO: this code is copied in LoginController
                 var jwtGenerator = scope.ServiceProvider.GetRequiredService<IJwtGenerator>();
-                Token = jwtGenerator.SerializeToken(jwtGenerator.GenerateJwtSecurityToken(new List<Claim>()));
+                Token = jwtGenerator.SerializeToken(jwtGenerator.GenerateJwtSecurityToken(new List<Claim>()
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, Constants.AdminUserId.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sid, Constants.AdminUsername),
+                    new Claim(Constants.JwtRoleKey, UserRole.Admin.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+                }));
+
+                //var db = scope.ServiceProvider.GetRequiredService<HorrorDbContext>();
+                //db.Database.EnsureDeleted();
             });
         }
 
