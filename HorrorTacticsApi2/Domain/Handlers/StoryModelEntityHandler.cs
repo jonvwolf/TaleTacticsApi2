@@ -13,11 +13,9 @@ namespace HorrorTacticsApi2.Domain
     public class StoryModelEntityHandler : ModelEntityHandler
     {
         readonly StorySceneModelEntityHandler scene;
-        readonly UserModelEntityHandler _userModelEntityHandler;
-        public StoryModelEntityHandler(StorySceneModelEntityHandler scene, IHttpContextAccessor context, UserModelEntityHandler userModelEntityHandler) : base(context)
+        public StoryModelEntityHandler(StorySceneModelEntityHandler scene, IHttpContextAccessor context) : base(context)
         {
             this.scene = scene;
-            _userModelEntityHandler = userModelEntityHandler;
         }
 
         public void Validate(UpdateStoryModel model, bool basicValidated)
@@ -40,10 +38,9 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public StoryEntity CreateEntity(UserJwt user, CreateStoryModel model)
+        public StoryEntity CreateEntity(UserEntity user, CreateStoryModel model)
         {
-            var userEntity = _userModelEntityHandler.GetEntityForReference(user);
-            return new StoryEntity(model.Title, model.Description, new List<StorySceneEntity>(), userEntity);
+            return new StoryEntity(model.Title, model.Description, new List<StorySceneEntity>(), user);
         }
 
         public void UpdateEntity(UpdateStoryModel model, StoryEntity entity)

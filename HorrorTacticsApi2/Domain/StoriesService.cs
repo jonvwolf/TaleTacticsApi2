@@ -12,9 +12,10 @@ namespace HorrorTacticsApi2.Domain
     {
         readonly IHorrorDbContext _context;
         readonly StoryModelEntityHandler _imeHandler;
-        
-        public StoriesService(IHorrorDbContext context, StoryModelEntityHandler handler)
+        readonly UserService _service;
+        public StoriesService(IHorrorDbContext context, StoryModelEntityHandler handler, UserService service)
         {
+            _service = service;
             _context = context;
             _imeHandler = handler;
         }
@@ -38,7 +39,7 @@ namespace HorrorTacticsApi2.Domain
         {
             _imeHandler.Validate(model, basicValidated);
 
-            var entity = _imeHandler.CreateEntity(user, model);
+            var entity = _imeHandler.CreateEntity(_service.GetReference(user), model);
             _context.Stories.Add(entity);
             await _context.SaveChangesWrappedAsync(token);
 

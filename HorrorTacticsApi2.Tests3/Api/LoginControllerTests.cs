@@ -38,7 +38,7 @@ namespace HorrorTacticsApi2.Tests3.Api
         }
 
         [Fact]
-        public async Task Should_Return_Unauthorized_With_Bad_Password()
+        public async Task Should_Return_NotFound_With_Bad_Password()
         {
             // arrange
             using var client = _factory.CreateClient();
@@ -48,7 +48,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var response = await client.PostAsync(Path, Helper.GetContent(login));
 
             // assert
-            Assert.Equal(StatusCodes.Status401Unauthorized, (int)response.StatusCode);
+            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
         }
 
         [Fact]

@@ -11,10 +11,8 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class ImageModelEntityHandler : ModelEntityHandler
     {
-        readonly UserModelEntityHandler _userModelEntityHandler;
-        public ImageModelEntityHandler(IHttpContextAccessor context, UserModelEntityHandler userModelEntityHandler) : base(context)
+        public ImageModelEntityHandler(IHttpContextAccessor context) : base(context)
         {
-            _userModelEntityHandler = userModelEntityHandler;
         }
         public void Validate(UpdateImageModel model, bool basicValidated)
         {
@@ -26,10 +24,9 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public ImageEntity CreateEntity(UserJwt user, FileUploaded file)
+        public ImageEntity CreateEntity(UserEntity user, FileUploaded file)
         {
-            var userEntity = _userModelEntityHandler.GetEntityForReference(user);
-            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, userEntity);
+            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, user);
 
             return new ImageEntity(htFile, 0, 0);
         }

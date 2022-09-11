@@ -11,9 +11,10 @@ namespace HorrorTacticsApi2.Domain
         readonly IHorrorDbContext _context;
         readonly ImageModelEntityHandler _imeHandler;
         readonly FileUploadHandler _fileUploadHandler;
-
-        public ImagesService(IHorrorDbContext context, ImageModelEntityHandler handler, FileUploadHandler fileUploadHandler)
+        readonly UserService _user;
+        public ImagesService(IHorrorDbContext context, ImageModelEntityHandler handler, FileUploadHandler fileUploadHandler, UserService user)
         {
+            _user = user;
             _context = context;
             _imeHandler = handler;
             _fileUploadHandler = fileUploadHandler;
@@ -56,7 +57,7 @@ namespace HorrorTacticsApi2.Domain
             ImageEntity entity;
             try
             {
-                entity = _imeHandler.CreateEntity(user, uploadedFile);
+                entity = _imeHandler.CreateEntity(_user.GetReference(user), uploadedFile);
 
                 _context.Images.Add(entity);
                 await _context.SaveChangesWrappedAsync(token);
