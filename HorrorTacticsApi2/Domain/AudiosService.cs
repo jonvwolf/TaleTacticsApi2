@@ -12,12 +12,14 @@ namespace HorrorTacticsApi2.Domain
         readonly IHorrorDbContext _context;
         readonly AudioModelEntityHandler _imeHandler;
         readonly FileUploadHandler _fileUploadHandler;
+        readonly UserService _user;
 
-        public AudiosService(IHorrorDbContext context, AudioModelEntityHandler handler, FileUploadHandler fileUploadHandler)
+        public AudiosService(IHorrorDbContext context, AudioModelEntityHandler handler, FileUploadHandler fileUploadHandler, UserService user)
         {
             _context = context;
             _imeHandler = handler;
             _fileUploadHandler = fileUploadHandler;
+            _user = user;
         }
 
         public async Task<IList<ReadAudioModel>> GetAllAudiosAsync(CancellationToken token)
@@ -57,7 +59,7 @@ namespace HorrorTacticsApi2.Domain
             AudioEntity entity;
             try
             {
-                entity = _imeHandler.CreateEntity(user, uploadedFile);
+                entity = _imeHandler.CreateEntity(_user.GetReference(user), uploadedFile);
 
                 _context.Audios.Add(entity);
                 await _context.SaveChangesWrappedAsync(token);

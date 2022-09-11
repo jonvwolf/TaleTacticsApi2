@@ -30,6 +30,7 @@ namespace HorrorTacticsApi2.Tests3.Api
 
 
             var created = await CreateUser(client);
+            var created2 = await CreateUser(client);
             var getUser = await GetUser(client, created.Id);
             var updateUser = await UpdateUser(client, created.Id, new UpdateUserModel("mynewpasswordtest"));
 

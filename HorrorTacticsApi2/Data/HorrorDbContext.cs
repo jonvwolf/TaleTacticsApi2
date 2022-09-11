@@ -16,13 +16,8 @@ namespace HorrorTacticsApi2.Data
         public DbSet<StoryEntity> Stories => Set<StoryEntity>();
         public DbSet<UserEntity> Users => Set<UserEntity>();
 
-        string adminPassword = string.Empty;
-        readonly PasswordHelper passwordHelper;
-
-        public HorrorDbContext(DbContextOptions<HorrorDbContext> options, IOptions<AppSettings> settings, PasswordHelper passwordHelper) : base(options)
+        public HorrorDbContext(DbContextOptions<HorrorDbContext> options) : base(options)
         {
-            adminPassword = settings.Value.MainPassword;
-            this.passwordHelper = passwordHelper;
         }
 
         public Task<int> SaveChangesWrappedAsync(CancellationToken cancellationToken = default)
@@ -60,20 +55,12 @@ namespace HorrorTacticsApi2.Data
                 .HasMany(x => x.Images)
                 .WithMany(x => x.SceneCommands);
 
-            if (!string.IsNullOrEmpty(adminPassword))
-            {
-                var salt = passwordHelper.GenerateSalt();
-                var password = passwordHelper.GenerateHash(adminPassword, salt);
-
-                modelBuilder.Entity<UserEntity>()
-                    .HasData(new UserEntity(Constants.AdminUsername, password, salt)
+            modelBuilder.Entity<UserEntity>()
+                    .HasData(new UserEntity(Constants.AdminUsername, Array.Empty<byte>(), Array.Empty<byte>())
                     {
                         Id = Constants.AdminUserId,
                         Role = UserRole.Admin
                     });
-            }
-
-            adminPassword = string.Empty;
         }
 
         public Task<IDbContextTransaction> CreateTransactionAsync()

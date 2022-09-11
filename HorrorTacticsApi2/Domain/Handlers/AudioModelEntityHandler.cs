@@ -12,10 +12,8 @@ namespace HorrorTacticsApi2.Domain
     /// </summary>
     public class AudioModelEntityHandler : ModelEntityHandler
     {
-        readonly UserModelEntityHandler _userhandler;
-        public AudioModelEntityHandler(IHttpContextAccessor context, UserModelEntityHandler userHandler) : base(context)
+        public AudioModelEntityHandler(IHttpContextAccessor context) : base(context)
         {
-            _userhandler = userHandler;
         }
         public void Validate(UpdateAudioModel model, bool basicValidated)
         {
@@ -27,10 +25,9 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtBadRequestException("Model is null");
         }
 
-        public AudioEntity CreateEntity(UserJwt user, FileUploaded file)
+        public AudioEntity CreateEntity(UserEntity user, FileUploaded file)
         {
-            var userEntity = _userhandler.GetEntityForReference(user);
-            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, userEntity);
+            var htFile = new FileEntity(file.Name, file.Format, file.Filename, file.SizeInBytes, user);
 
             // TODO: update duration AFTER virus scan
             return new AudioEntity(htFile, false, 0);

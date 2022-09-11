@@ -51,6 +51,13 @@ namespace HorrorTacticsApi2.Domain
             return _handler.CreateReadModel(user);
         }
 
+        public UserEntity GetReference(UserJwt user)
+        {
+            var entity = _handler.GetEntityForReference(user);
+            _context.Users.Attach(entity);
+            return entity;
+        }
+
         public async Task<ReadUserModel> CreateAsync(CreateUserModel model, CancellationToken token)
         {
             var entity = _handler.CreateEntity(model);
