@@ -16,20 +16,25 @@ namespace HorrorTacticsApi2.Controllers
                 var user = HttpContext.User;
                 if (user != default && user.Claims != default)
                 {
-                    var userId = GetClaim(ClaimTypes.NameIdentifier, user.Claims);
-                    var username = GetClaim(JwtRegisteredClaimNames.Sid, user.Claims);
-                    var role = GetClaim(ClaimTypes.Role, user.Claims);
-
-                    if (!Enum.TryParse(role.Value, out UserRole roleEnum))
-                        roleEnum = UserRole.NotSet;
-
-                    userJwt = new UserJwt(long.Parse(userId.Value), username.Value, roleEnum);
+                    userJwt = CreateUserJwt(user.Claims);
                 }
             }
 
             if (userJwt == default)
                 throw new InvalidOperationException("userJwt is default");
             return userJwt;
+        }
+
+        public static UserJwt CreateUserJwt(IEnumerable<Claim> claims)
+        {
+            var userId = GetClaim(ClaimTypes.NameIdentifier, claims);
+            var username = GetClaim(JwtRegisteredClaimNames.Sid, claims);
+            var role = GetClaim(ClaimTypes.Role, claims);
+
+            if (!Enum.TryParse(role.Value, out UserRole roleEnum))
+                roleEnum = UserRole.NotSet;
+
+            return new UserJwt(long.Parse(userId.Value), username.Value, roleEnum);
         }
 
         static Claim GetClaim(string type, IEnumerable<Claim> claims)

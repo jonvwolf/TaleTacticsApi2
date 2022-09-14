@@ -1,4 +1,5 @@
-﻿using HorrorTacticsApi2.Game;
+﻿using HorrorTacticsApi2.Controllers;
+using HorrorTacticsApi2.Game;
 using HorrorTacticsApi2.Hubs.Models;
 using Jonwolfdev.Utils6.Validation;
 using Microsoft.AspNetCore.Authorization;
@@ -21,13 +22,22 @@ namespace HorrorTacticsApi2.Hubs
             this.validator = validator;
         }
 
+        UserJwt? GetUser()
+        {
+            var user = Context.User;
+            if (user != default && user.Claims != default)
+            {
+                return HtController.CreateUserJwt(user.Claims);
+            }
+            throw new InvalidOperationException("No user jwt?");
+        }
+
         [Authorize]
         public Task JoinGameAsHm(GameCodeModel gameCode)
         {
             validator.Validate(gameCode, nameof(GameCodeModel));
             
-            // TODO: validate gameCode belongs to the HM user (JWT token)
-            EnsureGameCodeExists(gameCode);
+            EnsureGameCodeExists(gameCode, GetUser());
             return Groups.AddToGroupAsync(Context.ConnectionId, ConstructGroupNameForHm(gameCode.GameCode));
         }
 
@@ -46,7 +56,7 @@ namespace HorrorTacticsApi2.Hubs
             validator.Validate(gameCode, nameof(GameCodeModel));
             validator.Validate(model, nameof(HmCommandModel));
 
-            EnsureGameCodeExists(gameCode);
+            EnsureGameCodeExists(gameCode, GetUser());
             Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(new TextLogModel("Command received", "Hub"));
             return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveHmCommand(model);
         }
@@ -57,7 +67,7 @@ namespace HorrorTacticsApi2.Hubs
             validator.Validate(gameCode, nameof(GameCodeModel));
             validator.Validate(model, nameof(HmCommandPredefinedModel));
 
-            EnsureGameCodeExists(gameCode);
+            EnsureGameCodeExists(gameCode, GetUser());
             Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(new TextLogModel("Command predefined received", "Hub"));
             return Clients.Group(ConstructGroupNameForPlayer(gameCode.GameCode)).PlayerReceiveHmCommandPredefined(model);
         }
@@ -89,9 +99,9 @@ namespace HorrorTacticsApi2.Hubs
             return Clients.Group(ConstructGroupNameForHm(gameCode.GameCode)).HmReceiveLog(model);
         }
 
-        void EnsureGameCodeExists(GameCodeModel gameCode)
+        void EnsureGameCodeExists(GameCodeModel gameCode, UserJwt? user =default)
         {
-            if (!games.DoesGameCodeExist(gameCode.GameCode))
+            if (!games.DoesGameCodeExist(gameCode.GameCode, user?.Id))
                 throw new HubException("Game code does not exist");
         }
 

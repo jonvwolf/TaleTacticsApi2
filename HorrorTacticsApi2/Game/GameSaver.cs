@@ -66,11 +66,23 @@ namespace HorrorTacticsApi2.Game
             }
         }
 
-        public bool DoesGameCodeExist(string gameCode)
+        public bool DoesGameCodeExist(string gameCode, long? userId)
         {
             lock (lockObj)
             {
-                return games.ContainsKey(gameCode);
+                if (userId.HasValue)
+                {
+                    if (games.TryGetValue(gameCode, out var state))
+                    {
+                        if (state.OwnerId == userId)
+                            return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    return games.ContainsKey(gameCode);
+                }
             }
         }
 
