@@ -17,7 +17,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class UsersController : ControllerBase
+    public class UsersController : HtController
     {
         readonly UserService _service;
         public UsersController(UserService service)
@@ -31,6 +31,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadUserModel>> Get([FromRoute] long id, CancellationToken token)
         {
+            EnsureCanDoOperation();
             var model = await _service.TryGetAsync(id, token);
             if (model == default)
                 return NotFound();
@@ -55,6 +56,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadUserModel>> Post([FromBody] CreateUserModel model, CancellationToken token)
         {
+            EnsureCanDoOperation();
             var dto = await _service.CreateAsync(model, token);
             return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
         }
@@ -66,6 +68,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneCommandModel>> Put([FromRoute] long id, [FromBody] UpdateUserModel model, CancellationToken token)
         {
+            EnsureCanDoOperation();
             var dto = await _service.UpdateAsync(id, model, token);
             return Ok(dto);
         }
@@ -79,5 +82,14 @@ namespace HorrorTacticsApi2.Controllers
         //    await _service.DeleteCommandAsync(id, token);
         //    return NoContent();
         //}
+
+        void EnsureCanDoOperation()
+        {
+            var user = GetUser();
+            if (user.Role != UserRole.Admin)
+            {
+                throw new InvalidOperationException("Hacking attempt User controller");
+            }
+        }
     }
 }

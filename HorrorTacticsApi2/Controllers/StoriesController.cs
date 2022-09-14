@@ -35,7 +35,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<IList<ReadStoryModel>>> Get(CancellationToken token)
         {
-            return Ok(await service.GetAllStoriesAsync(token));
+            return Ok(await service.GetAllStoriesAsync(GetUser(), token));
         }
 
         [HttpGet("{id}")]
@@ -44,7 +44,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await service.TryGetAsync(id, token);
+            var model = await service.TryGetAsync(GetUser(), id, token);
             if (model == default)
                 return NotFound();
 
@@ -68,7 +68,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStoryModel>> Put([FromRoute] long id, [FromBody] UpdateStoryModel model, CancellationToken token)
         {
-            return Ok(await service.UpdateStoryAsync(id, model, true, token));
+            return Ok(await service.UpdateStoryAsync(GetUser(), id, model, true, token));
         }
 
         [HttpDelete("{id}")]
@@ -76,7 +76,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await service.DeleteStoryAsync(id, token);
+            await service.DeleteStoryAsync(GetUser(), id, token);
             return NoContent();
         }
 
@@ -87,7 +87,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadGameCreatedModel>> PostGame([FromBody] CreateGameModel model, CancellationToken token)
         {
-            var game = await games.CreateGameAsync(model.StoryId, token);
+            var game = await games.CreateGameAsync(GetUser(), model.StoryId, token);
             return CreatedAtAction(nameof(GamesController.GetConfiguration), nameof(GamesController).Replace("Controller", ""), new { gameCode = game.GameCode }, game);
         }
     }

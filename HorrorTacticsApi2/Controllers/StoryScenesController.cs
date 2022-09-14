@@ -16,7 +16,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class ScenesController : ControllerBase
+    public class ScenesController : HtController
     {
         readonly StoryScenesService _service;
         
@@ -31,7 +31,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.TryGetAsync(id, true, token);
+            var model = await _service.TryGetAsync(GetUser(), id, true, token);
             if (model == default)
                 return NotFound();
 
@@ -43,7 +43,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneModel>> GetAll([FromRoute] long storyId, CancellationToken token)
         {
-            var model = await _service.GetAllAsync(storyId, true, token);
+            var model = await _service.GetAllAsync(GetUser(), storyId, true, token);
             
             return Ok(model);
         }
@@ -54,7 +54,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneModel>> Post([FromRoute] long storyId, [FromBody] CreateStorySceneModel model, CancellationToken token)
         {
-            var readModel = await _service.CreateStorySceneAsync(storyId, model, true, token);
+            var readModel = await _service.CreateStorySceneAsync(GetUser(), storyId, model, true, token);
             return CreatedAtAction(nameof(Get), new { id = readModel.Id }, readModel);
         }
 
@@ -65,7 +65,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneModel>> Put([FromRoute] long id, [FromBody] UpdateStorySceneModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateStorySceneAsync(id, model, true, token));
+            return Ok(await _service.UpdateStorySceneAsync(GetUser(), id, model, true, token));
         }
 
         [HttpDelete("stories/[controller]/{id}")]
@@ -73,7 +73,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await _service.DeleteStorySceneAsync(id, token);
+            await _service.DeleteStorySceneAsync(GetUser(), id, token);
             return NoContent();
         }
 

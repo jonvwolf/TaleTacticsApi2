@@ -20,18 +20,18 @@ namespace HorrorTacticsApi2.Domain
             _fileUploadHandler = fileUploadHandler;
         }
 
-        public async Task<IList<ReadImageModel>> GetAllImagesAsync(CancellationToken token)
+        public async Task<IList<ReadImageModel>> GetAllImagesAsync(UserJwt user, CancellationToken token)
         {
             var list = new List<ReadImageModel>();
-            var images = await GetQuery().ToListAsync(token);
+            var images = await GetQuery(user.Id).ToListAsync(token);
             images.ForEach(image => { list.Add(_imeHandler.CreateReadModel(image)); });
 
             return list;
         }
 
-        public async Task<ReadImageModel?> TryGetAsync(long id, CancellationToken token)
+        public async Task<ReadImageModel?> TryGetAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindImageAsync(id, token);
+            var entity = await TryFindImageAsync(user.Id, id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -40,7 +40,7 @@ namespace HorrorTacticsApi2.Domain
             if (!isBasicValidated)
                 throw new NotImplementedException();
 
-            var entity = await TryFindImageAsync(filename, token);
+            var entity = await TryFindImageAsync(default, filename, token);
             if (entity == default)
                 throw new HtNotFoundException("File not found");
 
@@ -73,9 +73,9 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadImageModel> ReplaceImageFileAsync(long id, CancellationToken token)
+        public async Task<ReadImageModel> ReplaceImageFileAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindImageAsync(id, token);
+            var entity = await TryFindImageAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -100,10 +100,10 @@ namespace HorrorTacticsApi2.Domain
 
         }
 
-        public async Task<ReadImageModel> UpdateImageAsync(long id, UpdateImageModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadImageModel> UpdateImageAsync(UserJwt user, long id, UpdateImageModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await TryFindImageAsync(id, token);
+            var entity = await TryFindImageAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -114,9 +114,9 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task DeleteImageAsync(long id, CancellationToken token)
+        public async Task DeleteImageAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindImageAsync(id, token);
+            var entity = await TryFindImageAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
@@ -134,22 +134,25 @@ namespace HorrorTacticsApi2.Domain
             _fileUploadHandler.DeleteUploadedFile(filename);
         }
 
-        public async Task<ImageEntity?> TryFindImageAsync(long id, CancellationToken token)
+        public async Task<ImageEntity?> TryFindImageAsync(long? userId, long id, CancellationToken token)
         {
-            var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
+            var entity = await GetQuery(userId).SingleOrDefaultAsync(x => x.Id == id, token);
             return entity;
         }
 
-        public async Task<ImageEntity?> TryFindImageAsync(string filename, CancellationToken token)
+        public async Task<ImageEntity?> TryFindImageAsync(long? userId, string filename, CancellationToken token)
         {
-            var entity = await GetQuery().SingleOrDefaultAsync(x => x.File.Filename == filename, token);
+            var entity = await GetQuery(userId).SingleOrDefaultAsync(x => x.File.Filename == filename, token);
 
             return entity;
         }
 
-        IQueryable<ImageEntity> GetQuery(bool includeFiles = true)
+        IQueryable<ImageEntity> GetQuery(long? userId, bool includeFiles = true)
         {
             IQueryable<ImageEntity> query = _context.Images;
+
+            if (userId.HasValue)
+                query = query.Where(x => x.File.Owner.Id == userId);
 
             if (includeFiles)
                 query = query.Include(x => x.File);

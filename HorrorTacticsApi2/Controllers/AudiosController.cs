@@ -30,7 +30,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<IList<ReadAudioModel>>> Get(CancellationToken token)
         {
-            return Ok(await _service.GetAllAudiosAsync(token));
+            return Ok(await _service.GetAllAudiosAsync(GetUser(), token));
         }
 
         [HttpGet("{id}")]
@@ -39,7 +39,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadAudioModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.TryGetAsync(id, token);
+            var model = await _service.TryGetAsync(GetUser(), id, token);
             if (model == default)
                 return NotFound();
 
@@ -65,7 +65,7 @@ namespace HorrorTacticsApi2.Controllers
         [Consumes(MediaTypeNames.Application.Json), Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadAudioModel>> Put([FromRoute] long id, [FromBody] UpdateAudioModel model, CancellationToken token)
         {
-            return Ok(await _service.UpdateAudioAsync(id, model, true, token));
+            return Ok(await _service.UpdateAudioAsync(GetUser(), id, model, true, token));
         }
 
         [HttpPut("{id}/file")]
@@ -75,7 +75,7 @@ namespace HorrorTacticsApi2.Controllers
         [DisableFormValueModelBinding]
         public async Task<ActionResult<ReadAudioModel>> PutFile([FromRoute] long id, CancellationToken token)
         {
-            return Ok(await _service.ReplaceAudioFileAsync(id, token));
+            return Ok(await _service.ReplaceAudioFileAsync(GetUser(), id, token));
         }
 
         [HttpDelete("{id}")]
@@ -83,7 +83,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await _service.DeleteAudioAsync(id, token);
+            await _service.DeleteAudioAsync(GetUser(), id, token);
             return NoContent();
         }
     }

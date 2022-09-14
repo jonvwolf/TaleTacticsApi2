@@ -29,7 +29,7 @@ namespace HorrorTacticsApi2.Game
             maxGameCodeLength = settings.Value.GameCodeMaxLength;
         }
 
-        public string CreateGame(ReadStoryModel story)
+        public string CreateGame(ReadStoryModel story, long userId)
         {
             // Start at 1 because 0 % 10 will increase the game code length
             for(int i = 1; i <= MaxTriesGameCode; i++)
@@ -49,7 +49,7 @@ namespace HorrorTacticsApi2.Game
                     if (games.ContainsKey(code))
                         continue;
 
-                    games[code] = new GameState(code, story);
+                    games[code] = new GameState(code, story, userId);
                     return code;
                 }
             }
@@ -74,11 +74,15 @@ namespace HorrorTacticsApi2.Game
             }
         }
 
-        public void RemoveGame(string gameCode)
+        public void RemoveGame(string gameCode, long userId)
         {
             lock (lockObj)
             {
-                games.Remove(gameCode);
+                if (games.TryGetValue(gameCode, out var state))
+                {
+                    if (state.OwnerId == userId)
+                        games.Remove(gameCode);
+                }
             }
         }
 
@@ -90,12 +94,12 @@ namespace HorrorTacticsApi2.Game
             }
         }
 
-        public IReadOnlyList<ReadGameStateModel> GetAllGames()
+        public IReadOnlyList<ReadGameStateModel> GetAllGames(long userId)
         {
             lock (lockObj)
             {
                 // TODO: only model handlers can do this (create models)
-                return games.Select(pair => new ReadGameStateModel(pair.Key, pair.Value.Story)).ToList();
+                return games.Where(x => x.Value.OwnerId == userId).Select(pair => new ReadGameStateModel(pair.Key, pair.Value.Story)).ToList();
             }
         }
 

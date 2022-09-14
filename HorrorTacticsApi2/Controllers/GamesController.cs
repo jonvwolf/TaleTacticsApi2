@@ -15,7 +15,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public class GamesController : ControllerBase
+    public class GamesController : HtController
     {
         readonly GamesService games;
         public GamesController(GamesService games)
@@ -40,7 +40,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public ActionResult<ReadGameStateModel> Get([FromRoute] string gameCode)
         {
-            var item = games.GetAllGames().SingleOrDefault(x => x.Code == gameCode);
+            var item = games.GetAllGames(GetUser()).SingleOrDefault(x => x.Code == gameCode);
             if (item == default)
                 return NotFound();
 
@@ -52,7 +52,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public ActionResult<List<ReadGameStateModel>> GetAll()
         {
-            return Ok(games.GetAllGames());
+            return Ok(games.GetAllGames(GetUser()));
         }
 
         [HttpDelete($"{Constants.SecuredApiPath}/[controller]/" + "{gameCode}")]
@@ -60,7 +60,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public ActionResult Delete([FromRoute] string gameCode)
         {
-            games.DeleteGame(gameCode);
+            games.DeleteGame(GetUser(), gameCode);
             return NoContent();
         }
     }

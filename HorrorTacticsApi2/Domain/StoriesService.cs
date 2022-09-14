@@ -20,18 +20,18 @@ namespace HorrorTacticsApi2.Domain
             _imeHandler = handler;
         }
 
-        public async Task<IList<ReadStoryModel>> GetAllStoriesAsync(CancellationToken token)
+        public async Task<IList<ReadStoryModel>> GetAllStoriesAsync(UserJwt user, CancellationToken token)
         {
             var list = new List<ReadStoryModel>();
-            var images = await GetQuery(true).ToListAsync(token);
+            var images = await GetQuery(user.Id, true).ToListAsync(token);
             images.ForEach(image => { list.Add(_imeHandler.CreateReadModel(image)); });
 
             return list;
         }
 
-        public async Task<ReadStoryModel?> TryGetAsync(long id, CancellationToken token)
+        public async Task<ReadStoryModel?> TryGetAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindStoryAsync(id, true, token);
+            var entity = await TryFindStoryAsync(user.Id, id, true, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -46,12 +46,12 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStoryModel> UpdateStoryAsync(long id, UpdateStoryModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStoryModel> UpdateStoryAsync(UserJwt user, long id, UpdateStoryModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
             // TODO: improve includeAll performance (does it really need to include all references when Put?)
             // - Even better yet... why return data when updating?
-            var entity = await TryFindStoryAsync(id, true, token);
+            var entity = await TryFindStoryAsync(user.Id, id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"Story with Id {id} not found");
 
@@ -62,9 +62,9 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task DeleteStoryAsync(long id, CancellationToken token)
+        public async Task DeleteStoryAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindStoryAsync(id, false, token);
+            var entity = await TryFindStoryAsync(user.Id, id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"Story with Id {id} not found");
 
@@ -72,16 +72,18 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
         }
 
-        public async Task<StoryEntity?> TryFindStoryAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<StoryEntity?> TryFindStoryAsync(long? userId, long id, bool includeAll, CancellationToken token)
         {
-            var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
+            var entity = await GetQuery(userId, includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 
             return entity;
         }
 
-        IQueryable<StoryEntity> GetQuery(bool includeAll = true)
+        IQueryable<StoryEntity> GetQuery(long? userId, bool includeAll = true)
         {
             IQueryable<StoryEntity> query = _context.Stories;
+            if (userId.HasValue)
+                query = query.Where(x => x.Owner.Id == userId);
 
             if (includeAll)
             {

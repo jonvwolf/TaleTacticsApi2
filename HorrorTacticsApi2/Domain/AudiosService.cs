@@ -22,18 +22,18 @@ namespace HorrorTacticsApi2.Domain
             _user = user;
         }
 
-        public async Task<IList<ReadAudioModel>> GetAllAudiosAsync(CancellationToken token)
+        public async Task<IList<ReadAudioModel>> GetAllAudiosAsync(UserJwt user, CancellationToken token)
         {
             var list = new List<ReadAudioModel>();
-            var images = await GetQuery().ToListAsync(token);
+            var images = await GetQuery(user.Id).ToListAsync(token);
             images.ForEach(image => { list.Add(_imeHandler.CreateReadModel(image)); });
 
             return list;
         }
 
-        public async Task<ReadAudioModel?> TryGetAsync(long id, CancellationToken token)
+        public async Task<ReadAudioModel?> TryGetAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(user.Id, id, token);
             return entity == default ? default : _imeHandler.CreateReadModel(entity);
         }
 
@@ -42,7 +42,7 @@ namespace HorrorTacticsApi2.Domain
             if (!isBasicValidated)
                 throw new NotImplementedException();
 
-            var entity = await TryFindAudioAsync(filename, token);
+            var entity = await TryFindAudioAsync(default, filename, token);
             if (entity == default)
                 throw new HtNotFoundException("File not found");
 
@@ -75,9 +75,9 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadAudioModel> ReplaceAudioFileAsync(long id, CancellationToken token)
+        public async Task<ReadAudioModel> ReplaceAudioFileAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Audio with Id {id} not found");
 
@@ -102,10 +102,10 @@ namespace HorrorTacticsApi2.Domain
             
         }
 
-        public async Task<ReadAudioModel> UpdateAudioAsync(long id, UpdateAudioModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadAudioModel> UpdateAudioAsync(UserJwt user, long id, UpdateAudioModel model, bool basicValidated, CancellationToken token)
         {
             _imeHandler.Validate(model, basicValidated);
-            var entity = await TryFindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Audio with Id {id} not found");
 
@@ -116,9 +116,9 @@ namespace HorrorTacticsApi2.Domain
             return _imeHandler.CreateReadModel(entity);
         }
 
-        public async Task DeleteAudioAsync(long id, CancellationToken token)
+        public async Task DeleteAudioAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await TryFindAudioAsync(id, token);
+            var entity = await TryFindAudioAsync(user.Id, id, token);
             if (entity == default)
                 throw new HtNotFoundException($"Audio with Id {id} not found");
 
@@ -136,23 +136,26 @@ namespace HorrorTacticsApi2.Domain
             _fileUploadHandler.DeleteUploadedFile(filename);
         }
 
-        public async Task<AudioEntity?> TryFindAudioAsync(long id, CancellationToken token)
+        public async Task<AudioEntity?> TryFindAudioAsync(long userId, long id, CancellationToken token)
         {
-            var entity = await GetQuery().SingleOrDefaultAsync(x => x.Id == id, token);
+            var entity = await GetQuery(userId).SingleOrDefaultAsync(x => x.Id == id, token);
 
             return entity;
         }
 
-        public async Task<AudioEntity?> TryFindAudioAsync(string filename, CancellationToken token)
+        public async Task<AudioEntity?> TryFindAudioAsync(long? userId, string filename, CancellationToken token)
         {
-            var entity = await GetQuery().SingleOrDefaultAsync(x => x.File.Filename == filename, token);
+            var entity = await GetQuery(userId).SingleOrDefaultAsync(x => x.File.Filename == filename, token);
 
             return entity;
         }
 
-        IQueryable<AudioEntity> GetQuery(bool includeFiles = true)
+        IQueryable<AudioEntity> GetQuery(long? userId, bool includeFiles = true)
         {
             IQueryable<AudioEntity> query = _context.Audios;
+
+            if (userId.HasValue)
+                query = query.Where(x => x.File.Owner.Id == userId);
 
             if (includeFiles)
                 query = query.Include(x => x.File);

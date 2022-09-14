@@ -9,7 +9,7 @@ namespace HorrorTacticsApi2.Controllers
     {
         UserJwt? userJwt;
 
-        public UserJwt GetUser()
+        protected UserJwt GetUser()
         {
             if (userJwt == default)
             {

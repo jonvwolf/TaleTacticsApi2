@@ -15,7 +15,7 @@ namespace HorrorTacticsApi2.Controllers
     [ApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public class CommandsController : ControllerBase
+    public class CommandsController : HtController
     {
         readonly StorySceneCommandsService _service;
         public CommandsController(StorySceneCommandsService service)
@@ -29,7 +29,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneCommandModel>> Get([FromRoute] long id, CancellationToken token)
         {
-            var model = await _service.TryGetAsync(id, true, token);
+            var model = await _service.TryGetAsync(GetUser(), id, true, token);
             if (model == default)
                 return NotFound();
 
@@ -41,7 +41,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<List<ReadStorySceneCommandModel>>> GetAll([FromRoute] long idStoryScene, CancellationToken token)
         {
-            var model = await _service.GetAllAsync(idStoryScene, true, token);
+            var model = await _service.GetAllAsync(GetUser(), idStoryScene, true, token);
             
             return Ok(model);
         }
@@ -53,7 +53,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneCommandModel>> Post([FromRoute] long idStoryScene, [FromBody] CreateStorySceneCommandModel model, CancellationToken token)
         {
-            var dto = await _service.CreateCommandAsync(idStoryScene, model, true, token);
+            var dto = await _service.CreateCommandAsync(GetUser(), idStoryScene, model, true, token);
             return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
         }
 
@@ -64,7 +64,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult<ReadStorySceneCommandModel>> Put([FromRoute] long id, [FromBody] UpdateStorySceneCommandModel model, CancellationToken token)
         {
-            var dto = await _service.UpdateCommandAsync(id, model, true, token);
+            var dto = await _service.UpdateCommandAsync(GetUser(), id, model, true, token);
             return Ok(dto);
         }
 
@@ -74,7 +74,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public async Task<ActionResult> Delete([FromRoute] long id, CancellationToken token)
         {
-            await _service.DeleteCommandAsync(id, token);
+            await _service.DeleteCommandAsync(GetUser(), id, token);
             return NoContent();
         }
     }

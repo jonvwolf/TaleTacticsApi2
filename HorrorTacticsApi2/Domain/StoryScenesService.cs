@@ -21,15 +21,15 @@ namespace HorrorTacticsApi2.Domain
             this.stories = stories;
         }
 
-        public async Task<ReadStorySceneModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<ReadStorySceneModel?> TryGetAsync(UserJwt user, long id, bool includeAll, CancellationToken token)
         {
-            var entity = await FindStorySceneAsync(id, includeAll, token);
+            var entity = await FindStorySceneAsync(user.Id, id, includeAll, token);
             return entity == default ? default : imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<List<ReadStorySceneModel>> GetAllAsync(long storyId, bool includeAll, CancellationToken token)
+        public async Task<List<ReadStorySceneModel>> GetAllAsync(UserJwt user, long storyId, bool includeAll, CancellationToken token)
         {
-            var list = await GetQuery(includeAll)
+            var list = await GetQuery(user.Id, includeAll)
                 .Where(x => x.ParentStory.Id == storyId)
                 .OrderBy(x => x.Title)
                 .Select(x => imeHandler.CreateReadModel(x))
@@ -38,9 +38,9 @@ namespace HorrorTacticsApi2.Domain
             return list;
         }
 
-        public async Task<ReadStorySceneModel> CreateStorySceneAsync(long storyId, CreateStorySceneModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneModel> CreateStorySceneAsync(UserJwt user, long storyId, CreateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            var story = await stories.TryFindStoryAsync(storyId, true, token);
+            var story = await stories.TryFindStoryAsync(user.Id, storyId, true, token);
             if (story == default)
                 throw new HtNotFoundException($"Story with id {storyId} not found");
 
@@ -51,9 +51,9 @@ namespace HorrorTacticsApi2.Domain
             return imeHandler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStorySceneModel> UpdateStorySceneAsync(long id, UpdateStorySceneModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneModel> UpdateStorySceneAsync(UserJwt user, long id, UpdateStorySceneModel model, bool basicValidated, CancellationToken token)
         {
-            var entity = await FindStorySceneAsync(id, true, token);
+            var entity = await FindStorySceneAsync(user.Id, id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"StoryScene with Id {id} not found");
 
@@ -64,9 +64,9 @@ namespace HorrorTacticsApi2.Domain
             return imeHandler.CreateReadModel(entity);
         }
 
-        public async Task DeleteStorySceneAsync(long id, CancellationToken token)
+        public async Task DeleteStorySceneAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await FindStorySceneAsync(id, false, token);
+            var entity = await FindStorySceneAsync(user.Id, id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"StoryScene with Id {id} not found");
 
@@ -74,16 +74,19 @@ namespace HorrorTacticsApi2.Domain
             await context.SaveChangesWrappedAsync(token);
         }
 
-        public async Task<StorySceneEntity?> FindStorySceneAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<StorySceneEntity?> FindStorySceneAsync(long? userId, long id, bool includeAll, CancellationToken token)
         {
-            var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
+            var entity = await GetQuery(userId, includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 
             return entity;
         }
 
-        IQueryable<StorySceneEntity> GetQuery(bool includeAll = true)
+        IQueryable<StorySceneEntity> GetQuery(long? userId, bool includeAll = true)
         {
             IQueryable<StorySceneEntity> query = context.StoryScenes;
+
+            if (userId.HasValue)
+                query = query.Where(x => x.ParentStory.Owner.Id == userId);
 
             if (includeAll)
             {

@@ -20,26 +20,26 @@ namespace HorrorTacticsApi2.Domain
             MaxGamesPerUser = settings.Value.MaxGamesPerUser;
         }
 
-        public async Task<ReadGameCreatedModel> CreateGameAsync(long storyId, CancellationToken token)
+        public async Task<ReadGameCreatedModel> CreateGameAsync(UserJwt user, long storyId, CancellationToken token)
         {
             // TODO: performance, only need to check if it exists
-            var story = await stories.TryGetAsync(storyId, token) ?? throw new HtNotFoundException($"Story id not found: {storyId}");
+            var story = await stories.TryGetAsync(user, storyId, token) ?? throw new HtNotFoundException($"Story id not found: {storyId}");
 
             if (gameSaver.GetTotalGames() >= MaxGamesPerUser)
                 throw new HtConflictException("Cannot create more games. Delete one first and try again");
 
             // TODO: remember that services do not handle records/models. Change this
-            return new ReadGameCreatedModel(gameSaver.CreateGame(story));
+            return new ReadGameCreatedModel(gameSaver.CreateGame(story, user.Id));
         }
 
-        public void DeleteGame(string gameCode)
+        public void DeleteGame(UserJwt user, string gameCode)
         {
-            gameSaver.RemoveGame(gameCode);
+            gameSaver.RemoveGame(gameCode, user.Id);
         }
 
-        public IReadOnlyList<ReadGameStateModel> GetAllGames()
+        public IReadOnlyList<ReadGameStateModel> GetAllGames(UserJwt user)
         {
-            return gameSaver.GetAllGames();
+            return gameSaver.GetAllGames(user.Id);
         }
 
         public ReadGameConfiguration GetGameConfiguration(string gameCode)

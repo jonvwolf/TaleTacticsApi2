@@ -22,49 +22,49 @@ namespace HorrorTacticsApi2.Domain
             this.scenes = scenes;
         }
 
-        public async Task<ReadStorySceneCommandModel?> TryGetAsync(long id, bool includeAll, CancellationToken token)
+        public async Task<ReadStorySceneCommandModel?> TryGetAsync(UserJwt user, long id, bool includeAll, CancellationToken token)
         {
-            var entity = await FindCommandAsync(id, includeAll, token);
+            var entity = await FindCommandAsync(user.Id, id, includeAll, token);
             return entity == default ? default : handler.CreateReadModel(entity);
         }
 
-        public async Task<List<ReadStorySceneCommandModel>> GetAllAsync(long storySceneId, bool includeAll, CancellationToken token)
+        public async Task<List<ReadStorySceneCommandModel>> GetAllAsync(UserJwt user, long storySceneId, bool includeAll, CancellationToken token)
         {
-            var entities = await FindCommandsAsync(includeAll, storySceneId, token);
+            var entities = await FindCommandsAsync(user.Id, includeAll, storySceneId, token);
             return handler.CreateReadModel(entities);
         }
 
-        public async Task<ReadStorySceneCommandModel> CreateCommandAsync(long sceneId, CreateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneCommandModel> CreateCommandAsync(UserJwt user, long sceneId, CreateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
         {
-            var scene = await scenes.FindStorySceneAsync(sceneId, true, token);
+            var scene = await scenes.FindStorySceneAsync(user.Id, sceneId, true, token);
             if (scene == default)
                 throw new HtNotFoundException($"Scene with id {sceneId} not found");
 
             handler.Validate(model, basicValidated);
-            var entity = await handler.CreateEntityAsync(model, scene, token);
+            var entity = await handler.CreateEntityAsync(user, model, scene, token);
             context.StorySceneCommands.Add(entity);
             await context.SaveChangesWrappedAsync(token);
 
             return handler.CreateReadModel(entity);
         }
 
-        public async Task<ReadStorySceneCommandModel> UpdateCommandAsync(long id, UpdateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
+        public async Task<ReadStorySceneCommandModel> UpdateCommandAsync(UserJwt user, long id, UpdateStorySceneCommandModel model, bool basicValidated, CancellationToken token)
         {
-            var entity = await FindCommandAsync(id, true, token);
+            var entity = await FindCommandAsync(user.Id, id, true, token);
             if (entity == default)
                 throw new HtNotFoundException($"Command with Id {id} not found");
 
             handler.Validate(model, basicValidated);
-            await handler.UpdateEntityAsync(model, entity, token);
+            await handler.UpdateEntityAsync(user, model, entity, token);
 
             await context.SaveChangesWrappedAsync(token);
 
             return handler.CreateReadModel(entity);
         }
 
-        public async Task DeleteCommandAsync(long id, CancellationToken token)
+        public async Task DeleteCommandAsync(UserJwt user, long id, CancellationToken token)
         {
-            var entity = await FindCommandAsync(id, false, token);
+            var entity = await FindCommandAsync(user.Id, id, false, token);
             if (entity == default)
                 throw new HtNotFoundException($"Command with Id {id} not found");
 
@@ -72,24 +72,25 @@ namespace HorrorTacticsApi2.Domain
             await context.SaveChangesWrappedAsync(token);
         }
 
-        async Task<StorySceneCommandEntity?> FindCommandAsync(long id, bool includeAll, CancellationToken token)
+        async Task<StorySceneCommandEntity?> FindCommandAsync(long? userId, long id, bool includeAll, CancellationToken token)
         {
-            var entity = await GetQuery(includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
+            var entity = await GetQuery(userId, includeAll).SingleOrDefaultAsync(x => x.Id == id, token);
 
             return entity;
         }
 
-        async Task<List<StorySceneCommandEntity>> FindCommandsAsync(bool includeAll, long storySceneId, CancellationToken token)
+        async Task<List<StorySceneCommandEntity>> FindCommandsAsync(long? userId, bool includeAll, long storySceneId, CancellationToken token)
         {
-            var entity = await GetQuery(includeAll).Where(x => x.ParentStoryScene.Id == storySceneId).ToListAsync(token);
+            var entity = await GetQuery(userId, includeAll).Where(x => x.ParentStoryScene.Id == storySceneId).ToListAsync(token);
 
             return entity;
         }
 
-        IQueryable<StorySceneCommandEntity> GetQuery(bool includeAll = true)
+        IQueryable<StorySceneCommandEntity> GetQuery(long? userId, bool includeAll = true)
         {
             IQueryable<StorySceneCommandEntity> query = context.StorySceneCommands;
-
+            if (userId.HasValue)
+                query = query.Where(x => x.ParentStoryScene.ParentStory.Owner.Id == userId);
             if (includeAll)
             {
                 // TODO: this should be organized (code)

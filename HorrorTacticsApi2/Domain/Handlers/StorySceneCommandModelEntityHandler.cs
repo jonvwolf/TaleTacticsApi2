@@ -35,20 +35,20 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 throw new NotImplementedException("basicValidated");
         }
 
-        public async Task<StorySceneCommandEntity> CreateEntityAsync(CreateStorySceneCommandModel model, StorySceneEntity parent, CancellationToken token)
+        public async Task<StorySceneCommandEntity> CreateEntityAsync(UserJwt user, CreateStorySceneCommandModel model, StorySceneEntity parent, CancellationToken token)
         {
             return new StorySceneCommandEntity(
                 parent,
                 model.Title,
                 model.Texts,
                 CreateTimersFromList(model.Timers),
-                await FindImagesFromIdsAsync(model.Images, token),
-                await FindAudiosFromIdsAsync(model.Audios, token),
+                await FindImagesFromIdsAsync(user, model.Images, token),
+                await FindAudiosFromIdsAsync(user, model.Audios, token),
                 model.Minigames ?? new List<long>()
             );
         }
 
-        public async Task UpdateEntityAsync(UpdateStorySceneCommandModel model, StorySceneCommandEntity entity, CancellationToken token)
+        public async Task UpdateEntityAsync(UserJwt user, UpdateStorySceneCommandModel model, StorySceneCommandEntity entity, CancellationToken token)
         {
             entity.Title = model.Title;
 
@@ -62,7 +62,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 // TODO: improve this (performance)
                 entity.Images.Clear();
                 if (model.Images.Count > 0)
-                    entity.Images.AddRange(await FindImagesFromIdsAsync(model.Images, token));
+                    entity.Images.AddRange(await FindImagesFromIdsAsync(user, model.Images, token));
             }
 
             if (model.Audios != default)
@@ -70,7 +70,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 // TODO: improve this (performance)
                 entity.Audios.Clear();
                 if (model.Audios.Count > 0)
-                    entity.Audios.AddRange(await FindAudiosFromIdsAsync(model.Audios, token));
+                    entity.Audios.AddRange(await FindAudiosFromIdsAsync(user, model.Audios, token));
             }
 
             if(model.Minigames != default)
@@ -122,7 +122,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
             return timers.Split(Separator, StringSplitOptions.RemoveEmptyEntries).Select(x => uint.Parse(x)).ToList();
         }
 
-        async Task<List<ImageEntity>> FindImagesFromIdsAsync(IReadOnlyList<long>? imageIds, CancellationToken token)
+        async Task<List<ImageEntity>> FindImagesFromIdsAsync(UserJwt user, IReadOnlyList<long>? imageIds, CancellationToken token)
         {
             var imagesEntities = new List<ImageEntity>();
             // TODO: optimize, only need to know the Ids exist
@@ -131,7 +131,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 foreach (var imageId in imageIds)
                 {
                     // TODO: includeAll should be here too for the TryFind
-                    var entity = await images.TryFindImageAsync(imageId, token);
+                    var entity = await images.TryFindImageAsync(user.Id, imageId, token);
                     if (entity != default)
                         imagesEntities.Add(entity);
                 }
@@ -139,7 +139,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
             return imagesEntities;
         }
 
-        async Task<List<AudioEntity>> FindAudiosFromIdsAsync(IReadOnlyList<long>? audioIds, CancellationToken token)
+        async Task<List<AudioEntity>> FindAudiosFromIdsAsync(UserJwt user, IReadOnlyList<long>? audioIds, CancellationToken token)
         {
             var audioEntities = new List<AudioEntity>();
             // TODO: optimize, only need to know the Ids exist
@@ -148,7 +148,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 foreach (var audioId in audioIds)
                 {
                     // TODO: includeAll should be here too for the TryFind
-                    var entity = await audios.TryFindAudioAsync(audioId, token);
+                    var entity = await audios.TryFindAudioAsync(user.Id, audioId, token);
                     if (entity != default)
                         audioEntities.Add(entity);
                 }
