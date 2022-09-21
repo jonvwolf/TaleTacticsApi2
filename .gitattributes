@@ -1,3 +1,5 @@
+[attr]lfs -text filter=lfs diff=lfs merge=lfs
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
@@ -40,12 +42,11 @@
 #
 # image files are treated as binary by default.
 ###############################################################################
-*.jpg   binary
-*.jpeg   binary
-*.png   binary
-#*.gif   binary
+*.jpg   lfs
+*.png   lfs
+*.gif   lfs
 
-*.mp3 binary
+*.mp3 lfs
 
 ###############################################################################
 # diff behavior for common document formats
