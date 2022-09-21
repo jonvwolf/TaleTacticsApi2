@@ -40,9 +40,12 @@
 #
 # image files are treated as binary by default.
 ###############################################################################
-#*.jpg   binary
-#*.png   binary
+*.jpg   binary
+*.jpeg   binary
+*.png   binary
 #*.gif   binary
+
+*.mp3 binary
 
 ###############################################################################
 # diff behavior for common document formats
