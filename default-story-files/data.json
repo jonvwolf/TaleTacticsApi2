@@ -1,0 +1,27 @@
+{
+	"storyTitle": "",
+	"storyDescription": "",
+	
+	"texts": {
+		"introGraveyard1": "My father has recently passed away. He was a retired war hero. Along with our nation, he fought against the heretics who brought chaos and suffering to our lands.",
+		"introGraveyard2": "He used to tell me stories about the Great War, and how it defined his life. I never confronted him, and deep inside, I sensed he was hiding something. Maybe it was something he wasn't proud of. And I think it was related to my mother.",
+		"introGraveyard3": "I barely remember my mother. My father told me she died giving birth to me, but his eyes were telling a different story.",
+		"introGraveyard4": "My father wasn't perfect, but he did everything he could to teach me and survive on my own. And for this, I am grateful. Rest in peace, papa.",
+		"introHouse1": "It has been a couple of weeks, and I haven't been able to return to normality. The house feels void of life. Sometimes, I stare around the house, losing track of time, trying to relive my time with my father. Where we used to eat, where we used to train, where he used to tell me about his peculiar stories.",
+		"introHouse2": "But it's time... to make my own path, to leave the past and go forward. It's time to do good, to help my nation, my people, just like my papa. I want to make him proud.",
+		"introHouseInsignia1": "I will carry my father's insignia, the one he wore during the Great War. I hope one day I will be worthy of wearing it.",
+		"bodyCampfire1": "One more day of traveling, and I will soon be at Invictea's Kingdom. It was my mother's birthplace, and I wonder how is life over there. My father always told me stories about the place, and how the final battle was fought there. Our nation was on the brink of losing.",
+		"bodyCampfire2": "I'm sure there will be plenty of opportunities to support my nation and make a name of my own. Can't wait!"
+		"bodyCastle1": "At last! Invictea's Kingdom! Wow, it looks even more amazing in person! There are so many people and... is that a frog talking?",
+		"bodyCastleRest1": "Uggh... I'm so hungry, what's that smell? It... looks... so... tasty... I want one!",
+		"bodyCastleRest2": "Food seller: That would be 20 silver coins\r\nYou: Oh, right! Let's see 20 silver co- Oops, I dropped my father's insignia.",
+		"bodyCastleRest3": "Food seller: Wh- Wha- What is that?! GUARDS!!! GUARDS!!! GUARDS!!!\r\nYou: Uhh... what is going on? What did I do?",
+		"bodyCastleRest4": "Kingdom's Knight: On behalf of our nation and the Queen's Invictea's orders, you are arrested.\r\nYou: What?! Why?!",
+		"bodyCastleRest5": "Kingdom's Knight: For carrying the heretics' insignia. You: Wa- Wai- Wait! No! No! No! This is my father's insignia! He fought against the heretics!",
+		"bodyCastleRest6": "Kingdom's Knight: Silence! You will face justice, heretic!",
+		"endJail1": "It has been a couple of days since I was arrested, at least I think. It's hard to keep account of days when it is this dark.",
+		"endJail2": "I can't believe this... if I could explain the situation, I'm sure the Queen will understand. My father a heretic? That is ridiculous! He- He couldn't have lied to me, right? No way.",
+		"endJailInsignia1": "My father is a war hero, he sacrificed so much for our nation... It has to be a mistake. Maybe... am I confusing things? Could this insignia be an enemy trophy? No, it can't be. I remember perfectly, that the heretic's insignia is all black with a red eye in the center.",
+		"endJailInsignia2": "My trial will be tomorrow. I need to be ready. Once I explain the situation and mention my father's name, everything will be fine again. I'm sure of it!"
+	}
+}
