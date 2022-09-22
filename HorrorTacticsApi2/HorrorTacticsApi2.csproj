@@ -9,6 +9,78 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="..\default-story-files\body_campfire.jpg" Link="DefaultStoryFiles\body_campfire.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_campfire.mp3" Link="DefaultStoryFiles\body_campfire.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_castle_theme.mp3" Link="DefaultStoryFiles\body_castle_theme.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_chest.jpg" Link="DefaultStoryFiles\body_chest.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_chest_insignia.jpg" Link="DefaultStoryFiles\body_chest_insignia.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_entrance.jpg" Link="DefaultStoryFiles\body_entrance.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_entrance_guard.jpg" Link="DefaultStoryFiles\body_entrance_guard.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_jail.jpg" Link="DefaultStoryFiles\body_jail.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_knight.mp3" Link="DefaultStoryFiles\body_knight.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_market_ambience.mp3" Link="DefaultStoryFiles\body_market_ambience.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_ramen_restaurant.jpg" Link="DefaultStoryFiles\body_ramen_restaurant.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\body_ramen_restaurant_knight.jpg" Link="DefaultStoryFiles\body_ramen_restaurant_knight.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\credits_okay.mp3" Link="DefaultStoryFiles\credits_okay.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\end_credits.jpg" Link="DefaultStoryFiles\end_credits.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\end_fail.mp3" Link="DefaultStoryFiles\end_fail.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\end_insignia.jpg" Link="DefaultStoryFiles\end_insignia.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\end_tobecontinued.jpg" Link="DefaultStoryFiles\end_tobecontinued.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\end_tobecontinued_part2.jpg" Link="DefaultStoryFiles\end_tobecontinued_part2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\intro_graveyard.jpg" Link="DefaultStoryFiles\intro_graveyard.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\intro_house.jpg" Link="DefaultStoryFiles\intro_house.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\intro_theme.mp3" Link="DefaultStoryFiles\intro_theme.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\intro_title.jpg" Link="DefaultStoryFiles\intro_title.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\se_stomach.mp3" Link="DefaultStoryFiles\se_stomach.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Jonwolfdev.Utils6" Version="20220128.8.0-beta" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
@@ -31,6 +103,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DefaultStoryFiles\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

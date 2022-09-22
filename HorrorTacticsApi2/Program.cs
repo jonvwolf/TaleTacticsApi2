@@ -68,13 +68,6 @@ try
     builder.Services.AddSingleton<IFileIO, PhysicalFileIO>();
     builder.Services.AddHttpContextAccessor();
 
-    builder.Services.AddSingleton<IFileProvider>(services =>
-    {
-        var config = services.GetRequiredService<IOptions<AppSettings>>().Value;
-        var physicalProvider = new PhysicalFileProvider(config.UploadPath);
-        return physicalProvider;
-    });
-
     builder.Services
         .AddSignalR()
         .AddNewtonsoftJsonProtocol();

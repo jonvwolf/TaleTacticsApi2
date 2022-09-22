@@ -44,7 +44,7 @@ namespace HorrorTacticsApi2.Domain
         /// <param name="entity"></param>
         /// <param name="newFile"></param>
         /// <returns>Returns the file to be deleted</returns>
-        public string UpdateEntity(ImageEntity entity, FileUploaded newFile)
+        public string? UpdateEntity(ImageEntity entity, FileUploaded newFile)
         {
             string oldFile = entity.File.Filename;
 
@@ -52,6 +52,12 @@ namespace HorrorTacticsApi2.Domain
             entity.File.Filename = newFile.Filename;
             entity.File.IsVirusScanned = false;
             entity.File.SizeInBytes = newFile.SizeInBytes;
+
+            if (entity.File.IsDefault)
+            {
+                entity.File.IsDefault = false;
+                return default;
+            }
 
             // TODO: update width/height AFTER virus scan
             return oldFile;

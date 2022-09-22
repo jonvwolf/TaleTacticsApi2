@@ -47,7 +47,7 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtNotFoundException("File not found");
 
             // this is fine as long as it is validated against database value
-            var stream = _fileUploadHandler.GetFileStream(filename);
+            var stream = _fileUploadHandler.GetFileStream(filename, entity.File.IsDefault);
 
             return stream;
         }
@@ -83,7 +83,7 @@ namespace HorrorTacticsApi2.Domain
 
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedAudioExtensionsForUpload, token);
 
-            string oldFileToDelete;
+            string? oldFileToDelete;
 
             try
             {
@@ -96,7 +96,8 @@ namespace HorrorTacticsApi2.Domain
                 throw;
             }
 
-            _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
+            if (oldFileToDelete != default)
+                _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
 
             return _imeHandler.CreateReadModel(entity);
             
@@ -123,6 +124,7 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtNotFoundException($"Audio with Id {id} not found");
 
             string filename = entity.File.Filename;
+            bool isDefault = entity.File.IsDefault;
 
             using var transaction = await _context.CreateTransactionAsync();
 
@@ -132,8 +134,11 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
             await transaction.CommitAsync(token);
 
-            // TODO: move physical file to a trash folder, if entity fails to be removed, bring back the file
-            _fileUploadHandler.DeleteUploadedFile(filename);
+            if (!isDefault)
+            {
+                // TODO: move physical file to a trash folder, if entity fails to be removed, bring back the file
+                _fileUploadHandler.DeleteUploadedFile(filename);
+            }
         }
 
         public async Task<AudioEntity?> TryFindAudioAsync(long userId, long id, CancellationToken token)

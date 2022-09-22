@@ -45,7 +45,7 @@ namespace HorrorTacticsApi2.Domain
                 throw new HtNotFoundException("File not found");
 
             // this is fine as long as it is validated against database value
-            var stream = _fileUploadHandler.GetFileStream(filename);
+            var stream = _fileUploadHandler.GetFileStream(filename, entity.File.IsDefault);
 
             return stream;
         }
@@ -81,7 +81,7 @@ namespace HorrorTacticsApi2.Domain
 
             var uploadedFile = await _fileUploadHandler.HandleAsync(FormatHelper.AllowedImageExtensionsForUpload, token);
 
-            string oldFileToDelete;
+            string? oldFileToDelete;
 
             try
             {
@@ -94,7 +94,8 @@ namespace HorrorTacticsApi2.Domain
                 throw;
             }
 
-            _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
+            if (oldFileToDelete != default)
+                _fileUploadHandler.TryDeleteUploadedFile(oldFileToDelete);
 
             return _imeHandler.CreateReadModel(entity);
 
@@ -120,6 +121,7 @@ namespace HorrorTacticsApi2.Domain
             if (entity == default)
                 throw new HtNotFoundException($"Image with Id {id} not found");
 
+            bool isDefault = entity.File.IsDefault;
             string filename = entity.File.Filename;
 
             using var transaction = await _context.CreateTransactionAsync();
@@ -130,8 +132,11 @@ namespace HorrorTacticsApi2.Domain
             await _context.SaveChangesWrappedAsync(token);
             await transaction.CommitAsync(token);
 
-            // TODO: move physical file to a trash folder, if entity fails to be removed, bring back the file
-            _fileUploadHandler.DeleteUploadedFile(filename);
+            if (!isDefault)
+            {
+                // TODO: move physical file to a trash folder, if entity fails to be removed, bring back the file
+                _fileUploadHandler.DeleteUploadedFile(filename);
+            }
         }
 
         public async Task<ImageEntity?> TryFindImageAsync(long? userId, long id, CancellationToken token)

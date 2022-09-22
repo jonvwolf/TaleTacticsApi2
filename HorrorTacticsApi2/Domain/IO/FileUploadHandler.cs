@@ -27,9 +27,13 @@ namespace HorrorTacticsApi2.Domain
             _io = io;
         }
 
-        public Stream GetFileStream(string filename)
+        public Stream GetFileStream(string filename, bool isDefault)
         {
-            var fullpath = Path.Combine(_options.UploadPath, filename);
+            var path = _options.UploadPath;
+            if (isDefault)
+                path = Constants.DefaultFilePath;
+
+            var fullpath = Path.Combine(path, filename);
             return _io.GetFileStream(fullpath);
         }
 

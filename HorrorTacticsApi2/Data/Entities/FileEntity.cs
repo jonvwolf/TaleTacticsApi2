@@ -21,6 +21,7 @@ namespace HorrorTacticsApi2.Data.Entities
         public bool IsVirusScanned { get; set; }
         [Required]
         public UserEntity Owner { get; set; } = UserEntity.EmptyUser;
+        public bool IsDefault { get; set; }
         public FileEntity()
         {
 
