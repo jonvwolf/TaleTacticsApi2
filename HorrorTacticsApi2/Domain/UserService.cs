@@ -13,12 +13,17 @@ namespace HorrorTacticsApi2.Domain
         readonly IHorrorDbContext _context;
         readonly UserModelEntityHandler _handler;
         readonly PasswordHelper _passwordHelper;
+        readonly DefaultStoryCreatorService _creatorService;
+        readonly ILogger<UserService> _logger;
 
-        public UserService(IHorrorDbContext context, UserModelEntityHandler handler, PasswordHelper passwordHelper)
+        public UserService(IHorrorDbContext context, UserModelEntityHandler handler, PasswordHelper passwordHelper, DefaultStoryCreatorService creatorService,
+            ILogger<UserService> logger)
         {
             _context = context;
             _handler = handler;
             _passwordHelper = passwordHelper;
+            _creatorService = creatorService;
+            _logger = logger;
         }
 
         public async Task<ReadUserModel?> TryGetAsync(string password, string username, CancellationToken token, bool updateLastLogin = false)
@@ -26,6 +31,9 @@ namespace HorrorTacticsApi2.Domain
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username, token);
             if (user == default)
                 return default;
+
+            // TODO: remove this
+            await _creatorService.CreateAsync(user, CancellationToken.None);
 
             var pw = _passwordHelper.GenerateHash(password, user.Salt);
 
@@ -64,6 +72,17 @@ namespace HorrorTacticsApi2.Domain
 
             _context.Users.Add(entity);
             await _context.SaveChangesWrappedAsync(token);
+
+            try
+            {
+                // Do not pass token as we don't want to cancel.
+                // Do whatever it is possible to create the default story for the user
+                await _creatorService.CreateAsync(entity, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Couldn't create default story for user: {userId}", entity.Id);
+            }
 
             return _handler.CreateReadModel(entity);
         }

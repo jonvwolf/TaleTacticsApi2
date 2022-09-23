@@ -53,6 +53,7 @@ try
     builder.Services.AddScoped<GameModelStateHandler>();
     builder.Services.AddScoped<UserService>();
     builder.Services.AddScoped<UserModelEntityHandler>();
+    builder.Services.AddScoped<DefaultStoryCreatorService>();
     builder.Services.AddSingleton<PasswordHelper>();
 
     builder.Services.AddScoped<ImagesService>();

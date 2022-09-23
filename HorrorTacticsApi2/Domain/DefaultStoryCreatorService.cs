@@ -8,20 +8,13 @@ namespace HorrorTacticsApi2.Domain
 {
     public class DefaultStoryCreatorService
     {
-        readonly StoryScenesService _storyScenesService; 
-        readonly StoriesService _storiesService; 
-        readonly StorySceneCommandsService _storySceneCommandsService;
         readonly IHorrorDbContext _context;
-        public DefaultStoryCreatorService(StoryScenesService storyScenesService, StoriesService storiesService, StorySceneCommandsService storySceneCommandsService,
-            IHorrorDbContext context)
+        public DefaultStoryCreatorService(IHorrorDbContext context)
         {
-            _storiesService = storiesService;
-            _storyScenesService = storyScenesService;
-            _storySceneCommandsService = storySceneCommandsService;
             _context = context;
         }
 
-        public async Task Create(UserEntity entity, CancellationToken token)
+        public async Task CreateAsync(UserEntity entity, CancellationToken token)
         {
             var contents = await File.ReadAllTextAsync(Path.Combine(Constants.DefaultFilePath, Constants.DefaultDataFile), token);
             var data = JsonConvert.DeserializeObject<DefaultDataModel>(contents);
@@ -30,7 +23,7 @@ namespace HorrorTacticsApi2.Domain
 
             ObjectValidator<DefaultStoryCreatorService>.ValidateObject(data, nameof(data));
 
-            // TODO: this should go through services and modelentity handlers
+            // TODO: this should go through services and modelentity handlers (careful with circular dependency...)
             var story = new StoryEntity(data.StoryTitle, data.StoryDescription, new List<StorySceneEntity>(), entity);
             _context.Stories.Add(story);
 
@@ -74,9 +67,7 @@ namespace HorrorTacticsApi2.Domain
                 }
             }
 
-            // Do not pass token as we don't want to cancel.
-            // Do whatever it is possible to create the default story for the user
-            await _context.SaveChangesWrappedAsync(CancellationToken.None);
+            await _context.SaveChangesWrappedAsync(token);
         }
 
         static ImageEntity CreateImage(string id, DefaultDataImageModel info, UserEntity user)
