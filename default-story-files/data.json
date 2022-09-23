@@ -1,6 +1,33 @@
 {
-	"storyTitle": "",
-	"storyDescription": "",
+	"storyTitle": "A father's legacy (Example story)",
+	"storyDescription": "Hi! Welcome to my Horror Tactics platform, where you can easily create stories and share it with your friends! This story is an example to get you started! Just click `Start Game` on the Home page and it will start the game so your friends can join the fun!\r\nFor more help, there is a link on the menu (left side). Story made by me (@jonwolfdev)",
+	
+	"images": {
+		"intro_title.jpg": {"size":  47000},
+		"intro_graveyard.jpg": {"size":  76000},
+		"intro_house.jpg": {"size":  68000},
+		"body_chest_insignia.jpg": {"size":  60000},
+		"body_campfire.jpg": {"size":  55000},
+		"body_entrance.jpg": {"size":  106000},
+		"body_ramen_restaurant.jpg": {"size":  75000},
+		"body_ramen_restaurant_knight.jpg": {"size":  82000},
+		"body_jail.jpg": {"size":  110000},
+		"end_tobecontinued.jpg": {"size":  42000},
+		"end_insignia.jpg": {"size":  39000},
+		"end_credits.jpg": {"size":  123000},
+		"end_tobecontinued_part2.jpg": {"size":  95000},
+	},
+	
+	"sounds": {
+		"intro_theme.mp3": { "size": 740000, "isBgm": "true" },
+		"body_campfire.mp3": { "size": 522000, "isBgm": "true" },
+		"body_castle_theme2.mp3": { "size": 414000, "isBgm": "true" },
+		"body_knight.mp3": { "size": 174000, "isBgm": "true" },
+		"end_fail.mp3": { "size": 556000, "isBgm": "true" },
+		"credits_okay.mp3": { "size": 1250000, "isBgm": "true" },
+		
+		"se_stomach.mp3": { "size": 3500, "isBgm": "false" },
+	},
 	
 	"texts": {
 		"introGraveyard1": "My father has recently passed away. He was a retired war hero. Along with our nation, he fought against the heretics who brought chaos and suffering to our lands.",
@@ -22,6 +49,64 @@
 		"endJail1": "It has been a couple of days since I was arrested, at least I think. It's hard to keep account of days when it is this dark.",
 		"endJail2": "I can't believe this... if I could explain the situation, I'm sure the Queen will understand. My father a heretic? That is ridiculous! He- He couldn't have lied to me, right? No way.",
 		"endJailInsignia1": "My father is a war hero, he sacrificed so much for our nation... It has to be a mistake. Maybe... am I confusing things? Could this insignia be an enemy trophy? No, it can't be. I remember perfectly, that the heretic's insignia is all black with a red eye in the center.",
-		"endJailInsignia2": "My trial will be tomorrow. I need to be ready. Once I explain the situation and mention my father's name, everything will be fine again. I'm sure of it!"
-	}
+		"endJailInsignia2": "My trial will be tomorrow. I need to be ready. Once I explain the situation and mention my father's name, everything will be fine again. I'm sure of it!",
+		"endThankYou": "Thank you for experiencing my story! Let me know what you think! on twitter @jonwolfdev"
+	},
+	
+	"scenes": [
+		{
+			"title": "1. Introduction - The Graveyard",
+			"commands": [
+				{"title": "1. Start scene", "imageId": "intro_title.jpg", "soundIds": ["intro_theme.mp3"]},
+				{"title": "2. Show graveyard", "imageId": "intro_graveyard.jpg", "textId": "introGraveyard1" },
+				{"title": "3. Show next text", "textId": "introGraveyard2" },
+				{"title": "4. Show next text", "textId": "introGraveyard3" },
+				{"title": "5. Show next text", "textId": "introGraveyard4" },
+			]
+		},
+		{
+			"title": "2. Introduction - Farm House",
+			"commands": [
+				{"title": "1. Start scene", "imageId": "intro_house.jpg", "textId": "introHouse1", "soundIds": ["intro_theme.mp3"]},
+				{"title": "2. Show next text", "textId": "introHouse2" },
+				{"title": "3. Show chest w/ insignia", "imageId": "body_chest_insignia.jpg", "textId": "introHouseInsignia1" },
+			]
+		},
+		{
+			"title": "3. Body - Campfire",
+			"commands": [
+				{"title": "1. Start scene", "imageId": "body_campfire.jpg", "textId": "bodyCampfire1", "soundIds": ["body_campfire.mp3"]},
+				{"title": "2. Show next text", "textId": "bodyCampfire2" }
+			]
+		},
+		{
+			"title": "4. Body - Invictea's Kingdom",
+			"commands": [
+				{"title": "1. Start scene", "imageId": "body_entrance.jpg", "textId": "bodyCastle1", "soundIds": ["body_castle_theme2.mp3"]},
+				{"title": "2. Show food", "imageId": "body_ramen_restaurant.jpg", "textId": "bodyCastleRest1", "soundIds": ["se_stomach.mp3"]},
+				{"title": "3. Show next text", "textId": "bodyCastleRest2" },
+				{"title": "4. Show next text", "textId": "bodyCastleRest3" },
+				{"title": "5. Show knight", "imageId": "body_ramen_restaurant_knight.jpg", "textId": "bodyCastleRest4", "soundIds": ["body_knight.mp3"]},
+				{"title": "6. Show next text", "textId": "bodyCastleRest5" },
+				{"title": "7. Show next text", "textId": "bodyCastleRest6" },
+			]
+		},
+		{
+			"title": "5. Ending - Jail",
+			"commands": [
+				{"title": "1. Start scene", "imageId": "body_jail.jpg", "textId": "endJail1", "soundIds": ["end_fail.mp3"]},
+				{"title": "2. Show next text", "textId": "endJail2" },
+				{"title": "3. Show insignia", "imageId": "end_insignia.jpg", "textId": "endJailInsignia1" },
+				{"title": "4. Show next text", "textId": "endJailInsignia2" },
+				{"title": "5. Show to be continued", "imageId": "end_tobecontinued.jpg", "textId": "endThankYou" },
+			]
+		},
+		{
+			"title": "6. Credits",
+			"commands": [
+				{"title": "1. Start credits", "imageId": "end_credits.jpg", "soundIds": ["credits_okay.mp3"]},
+				{"title": "2. Show next credits", "imageId": "end_tobecontinued_part2.jpg" },
+			]
+		}
+	]
 }
