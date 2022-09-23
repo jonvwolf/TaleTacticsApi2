@@ -15,10 +15,7 @@
     <Content Include="..\default-story-files\body_campfire.mp3" Link="DefaultStoryFiles\body_campfire.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\default-story-files\body_castle_theme.mp3" Link="DefaultStoryFiles\body_castle_theme.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\default-story-files\body_chest.jpg" Link="DefaultStoryFiles\body_chest.jpg">
+    <Content Include="..\default-story-files\body_castle_theme2.mp3" Link="DefaultStoryFiles\body_castle_theme2.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\default-story-files\body_chest_insignia.jpg" Link="DefaultStoryFiles\body_chest_insignia.jpg">
@@ -27,16 +24,10 @@
     <Content Include="..\default-story-files\body_entrance.jpg" Link="DefaultStoryFiles\body_entrance.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\default-story-files\body_entrance_guard.jpg" Link="DefaultStoryFiles\body_entrance_guard.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\default-story-files\body_jail.jpg" Link="DefaultStoryFiles\body_jail.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\default-story-files\body_knight.mp3" Link="DefaultStoryFiles\body_knight.mp3">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\default-story-files\body_market_ambience.mp3" Link="DefaultStoryFiles\body_market_ambience.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\default-story-files\body_ramen_restaurant.jpg" Link="DefaultStoryFiles\body_ramen_restaurant.jpg">
@@ -46,6 +37,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\default-story-files\credits_okay.mp3" Link="DefaultStoryFiles\credits_okay.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\default-story-files\data.json" Link="DefaultStoryFiles\data.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\default-story-files\end_credits.jpg" Link="DefaultStoryFiles\end_credits.jpg">
@@ -103,7 +97,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DefaultStoryFiles\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

@@ -22,6 +22,7 @@
         public const string FileAudioApiPathWithVars = "audios/{filename}";
 
         public const string DefaultFilePath = "DefaultStoryFiles";
+        public const string DefaultDataFile = "data.json";
 
         public const string AdminUsername = "ht-master";
         public const long AdminUserId = 1;
