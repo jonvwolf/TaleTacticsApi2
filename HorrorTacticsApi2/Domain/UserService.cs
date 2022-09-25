@@ -32,9 +32,6 @@ namespace HorrorTacticsApi2.Domain
             if (user == default)
                 return default;
 
-            // TODO: remove this
-            await _creatorService.CreateAsync(user, CancellationToken.None);
-
             var pw = _passwordHelper.GenerateHash(password, user.Salt);
 
             if (user.Password.SequenceEqual(pw))

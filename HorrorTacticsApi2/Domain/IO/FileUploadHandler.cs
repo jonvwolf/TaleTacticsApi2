@@ -31,7 +31,10 @@ namespace HorrorTacticsApi2.Domain
         {
             var path = _options.UploadPath;
             if (isDefault)
-                path = Constants.DefaultFilePath;
+            {
+                path = Constants.GetDefaultFilePath();
+                filename = DefaultStoryCreatorService.GetFullPath(filename);
+            }
 
             var fullpath = Path.Combine(path, filename);
             return _io.GetFileStream(fullpath);

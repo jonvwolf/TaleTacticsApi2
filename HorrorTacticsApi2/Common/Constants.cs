@@ -1,4 +1,6 @@
-﻿namespace HorrorTacticsApi2
+﻿using System.Reflection;
+
+namespace HorrorTacticsApi2
 {
     public static class Constants
     {
@@ -21,7 +23,7 @@
         public const string FileImageApiPathWithVars = "images/{filename}";
         public const string FileAudioApiPathWithVars = "audios/{filename}";
 
-        public const string DefaultFilePath = "DefaultStoryFiles";
+        const string DefaultFilePath = "DefaultStoryFiles";
         public const string DefaultDataFile = "data.json";
 
         public const string AdminUsername = "ht-master";
@@ -41,6 +43,17 @@
         public static string GetFileAudioApiPath(string filename)
         {
             return FileAudioApiPathWithVars.Replace("{filename}", filename);
+        }
+
+        public static string GetDefaultFilePath()
+        {
+            Assembly asm = Assembly.GetExecutingAssembly();
+            string? path = Path.GetDirectoryName(asm.Location);
+
+            if (path == default)
+                throw new InvalidOperationException("path is null");
+
+            return Path.Combine(path, DefaultFilePath);
         }
     }
 }

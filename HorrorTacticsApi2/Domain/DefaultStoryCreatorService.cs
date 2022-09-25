@@ -9,6 +9,8 @@ namespace HorrorTacticsApi2.Domain
     public class DefaultStoryCreatorService
     {
         readonly IHorrorDbContext _context;
+        const string FilenameSeparator = "_";
+
         public DefaultStoryCreatorService(IHorrorDbContext context)
         {
             _context = context;
@@ -16,7 +18,7 @@ namespace HorrorTacticsApi2.Domain
 
         public async Task CreateAsync(UserEntity entity, CancellationToken token)
         {
-            var contents = await File.ReadAllTextAsync(Path.Combine(Constants.DefaultFilePath, Constants.DefaultDataFile), token);
+            var contents = await File.ReadAllTextAsync(Path.Combine(Constants.GetDefaultFilePath(), Constants.DefaultDataFile), token);
             var data = JsonConvert.DeserializeObject<DefaultDataModel>(contents);
             if (data == default)
                 throw new InvalidOperationException("Data was null/empty");
@@ -72,7 +74,7 @@ namespace HorrorTacticsApi2.Domain
 
         static ImageEntity CreateImage(string id, DefaultDataImageModel info, UserEntity user)
         {
-            var fileEntity = new FileEntity(id, FileFormatEnum.JPG, id, info.Size, user)
+            var fileEntity = new FileEntity(id, FileFormatEnum.JPG, RandomizeFilename(id), info.Size, user)
             {
                 IsDefault = true
             };
@@ -83,7 +85,9 @@ namespace HorrorTacticsApi2.Domain
 
         static AudioEntity CreateAudio(string id, DefaultDataSoundModel info, UserEntity user)
         {
-            var fileEntity = new FileEntity(id, FileFormatEnum.MP3, id, info.Size, user)
+            // TODO: when inserting duplicates, it would not throw duplicated key exception and empty values were in db or in memory db cache?
+            // - confirm first
+            var fileEntity = new FileEntity(id, FileFormatEnum.MP3, RandomizeFilename(id), info.Size, user)
             {
                 IsDefault = true
             };
@@ -93,6 +97,17 @@ namespace HorrorTacticsApi2.Domain
 
             var entity = new AudioEntity(fileEntity, info.IsBgm.Value, 0);
             return entity;
+        }
+
+        static string RandomizeFilename(string id)
+        {
+            return Guid.NewGuid().ToString() + FilenameSeparator + id;
+        }
+
+        public static string GetFullPath(string filename)
+        {
+            var parts = filename.Split(FilenameSeparator, 2);
+            return parts[1];
         }
     }
 }

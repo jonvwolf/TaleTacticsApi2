@@ -45,6 +45,7 @@ namespace HorrorTacticsApi2.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+                new Claim(JwtRegisteredClaimNames.Sid, user.Username),
                 new Claim(Constants.JwtRoleKey, user.Role.ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             });
