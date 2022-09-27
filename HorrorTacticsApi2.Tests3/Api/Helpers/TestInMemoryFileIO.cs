@@ -14,6 +14,16 @@ namespace HorrorTacticsApi2.Tests3.Api.Helpers
         readonly object locker = new();
 
         readonly Dictionary<string, byte[]> _db = new();
+
+        public TestInMemoryFileIO()
+        {
+            var files = Directory.GetFiles(Constants.GetDefaultFilePath());
+            foreach (var file in files)
+            {
+                _db.Add(file, new byte[] { 1, 2, 3 });
+            }
+        }
+
         public async Task<long> CreateAsync(string path, Stream source, int maxBytes, IReadOnlyList<byte[]> fileSignatures, CancellationToken token)
         {
             using var mem = new MemoryStream();

@@ -1,6 +1,7 @@
 ﻿using HorrorTacticsApi2.Common;
 using HorrorTacticsApi2.Domain;
 using HorrorTacticsApi2.Domain.Dtos;
+using HorrorTacticsApi2.Domain.Exceptions;
 using HorrorTacticsApi2.Domain.Models.Audio;
 using HorrorTacticsApi2.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -37,9 +38,17 @@ namespace HorrorTacticsApi2.Controllers
         {
             // TODO: check filename is validated
             // TODO: add some basic regex to the filename
-            var stream = await image.GetStreamFileAsync(filename, true, token);
-            // stream is disposed by the framework
-            return File(stream, MediaTypeNames.Image.Jpeg, filename);
+            try
+            {
+                var stream = await image.GetStreamFileAsync(filename, true, token);
+                // stream is disposed by the framework
+                return File(stream, MediaTypeNames.Image.Jpeg, filename);
+            }
+            catch (HtNotFoundException)
+            {
+                // TODO: In integration tests it will Error controller will not kick in...
+                return NotFound();
+            }
         }
 
         [HttpGet(Constants.FileAudioApiPathWithVars)]
@@ -53,9 +62,17 @@ namespace HorrorTacticsApi2.Controllers
         {
             // TODO: check filename is validated
             // TODO: add some basic regex to the filename
-            var stream = await service.GetStreamFileAsync(filename, true, token);
-            // stream is disposed by the framework
-            return File(stream, "audio/mpeg", filename);
+            try
+            {
+                var stream = await service.GetStreamFileAsync(filename, true, token);
+                // stream is disposed by the framework
+                return File(stream, "audio/mpeg", filename);
+            }
+            catch (HtNotFoundException)
+            {
+                // TODO: In integration tests it will Error controller will not kick in...
+                return NotFound();
+            }
         }
     }
 }

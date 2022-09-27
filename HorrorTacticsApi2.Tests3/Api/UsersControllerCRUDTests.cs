@@ -54,7 +54,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var storyModel = await StoryEndpoints.GetAsync(client, newStory.Id);
             Assert.NotNull(storyModel);
             Assert.Equal("My new title", storyModel.Title);
-            await ValidateOtherUser(client, storyModel);
+            await ValidateOtherUser(client, story);
 
             Assert.Equal(created.Username, getUser.Username);
             Assert.Equal(created.Role, getUser.Role);
@@ -72,6 +72,22 @@ namespace HorrorTacticsApi2.Tests3.Api
             var stories = await StoryEndpoints.GetAllAsync(client);
             Assert.Single(stories);
             Assert.Equal("A father's legacy (Example story)", stories.First().Title);
+
+            var imageModel = stories.First().StoryScenes.First().StorySceneCommands.First().Images.First();
+            var imageModelToCheck = existingStory.StoryScenes.First().StorySceneCommands.First().Images.First();
+
+            var audioModel = stories.First().StoryScenes.First().StorySceneCommands.First().Audios.First();
+            var audioModelToCheck = existingStory.StoryScenes.First().StorySceneCommands.First().Audios.First();
+
+            await FileEndpoints.AssertOkImageAsync(client, imageModel.AbsoluteUrl);
+            await ImageEndpoints.DeleteAndAssertAsync(client, imageModel.Id);
+            await FileEndpoints.NotFoundImageAssert(client, imageModel.AbsoluteUrl);
+            await FileEndpoints.AssertOkImageAsync(client, imageModelToCheck.AbsoluteUrl);
+
+            await FileEndpoints.AssertOkAudioAsync(client, audioModel.AbsoluteUrl);
+            await AudioEndpoints.DeleteAndAssertAsync(client, audioModel.Id);
+            await FileEndpoints.NotFoundAudioAssert(client, audioModel.AbsoluteUrl);
+            await FileEndpoints.AssertOkAudioAsync(client, audioModelToCheck.AbsoluteUrl);
         }
 
         static async Task<ReadUserModel> CreateUser(HttpClient client, string username)
