@@ -43,14 +43,14 @@
 		"bodyCastleRest1": "Uggh... I'm so hungry, what's that smell? It... looks... so... tasty... I want one!",
 		"bodyCastleRest2": "Food seller: That would be 20 silver coins\r\nYou: Oh, right! Let's see 20 silver co- Oops, I dropped my father's insignia.",
 		"bodyCastleRest3": "Food seller: Wh- Wha- What is that?! GUARDS!!! GUARDS!!! GUARDS!!!\r\nYou: Uhh... what is going on? What did I do?",
-		"bodyCastleRest4": "Kingdom's Knight: On behalf of our nation and the Queen's Invictea's orders, you are arrested.\r\nYou: What?! Why?!",
-		"bodyCastleRest5": "Kingdom's Knight: For carrying the heretics' insignia. You: Wa- Wai- Wait! No! No! No! This is my father's insignia! He fought against the heretics!",
-		"bodyCastleRest6": "Kingdom's Knight: Silence! You will face justice, heretic!",
-		"endJail1": "It has been a couple of days since I was arrested, at least I think. It's hard to keep account of days when it is this dark.",
+		"bodyCastleRest4": "Knight: On behalf of our nation and the Queen's Invictea's orders, you are arrested.\r\nYou: What?! Why?!",
+		"bodyCastleRest5": "Knight: For carrying the heretics' insignia.\r\nYou: Wa- Wai- Wait! No! No! No! This is my father's insignia! He fought against the heretics!",
+		"bodyCastleRest6": "Knight: Silence! You will face justice, heretic!",
+		"endJail1": "It has been a couple of days since I was arrested, I think. It's hard to keep account of days when it is this dark.",
 		"endJail2": "I can't believe this... if I could explain the situation, I'm sure the Queen will understand. My father a heretic? That is ridiculous! He- He couldn't have lied to me, right? No way.",
 		"endJailInsignia1": "My father is a war hero, he sacrificed so much for our nation... It has to be a mistake. Maybe... am I confusing things? Could this insignia be an enemy trophy? No, it can't be. I remember perfectly, that the heretic's insignia is all black with a red eye in the center.",
 		"endJailInsignia2": "My trial will be tomorrow. I need to be ready. Once I explain the situation and mention my father's name, everything will be fine again. I'm sure of it!",
-		"endThankYou": "Thank you for experiencing my story! Let me know what you think! on twitter @jonwolfdev"
+		"endThankYou": "Thank you for experiencing my story! Let me know what you think! on twitter @jonwolfdev or by email jonwolfdev@gmail.com"
 	},
 	
 	"scenes": [
