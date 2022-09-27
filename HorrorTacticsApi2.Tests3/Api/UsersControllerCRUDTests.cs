@@ -10,6 +10,12 @@ using HorrorTacticsApi2.Data.Entities;
 using HorrorTacticsApi2.Domain.Models.Audio;
 using HorrorTacticsApi2.Domain.Models.Stories;
 using HorrorTacticsApi2.Domain.Models.Users;
+using HorrorTacticsApi2.Tests3.Api.EndpointHelpers;
+using HorrorTacticsApi2.Domain.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using NuGet.Common;
+using System.Net.Http.Headers;
+using System.Linq;
 
 namespace HorrorTacticsApi2.Tests3.Api
 {
@@ -28,19 +34,49 @@ namespace HorrorTacticsApi2.Tests3.Api
         {
             using var client = _collection.CreateClient();
 
-
-            var created = await CreateUser(client);
-            var created2 = await CreateUser(client);
+            var created = await CreateUser(client, "test1");
+            var created2 = await CreateUser(client, "test2");
             var getUser = await GetUser(client, created.Id);
             var updateUser = await UpdateUser(client, created.Id, new UpdateUserModel("mynewpasswordtest"));
+
+            var login = new LoginModel("mynewpasswordtest", "test1");
+            var response = await client.PostAsync("/login", Helper.GetContent(login));
+            var responseModel = await Helper.VerifyAndGetAsync<TokenModel>(response, StatusCodes.Status200OK);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, responseModel.Token);
+
+            var stories = await StoryEndpoints.GetAllAsync(client);
+            Assert.NotEmpty(stories);
+            var story = stories.FirstOrDefault();
+            Assert.NotNull(story);
+            Assert.Equal("A father's legacy (Example story)", story.Title);
+
+            var newStory = await StoryEndpoints.CreateAndAssertAsync(client, new CreateStoryModel("My new title", "my new desc"));
+            var storyModel = await StoryEndpoints.GetAsync(client, newStory.Id);
+            Assert.NotNull(storyModel);
+            Assert.Equal("My new title", storyModel.Title);
+            await ValidateOtherUser(client, storyModel);
 
             Assert.Equal(created.Username, getUser.Username);
             Assert.Equal(created.Role, getUser.Role);
         }
 
-        static async Task<ReadUserModel> CreateUser(HttpClient client)
+        static async Task ValidateOtherUser(HttpClient client, ReadStoryModel existingStory)
         {
-            using var response = await client.PostAsync(Path, Helper.GetContent(new CreateUserModel("test1", "passwordtest")));
+            var login = new LoginModel("passwordtest", "test2");
+            var response = await client.PostAsync("/login", Helper.GetContent(login));
+            var responseModel = await Helper.VerifyAndGetAsync<TokenModel>(response, StatusCodes.Status200OK);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, responseModel.Token);
+
+            await StoryEndpoints.NotFoundAssert(client, existingStory.Id);
+
+            var stories = await StoryEndpoints.GetAllAsync(client);
+            Assert.Single(stories);
+            Assert.Equal("A father's legacy (Example story)", stories.First().Title);
+        }
+
+        static async Task<ReadUserModel> CreateUser(HttpClient client, string username)
+        {
+            using var response = await client.PostAsync(Path, Helper.GetContent(new CreateUserModel(username, "passwordtest")));
 
             var dto = await Helper.VerifyAndGetAsync<ReadUserModel>(response, StatusCodes.Status201Created);
 

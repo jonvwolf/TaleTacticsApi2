@@ -63,6 +63,12 @@ namespace HorrorTacticsApi2.Tests3.Api.EndpointHelpers
             }
         }
 
+        public static async Task NotFoundAssert(HttpClient client, long id)
+        {
+            using var response = await client.GetAsync($"secured/stories/{id}");
+            Assert.Equal(StatusCodes.Status404NotFound, (int)response.StatusCode);
+        }
+
         public static void AssertModels(ReadStoryModel expected, ReadStoryModel received)
         {
             // TODO: assert

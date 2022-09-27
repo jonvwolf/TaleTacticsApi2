@@ -43,9 +43,17 @@ namespace HorrorTacticsApi2.Data
                 .Property(x => x.Role)
                 .HasConversion<string>();
 
+            modelBuilder.Entity<UserEntity>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
+
             modelBuilder.Entity<FileEntity>()
                 .Property(x => x.Format)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<FileEntity>()
+                .HasIndex(x => x.Filename)
+                .IsUnique();
 
             modelBuilder.Entity<StorySceneCommandEntity>()
                 .HasMany(x => x.Audios)
