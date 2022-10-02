@@ -24,6 +24,8 @@
         public const int StorySceneCommand_Title_MaxStringLength = 60;
         public const int StorySceneCommand_Title_MinStringLength = 1;
 
+        public const int StorySceneCommand_Comments_MaxStringLength = 600;
+
         public const int StoryScene_Items_List_MaxLength = 50;
 
 

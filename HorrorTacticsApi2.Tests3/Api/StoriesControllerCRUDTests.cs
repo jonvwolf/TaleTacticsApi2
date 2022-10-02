@@ -82,7 +82,9 @@ namespace HorrorTacticsApi2.Tests3.Api
                     Minigames: new List<long>() { 1 },
                     Timers: default,
                     new List<long>() { imageDto.Id },
-                    new List<long>() { audioDto.Id }
+                    new List<long>() { audioDto.Id },
+                    default,
+                    false
                 )
             );
 
@@ -93,7 +95,9 @@ namespace HorrorTacticsApi2.Tests3.Api
                     Minigames: default,
                     Timers: new List<uint>() { 10 },
                     new List<long>() { imageDto.Id, imageDto2.Id },
-                    new List<long>() { audioDto2.Id }
+                    new List<long>() { audioDto2.Id },
+                    "My new comments",
+                    true
                 )
             );
 
@@ -104,7 +108,9 @@ namespace HorrorTacticsApi2.Tests3.Api
                 Timers: new List<uint>() { 10 },
                 new List<ReadImageModel>() { imageDto, imageDto2 },
                 new List<ReadAudioModel>() { audioDto2 },
-                Minigames: new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") }
+                Minigames: new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") },
+                "My new comments",
+                true
             );
 
             var expectedStoryScene2 = expectedStoryScene1 with
@@ -128,7 +134,9 @@ namespace HorrorTacticsApi2.Tests3.Api
                     Minigames: new List<long>() { 1 },
                     Timers: default,
                     new List<long>() { imageDto.Id },
-                    new List<long>() { audioDto.Id, audioDto3.Id }
+                    new List<long>() { audioDto.Id, audioDto3.Id },
+                    "Comments1",
+                    true
                 ));
 
             await AudioControllerCRUDTests.Delete_Should_Delete_Audio(client, audioDto3);
@@ -143,7 +151,9 @@ namespace HorrorTacticsApi2.Tests3.Api
                         Timers: new List<uint>(),
                         new List<ReadImageModel>() { imageDto },
                         new List<ReadAudioModel>() { audioDto },
-                        new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") }
+                        new List<ReadMinigameModel>() { new ReadMinigameModel(1, "OK?") },
+                        "Comments1",
+                        true
                     ) 
                 }
             };

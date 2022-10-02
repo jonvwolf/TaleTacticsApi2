@@ -25,6 +25,13 @@ namespace HorrorTacticsApi2.Domain.Models.Stories
         IReadOnlyList<long>? Images,
 
         [MaxLength(ValidationConstants.StoryScene_Items_List_MaxLength)]
-        IReadOnlyList<long>? Audios
+        IReadOnlyList<long>? Audios,
+
+        [MaxLength(ValidationConstants.StorySceneCommand_Comments_MaxStringLength),
+        RegularExpression(ValidationConstants.RegularExpressionForAllStrings,
+        MatchTimeoutInMilliseconds = ValidationConstants.RegularExpressionTimeoutMilliseconds)]
+        string? Comments,
+
+        bool StartInternalTimer
     );
 }

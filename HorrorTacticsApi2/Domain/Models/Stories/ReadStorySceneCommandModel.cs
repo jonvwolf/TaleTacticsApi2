@@ -11,6 +11,8 @@ namespace HorrorTacticsApi2.Domain.Models.Stories
         IReadOnlyList<uint> Timers,
         IReadOnlyList<ReadImageModel> Images,
         IReadOnlyList<ReadAudioModel> Audios,
-        IReadOnlyList<ReadMinigameModel> Minigames
+        IReadOnlyList<ReadMinigameModel> Minigames,
+        string? Comments,
+        bool StartInternalTimer
     );
 }

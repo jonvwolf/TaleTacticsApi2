@@ -32,13 +32,17 @@ namespace HorrorTacticsApi2.Data.Entities
 
         public long Minigames { get; set; }
 
+        public string? Comments { get; set; }
+
+        public bool StartInternalTimer { get; set; }
         public StorySceneCommandEntity()
         {
 
         }
 
         public StorySceneCommandEntity(StorySceneEntity parent, string title, string? texts, string timers, 
-            IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames)
+            IReadOnlyList<ImageEntity> images, IReadOnlyList<AudioEntity> audios, IReadOnlyList<long> minigames,
+            string? comments, bool startInternalTimer)
         {
             ParentStoryScene = parent;
             Title = title;
@@ -50,6 +54,8 @@ namespace HorrorTacticsApi2.Data.Entities
             Audios = audios.ToList();
             // TODO: change this
             Minigames = minigames.Count > 0 ? minigames[0] : 0;
+            Comments = comments;
+            StartInternalTimer = startInternalTimer;
         }
     }
 }

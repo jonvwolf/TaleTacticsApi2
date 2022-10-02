@@ -65,7 +65,7 @@ namespace HorrorTacticsApi2.Domain
                         }
                     }
 ;
-                    _context.StorySceneCommands.Add(new StorySceneCommandEntity(sceneEntity, command.Title, text, string.Empty, imageEntity, soundEntities, new List<long>()));
+                    _context.StorySceneCommands.Add(new StorySceneCommandEntity(sceneEntity, command.Title, text, string.Empty, imageEntity, soundEntities, new List<long>(), command.Comments, command.StartInternalTimer));
                 }
             }
 

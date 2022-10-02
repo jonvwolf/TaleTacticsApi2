@@ -44,7 +44,9 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 CreateTimersFromList(model.Timers),
                 await FindImagesFromIdsAsync(user, model.Images, token),
                 await FindAudiosFromIdsAsync(user, model.Audios, token),
-                model.Minigames ?? new List<long>()
+                model.Minigames ?? new List<long>(),
+                model.Comments,
+                model.StartInternalTimer
             );
         }
 
@@ -79,6 +81,9 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 if (model.Minigames.Count > 0)
                     entity.Minigames = 1;
             }
+
+            entity.Comments = model.Comments;
+            entity.StartInternalTimer = model.StartInternalTimer;
         }
 
         public ReadStorySceneCommandModel CreateReadModel(StorySceneCommandEntity entity)
@@ -94,7 +99,7 @@ namespace HorrorTacticsApi2.Domain.Handlers
                 minigames.Add(new ReadMinigameModel(1, "find_in_image"));
 
             // TODO: should I do `ToList`? inside Models?
-            return new ReadStorySceneCommandModel(entity.Id, entity.Title, entity.Texts, timers, images, audios, minigames);
+            return new ReadStorySceneCommandModel(entity.Id, entity.Title, entity.Texts, timers, images, audios, minigames, entity.Comments, entity.StartInternalTimer);
         }
 
         public List<ReadStorySceneCommandModel> CreateReadModel(List<StorySceneCommandEntity> entities)
