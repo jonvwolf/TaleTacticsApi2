@@ -9,7 +9,7 @@ namespace HorrorTacticsApi2.Game
     /// <summary>
     /// Multi thread safe
     /// </summary>
-    public class GameSaver
+    public class GameSaver : IDisposable
     {
         readonly Dictionary<string, GameState> games = new();
         
@@ -23,10 +23,13 @@ namespace HorrorTacticsApi2.Game
         readonly int maxGameCodeLength;
         int currentGameCodeLength;
 
-        public GameSaver(IOptions<AppSettings> settings)
+        readonly ILogger<GameSaver> logger;
+
+        public GameSaver(IOptions<AppSettings> settings, ILogger<GameSaver> logger)
         {
             currentGameCodeLength = settings.Value.GameCodeInitialLength;
             maxGameCodeLength = settings.Value.GameCodeMaxLength;
+            this.logger = logger;
         }
 
         public string CreateGame(ReadStoryModel story, long userId)
@@ -140,6 +143,12 @@ namespace HorrorTacticsApi2.Game
             }
 
             return sb.ToString();
+        }
+
+        public void Dispose()
+        {
+            // TODO: this should not be here
+            logger.LogWarning("Horror tactics is shutting down...");
         }
     }
 }

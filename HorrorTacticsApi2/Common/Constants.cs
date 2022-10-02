@@ -35,6 +35,9 @@ namespace HorrorTacticsApi2
 
         public const string JwtRoleKey = "role";
 
+        // TODO: this should be in appsettings?
+        public const string InitLogFolder = "logs";
+
         public static string GetFileImageApiPath(string filename)
         {
             return FileImageApiPathWithVars.Replace("{filename}", filename);

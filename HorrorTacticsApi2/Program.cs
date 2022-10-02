@@ -12,8 +12,6 @@ using Jonwolfdev.Utils6.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -22,12 +20,31 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
     builder.Configuration.AddEnvironmentVariables(prefix: Constants.ENV_PREFIX);
-    
+
+    var sentryOptions = builder.Configuration.GetSection(nameof(SentryOptions)).Get<SentryOptions>();
+    if (sentryOptions == default)
+        throw new InvalidOperationException($"{nameof(sentryOptions)} section is empty");
+
     builder.Host.UseSerilog((ctx, lc) =>
     {
         lc
             .WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
+
+        if (sentryOptions.Enable)
+        {
+            // When setting Dsn, if it has an invalid value, it will throw an exception
+            lc.WriteTo.Sentry(o =>
+            {
+                o.Dsn = sentryOptions.Dsn;
+                // When configuring for the first time, to see what the SDK is doing:
+                o.Debug = sentryOptions.Debug;
+                // Set TracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+                // We recommend adjusting this value in production.
+                o.TracesSampleRate = sentryOptions.TracesSampleRate;
+                o.Environment = builder.Environment.EnvironmentName;
+            });
+        }
     });
 
     // Add services to the container.
@@ -38,7 +55,8 @@ try
 
     builder.AddJwt();
 
-    builder.Services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options => {
+    builder.Services.AddDbContext<IHorrorDbContext, HorrorDbContext>(options =>
+    {
         options.UseNpgsql(builder.Configuration.GetConnectionString(Constants.CONNECTION_STRING_MAIN_KEY));
     });
 
@@ -88,11 +106,11 @@ try
     {
         opt.OperationFilter<FileUploadOperationFilter>();
 
-        var securityScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+        var securityScheme = new OpenApiSecurityScheme()
         {
-            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            In = ParameterLocation.Header,
             Name = "Authorization",
-            Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            Type = SecuritySchemeType.Http,
             BearerFormat = "JWT",
             Scheme = JwtBearerDefaults.AuthenticationScheme,
             Reference = new OpenApiReference()
@@ -103,7 +121,7 @@ try
         };
         opt.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
 
-        opt.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
+        opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
         {
             { securityScheme, Array.Empty<string>() }
         });
@@ -126,7 +144,7 @@ try
             // Start up operations...
             using var scope = app.Services.CreateScope();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("HorrorTactics starting up...");
+            logger.LogWarning("HorrorTactics starting up...");
 
             if (app.Environment.EnvironmentName.StartsWith(Constants.APITESTING_ENV_NAME))
             {
@@ -136,6 +154,7 @@ try
             }
 
             await scope.ServiceProvider.MigrateDbAsync();
+            logger.LogWarning("HorrorTactics migration OK");
         }
 
         // TODO: change this to a appsettings bool variable
@@ -183,9 +202,19 @@ try
         app.Run();
     }
 }
-catch (Exception)
+catch (Exception ex)
 {
-    // TODO: write to file?
+    try
+    {
+        if (!Directory.Exists(Constants.InitLogFolder))
+            Directory.CreateDirectory(Constants.InitLogFolder);
+
+        await File.WriteAllTextAsync(Path.Combine(Constants.InitLogFolder, $"init-error-{Guid.NewGuid()}.txt"), ex.ToString());
+    }
+    catch (Exception e)
+    {
+        throw new AggregateException("Error trying to log error in file", new Exception[] { e, ex });
+    }
     throw;
 }
 finally
