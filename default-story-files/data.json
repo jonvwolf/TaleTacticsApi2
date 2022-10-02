@@ -57,8 +57,8 @@
 		{
 			"title": "1. Introduction - The Graveyard",
 			"commands": [
-				{"title": "1. Start scene", "imageId": "intro_title.jpg", "soundIds": ["intro_theme.mp3"], "comments": "This is an optional internal comment. For you to add in case, you need to add some notes about something important in your story."},
-				{"title": "2. Show graveyard", "imageId": "intro_graveyard.jpg", "textId": "introGraveyard1", "comments": "This button starts an internal timer, in case you need to clicks buttons at a specific time. For example, to coordinate at a certain time in a song, to make it more dramatic. Your notes could looks like this:\r\n00:10 Click button X1\r\n00:30 Click button X2\r\n01:00 Click button X3", "startInternalTimer": true },
+				{"title": "1. Start scene", "imageId": "intro_title.jpg", "soundIds": ["intro_theme.mp3"], "comments": "This is an optional internal comment, only shown to you. For you to add in case, you need to add some notes about something important in your story."},
+				{"title": "2. Show graveyard", "imageId": "intro_graveyard.jpg", "textId": "introGraveyard1", "comments": "This button also starts an internal timer, in case you need to clicks buttons at a specific time. For example, to coordinate at a certain time in a song, to make it more dramatic. Your notes could looks like this:\r\n00:10 Click button X1\r\n00:30 Click button X2\r\n01:00 Click button X3", "startInternalTimer": true },
 				{"title": "3. Show next text", "textId": "introGraveyard2" },
 				{"title": "4. Show next text", "textId": "introGraveyard3" },
 				{"title": "5. Show next text", "textId": "introGraveyard4" },

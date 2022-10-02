@@ -73,6 +73,13 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.Single(stories);
             Assert.Equal("A father's legacy (Example story)", stories.First().Title);
 
+            var storyCommandWithCommentsAndInternalTimer = stories[0].StoryScenes
+                .Select(x => x.StorySceneCommands.Where(x => x.Comments != default && x.StartInternalTimer).FirstOrDefault())
+                .FirstOrDefault();
+
+            Assert.NotNull(storyCommandWithCommentsAndInternalTimer);
+            Assert.Contains("This button also starts an internal timer", storyCommandWithCommentsAndInternalTimer.Comments);
+
             var imageModel = stories.First().StoryScenes.First().StorySceneCommands.First().Images.First();
             var imageModelToCheck = existingStory.StoryScenes.First().StorySceneCommands.First().Images.First();
 
