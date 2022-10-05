@@ -94,6 +94,8 @@ try
         .AddControllers()
         .AddNewtonsoftJson();
 
+    builder.Services.AddResponseCaching();
+
     builder.Services.AddApiVersioning(config =>
     {
         config.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
@@ -190,7 +192,8 @@ try
         // TODO: change this to a appsettings bool variable
         if (!app.Environment.IsProduction())
             app.UseHttpsRedirection();
-
+        // In this order
+        app.UseResponseCaching();
         app.UseAuthentication();
         app.UseAuthorization();
 

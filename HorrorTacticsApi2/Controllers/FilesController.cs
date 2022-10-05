@@ -31,6 +31,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces(MediaTypeNames.Image.Jpeg)]
+        [ResponseCache(Duration = Constants.AssetFileCacheInSeconds, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetImage(
             [FromRoute, 
             StringLength(ValidationConstants.File_Filename_MaxStringLength, MinimumLength = ValidationConstants.File_Name_MinStringLength), 
@@ -55,6 +56,7 @@ namespace HorrorTacticsApi2.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Produces("audio/mpeg")]
+        [ResponseCache(Duration = Constants.AssetFileCacheInSeconds, Location = ResponseCacheLocation.Any)]
         public async Task<IActionResult> GetAudio(
             [FromRoute,
             StringLength(ValidationConstants.File_Filename_MaxStringLength, MinimumLength = ValidationConstants.File_Name_MinStringLength),

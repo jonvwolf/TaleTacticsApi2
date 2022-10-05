@@ -38,6 +38,8 @@ namespace HorrorTacticsApi2
         // TODO: this should be in appsettings?
         public const string InitLogFolder = "logs";
 
+        public const int AssetFileCacheInSeconds = 1209600;
+
         public static string GetFileImageApiPath(string filename)
         {
             return FileImageApiPathWithVars.Replace("{filename}", filename);
