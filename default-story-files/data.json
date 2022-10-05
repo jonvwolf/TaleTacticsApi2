@@ -58,8 +58,8 @@
 			"title": "1. Introduction - The Graveyard",
 			"commands": [
 				{"title": "1. Start scene", "imageId": "intro_title.jpg", "soundIds": ["intro_theme.mp3"], "comments": "This is an optional internal comment, only shown to you. For you to add in case, you need to add some notes about something important in your story."},
-				{"title": "2. Show graveyard", "imageId": "intro_graveyard.jpg", "textId": "introGraveyard1", "comments": "This button also starts an internal timer, in case you need to clicks buttons at a specific time. For example, to coordinate at a certain time in a song, to make it more dramatic. Your notes could looks like this:\r\n00:10 Click button X1\r\n00:30 Click button X2\r\n01:00 Click button X3", "startInternalTimer": true },
-				{"title": "3. Show next text", "textId": "introGraveyard2" },
+				{"title": "2. Show graveyard", "imageId": "intro_graveyard.jpg", "textId": "introGraveyard1", "comments": "This button also starts an internal timer, in case you need to clicks buttons at a specific time. For example, to coordinate at a certain time in a song, to make it more dramatic. Your notes could looks like this:\r\n00:10 Click button X1\r\n00:30 Click button X2\r\n01:00 Click button X3\r\n\r\nOr even better, name your buttons as \"Timer 00:15\" so it will be easier to coordinate", "startInternalTimer": true },
+				{"title": "3. Show next text", "textId": "introGraveyard2", "comments": "You can also start internal timer to know when to show the next text. For example, in your button comments \"At time 00:30 show next text\"" },
 				{"title": "4. Show next text", "textId": "introGraveyard3" },
 				{"title": "5. Show next text", "textId": "introGraveyard4" },
 			]
@@ -85,8 +85,8 @@
 				{"title": "1. Start scene", "imageId": "body_entrance.jpg", "textId": "bodyCastle1", "soundIds": ["body_castle_theme2.mp3"]},
 				{"title": "2. Show food", "imageId": "body_ramen_restaurant.jpg", "textId": "bodyCastleRest1", "soundIds": ["se_stomach.mp3"]},
 				{"title": "3. Show next text", "textId": "bodyCastleRest2" },
-				{"title": "4. Show next text", "textId": "bodyCastleRest3" },
-				{"title": "5. Show knight", "imageId": "body_ramen_restaurant_knight.jpg", "textId": "bodyCastleRest4", "soundIds": ["body_knight.mp3"]},
+				{"title": "4. Show next text", "textId": "bodyCastleRest3", "soundIds": ["body_knight.mp3"] },
+				{"title": "5. Show knight", "imageId": "body_ramen_restaurant_knight.jpg", "textId": "bodyCastleRest4", "soundIds": ["body_knight.mp3"] },
 				{"title": "6. Show next text", "textId": "bodyCastleRest5" },
 				{"title": "7. Show next text", "textId": "bodyCastleRest6" },
 			]
