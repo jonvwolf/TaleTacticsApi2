@@ -15,6 +15,7 @@ namespace HorrorTacticsApi2.Game
         public long OwnerId { get; }
         public DateTimeOffset CreatedAt { get; }
         public DateTimeOffset AccessedAt { get; protected set; }
+        public string Notes { get; set; } = string.Empty;
 
         public GameState(string code, ReadStoryModel story, long userId)
         {

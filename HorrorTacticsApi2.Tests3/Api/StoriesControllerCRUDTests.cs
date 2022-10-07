@@ -202,6 +202,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var storyDto = await CreateStory(client);
 
             var createdGame = await Post_Should_Create_Game(client, storyDto.Id);
+            await Put_Should_Add_Notes(client, createdGame.GameCode);
             // TODO: move this to its own test collection
             var gameConfig = await Games_Get_Should_Return_GameConfiguration(client, createdGame.GameCode);
             await Get_Audio_Should_Return_File(client, gameConfig);
@@ -232,6 +233,7 @@ namespace HorrorTacticsApi2.Tests3.Api
             var gameList = await GetAll_Should_Return_Games(client);
             var item = gameList.FirstOrDefault(x => x.Code == createdGame.GameCode);
             Assert.NotNull(item);
+            Assert.Equal("my new notes hell yeah!", item.Notes);
             await Delete_Should_Delete_Game(client, createdGame.GameCode);
             await Get_Should_Return_NotFound(client, createdGame.GameCode);
         }
@@ -382,6 +384,18 @@ namespace HorrorTacticsApi2.Tests3.Api
             var readModel = await Helper.VerifyAndGetAsync<ReadGameCreatedModel>(response, StatusCodes.Status201Created);
             Assert.True(readModel.GameCode.Length > 0);
             return readModel;
+        }
+
+        static async Task Put_Should_Add_Notes(HttpClient client, string gameCode)
+        {
+            // arrange
+            var model = new UpdateGameNotesModel("my new notes hell yeah!");
+
+            // act
+            using var response = await client.PutAsync(PathSecuredGames + "/" + gameCode + "/notes", Helper.GetContent(model));
+            var content = await response.Content.ReadAsStringAsync();
+            // assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
         }
 
         static async Task<List<ReadGameStateModel>> GetAll_Should_Return_Games(HttpClient client)

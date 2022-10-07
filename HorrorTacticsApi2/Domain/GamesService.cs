@@ -37,9 +37,19 @@ namespace HorrorTacticsApi2.Domain
             gameSaver.RemoveGame(gameCode, user.Id);
         }
 
+        public void UpdateGameNotes(UpdateGameNotesModel model, UserJwt user, string gameCode)
+        {
+            gameSaver.UpdateGameNotes(model.Notes, gameCode, user.Id);
+        }
+
         public IReadOnlyList<ReadGameStateModel> GetAllGames(UserJwt user)
         {
             return gameSaver.GetAllGames(user.Id);
+        }
+
+        public ReadGameStateModel? TryGetGameByCode(UserJwt user, string gameCode)
+        {
+            return gameSaver.TryGetGameByCode(gameCode, user.Id);
         }
 
         public ReadGameConfiguration GetGameConfiguration(string gameCode)

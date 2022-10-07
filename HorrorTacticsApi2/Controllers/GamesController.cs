@@ -40,7 +40,7 @@ namespace HorrorTacticsApi2.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         public ActionResult<ReadGameStateModel> Get([FromRoute] string gameCode)
         {
-            var item = games.GetAllGames(GetUser()).SingleOrDefault(x => x.Code == gameCode);
+            var item = games.TryGetGameByCode(GetUser(), gameCode);
             if (item == default)
                 return NotFound();
 
@@ -63,5 +63,16 @@ namespace HorrorTacticsApi2.Controllers
             games.DeleteGame(GetUser(), gameCode);
             return NoContent();
         }
+
+        [HttpPut($"{Constants.SecuredApiPath}/[controller]/" + "{gameCode}/notes")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [Produces(MediaTypeNames.Application.Json)]
+        public ActionResult PutNotes([FromRoute] string gameCode, [FromBody] UpdateGameNotesModel model)
+        {
+            games.UpdateGameNotes(model, GetUser(), gameCode);
+            return Ok();
+        }
+
+
     }
 }

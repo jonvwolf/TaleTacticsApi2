@@ -101,6 +101,20 @@ namespace HorrorTacticsApi2.Game
             }
         }
 
+        public void UpdateGameNotes(string notes, string gameCode, long userId)
+        {
+            lock (lockObj)
+            {
+                if (games.TryGetValue(gameCode, out var state))
+                {
+                    if (state.OwnerId == userId)
+                    {
+                        state.Notes = notes;
+                    }
+                }
+            }
+        }
+
         public int GetTotalGames()
         {
             lock (lockObj)
@@ -114,7 +128,23 @@ namespace HorrorTacticsApi2.Game
             lock (lockObj)
             {
                 // TODO: only model handlers can do this (create models)
-                return games.Where(x => x.Value.OwnerId == userId).Select(pair => new ReadGameStateModel(pair.Key, pair.Value.Story)).ToList();
+                return games.Where(x => x.Value.OwnerId == userId).Select(pair => new ReadGameStateModel(pair.Key, pair.Value.Notes, pair.Value.Story)).ToList();
+            }
+        }
+
+        public ReadGameStateModel? TryGetGameByCode(string gameCode, long userId)
+        {
+            lock (lockObj)
+            {
+                if (games.TryGetValue(gameCode, out var state))
+                {
+                    // TODO: only model handlers can do this (create models)
+                    if (state.OwnerId == userId)
+                    {
+                        return new ReadGameStateModel(gameCode, state.Notes, state.Story);
+                    }
+                }
+                return default;
             }
         }
 
