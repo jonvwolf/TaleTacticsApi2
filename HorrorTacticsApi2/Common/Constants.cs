@@ -37,6 +37,7 @@ namespace HorrorTacticsApi2
 
         // TODO: this should be in appsettings?
         public const string InitLogFolder = "logs";
+        public const string MetricsFolder = "metrics";
 
         public const int AssetFileCacheInSeconds = 1209600;
 

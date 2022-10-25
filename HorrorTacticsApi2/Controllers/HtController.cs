@@ -1,5 +1,6 @@
 ﻿using HorrorTacticsApi2.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -35,6 +36,23 @@ namespace HorrorTacticsApi2.Controllers
                 roleEnum = UserRole.NotSet;
 
             return new UserJwt(long.Parse(userId.Value), username.Value, roleEnum);
+        }
+
+        public static long? GetUserId(HttpContext context)
+        {
+            var user = context.User;
+            if (user != default && user.Claims != default)
+            {
+                var claim = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+                if (claim != default)
+                {
+                    if (long.TryParse(claim.Value, out var res))
+                    {
+                        return res;
+                    }
+                }
+            }
+            return default;
         }
 
         static Claim GetClaim(string type, IEnumerable<Claim> claims)

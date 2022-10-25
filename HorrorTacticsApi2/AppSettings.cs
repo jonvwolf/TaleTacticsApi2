@@ -30,6 +30,9 @@ namespace HorrorTacticsApi2
         [Range(1, 1000)]
         public int MaxGamesPerUser { get; set; }
 
+        [Range(1, 5000)]
+        public int MetricsServiceWaitForMinutes { get; set; } = 30;
+
         public int GetFileSizeLimitInBytes()
         {
             return FileSizeLimitInKB * 1024;

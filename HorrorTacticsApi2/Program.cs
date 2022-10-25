@@ -7,6 +7,7 @@ using HorrorTacticsApi2.Domain.IO;
 using HorrorTacticsApi2.Game;
 using HorrorTacticsApi2.Helpers;
 using HorrorTacticsApi2.Hubs;
+using HorrorTacticsApi2.Services;
 using HorrorTacticsApi2.Swagger;
 using Jonwolfdev.Utils6.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,9 @@ try
     // ObjectValidator should only be used for Hub validations
     builder.Services.AddSingleton<IObjectValidator<HubObjectValidator>, HubObjectValidator>();
 
+    builder.Services.AddHostedService<MetricsBackgroundService>();
+    builder.Services.AddSingleton<MetricsService>();
+
     builder.Services.AddScoped<ImageModelEntityHandler>();
     builder.Services.AddScoped<AudioModelEntityHandler>();
     builder.Services.AddScoped<StorySceneModelEntityHandler>();
@@ -91,7 +95,10 @@ try
         .AddSignalR()
         .AddNewtonsoftJsonProtocol();
     builder.Services
-        .AddControllers()
+        .AddControllers(config =>
+        {
+            config.Filters.Add<MetricsResponseFilter>();
+        })
         .AddNewtonsoftJson();
 
     builder.Services.AddResponseCaching();

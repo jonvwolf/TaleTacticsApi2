@@ -9,7 +9,7 @@ apply-migrations.txt
 *.user
 *.userosscache
 *.sln.docstates
-
+metrics
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
