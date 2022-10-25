@@ -52,7 +52,7 @@ namespace HorrorTacticsApi2.Services
                     await Task.Delay(wait, stoppingToken);
                     await SaveAsync(false);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                     await SaveAsync(true);
                     break;
