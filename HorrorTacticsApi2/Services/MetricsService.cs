@@ -37,6 +37,7 @@ namespace HorrorTacticsApi2.Services
 
         public async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // TODO: add integration test... maybe just check the file?
             var wait = TimeSpan.FromMinutes(_appSettings.MetricsServiceWaitForMinutes);
 
             if (!Directory.Exists(Constants.MetricsFolder))
