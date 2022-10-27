@@ -33,6 +33,9 @@ namespace HorrorTacticsApi2
         [Range(1, 5000)]
         public int MetricsServiceWaitForMinutes { get; set; } = 30;
 
+        [Required, MinLength(1)]
+        public string Version { get; set; } = string.Empty;
+
         public int GetFileSizeLimitInBytes()
         {
             return FileSizeLimitInKB * 1024;

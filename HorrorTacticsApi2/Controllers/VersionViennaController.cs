@@ -20,13 +20,18 @@ namespace HorrorTacticsApi2.Controllers
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public class VersionViennaController
     {
+        readonly string _version;
+        public VersionViennaController(IOptions<AppSettings> settings)
+        {
+            _version = settings.Value.Version;
+        }
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Produces(MediaTypeNames.Text.Plain)]
         public ActionResult<string> Get()
         {
-            const string version = "1.2";
-            return $"v{version} - Date: {DateTime.Now}";
+            return $"v{_version} - Date: {DateTime.Now}";
         }
     }
 }
