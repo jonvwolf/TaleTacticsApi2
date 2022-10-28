@@ -80,6 +80,10 @@ namespace HorrorTacticsApi2.Tests3.Api
             Assert.NotNull(storyCommandWithCommentsAndInternalTimer);
             Assert.Contains("This button also starts an internal timer", storyCommandWithCommentsAndInternalTimer.Comments);
 
+            var storyCommandWithTimer = stories[0].StoryScenes.FirstOrDefault(x => x.StorySceneCommands.Any(x => x.Timers.Count > 0 && x.Timers[0] == 60));
+
+            Assert.NotNull(storyCommandWithTimer);
+
             var imageModel = stories.First().StoryScenes.First().StorySceneCommands.First().Images.First();
             var imageModelToCheck = existingStory.StoryScenes.First().StorySceneCommands.First().Images.First();
 

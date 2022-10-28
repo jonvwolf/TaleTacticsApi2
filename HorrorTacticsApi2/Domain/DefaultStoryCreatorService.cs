@@ -54,6 +54,10 @@ namespace HorrorTacticsApi2.Domain
                 {
                     
                     string? text = command.TextId != default ? data.Texts[command.TextId] : default;
+                    string timer = string.Empty;
+                    if (command.Timer.HasValue)
+                        timer = command.Timer.Value.ToString();
+
                     var imageEntity = command.ImageId != default ? new List<ImageEntity>() { images[command.ImageId] } : new List<ImageEntity>();
 
                     List<AudioEntity> soundEntities = new();
@@ -65,7 +69,7 @@ namespace HorrorTacticsApi2.Domain
                         }
                     }
 ;
-                    _context.StorySceneCommands.Add(new StorySceneCommandEntity(sceneEntity, command.Title, text, string.Empty, imageEntity, soundEntities, new List<long>(), command.Comments, command.StartInternalTimer));
+                    _context.StorySceneCommands.Add(new StorySceneCommandEntity(sceneEntity, command.Title, text, timer, imageEntity, soundEntities, new List<long>(), command.Comments, command.StartInternalTimer));
                 }
             }
 

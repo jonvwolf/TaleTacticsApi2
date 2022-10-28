@@ -63,6 +63,8 @@ namespace HorrorTacticsApi2.Domain.Models
         string? ImageId,
         string? TextId,
         string? Comments,
+        [Range(1, 999)]
+        int? Timer,
         bool StartInternalTimer,
 
         IReadOnlyList<string>? SoundIds
