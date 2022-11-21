@@ -28,6 +28,8 @@ namespace HorrorTacticsApi2.Domain
             };
 
             var url = $"{request.Scheme}://{host}{pathBase}/{subPath}";
+            // For local android test
+            //var url = $"http://10.0.2.2:5216{pathBase}/{subPath}";
             return url;
         }
     }
