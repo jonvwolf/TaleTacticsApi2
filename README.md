@@ -2,9 +2,9 @@
 Go to: https://taletactics.com/
 
 # Github links to all components
-https://github.com/jonwolfdev/Tale-Tactics-Game
-https://github.com/jonwolfdev/TaleTacticsUi2
-https://github.com/jonwolfdev/TaleTacticsApi2
+- https://github.com/jonwolfdev/Tale-Tactics-Game
+- https://github.com/jonwolfdev/TaleTacticsUi2
+- https://github.com/jonwolfdev/TaleTacticsApi2
 
 # Tale-Tactics-Game
 
